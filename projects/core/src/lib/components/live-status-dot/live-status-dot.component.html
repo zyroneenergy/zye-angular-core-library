@@ -1,0 +1,8 @@
+<span
+  class="live-dot"
+  [class.live-dot--live]="isLive"
+  [class.live-dot--stale]="!isLive"
+  [matTooltip]="tooltipText ?? (isLive ? 'Live Data' : 'No Live Data')"
+  matTooltipPosition="above"
+  aria-hidden="true">
+</span>
