@@ -1,0 +1,215 @@
+<mat-card class="slc-card">
+
+  <!-- ── Header ── -->
+  <div class="slc-header">
+    <div class="title">
+      <mat-icon class="icon">{{ icon }}</mat-icon>
+      <div class="slc-header-title">
+        <span class="slc-title">{{ title }}</span>
+        <span *ngIf="subtitle" class="slc-subtitle">{{ subtitle }}</span>
+      </div>
+    </div>
+
+    <!--
+      Single cycle-sort button.
+      Shows the CURRENT active label + a coloured dot.
+      One click → next option in the list → emits sortChange.
+    -->
+    <button
+      *ngIf="sortButtons.length && _activeSort"
+      class="slc-sort-btn"
+      (click)="cycleSort()"
+      [title]="'Sorted by: ' + _activeSort.label + ' — click to change'">
+      <span class="isax isax-arrow-35"></span>Sort :
+      <span
+        class="slc-sort-dot"
+        [style.background]="_activeSort.dotColor ?? 'var(--primary500)'">
+      </span>
+      {{ _activeSort.label }}
+    </button>
+
+    <ng-content select="[slot=header-action]"></ng-content>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- ── Body ── -->
+  <div class="slc-body">
+
+    <ng-container *ngIf="status === 'loading'">
+      <lib-shimmer preset="card-compact" [count]="4" [staggerDelay]="50" />
+    </ng-container>
+
+    <lib-empty-data
+      *ngIf="status === 'empty'"
+      class="slc-state-center"
+      [icon]="'isax-folder-open'"
+      [name]="'No Data Available'"
+      [description]="emptyMessage">
+    </lib-empty-data>
+
+    <lib-empty-data
+      *ngIf="status === 'error'"
+      class="slc-state-center"
+      [icon]="'isax-danger'"
+      [name]="'Something went wrong'"
+      [description]="'We couldn\'t find any data to display at the moment.'">
+    </lib-empty-data>
+
+    <ul
+      *ngIf="status === 'success'"
+      class="slc-list"
+      [class.slc-list--scrollable]="items.length > maxVisible">
+
+      <li *ngFor="let site of items; let last = last" class="slc-item">
+
+        <!-- ══════════════════════════════════════
+             top-performing  — flat badge + bar + chips
+             ══════════════════════════════════════ -->
+        <ng-container *ngIf="variant === 'top-performing'">
+          <div class="slc-item-row slc-item-row--space">
+            <div class="slc-site-info">
+
+  <lib-live-status-dot
+    class="slc-live-dot"
+    [isLive]="isSiteLive(site)">
+  </lib-live-status-dot>
+
+  <div class="slc-site-text">
+
+    <span
+      class="slc-site-name"
+      [class.slc-site-name--offline]="!isSiteLive(site)"
+      (click)="navigate(site.id)">
+      {{ site.name }}
+    </span>
+
+    <span class="slc-location" [class.slc-location--offline]="!isSiteLive(site)">
+      {{ site.city }}, {{ site.state }}
+    </span>
+
+  </div>
+
+</div>
+            <span *ngIf="site.badge != null" class="slc-badge" [ngStyle]="getBadgeStyle(site.badge)">
+              {{ site.badge.label }}: {{ site.badge.value }}{{ site.badge.unit ?? '' }}
+            </span>
+          </div>
+          <div *ngIf="site.progressBar" class="slc-bar-wrap">
+            <div class="slc-bar-fill"
+              [style.width.%]="site.progressBar.fillPct"
+              [style.background]="site.progressBar.fillColor ?? 'var(--primary500)'"></div>
+            <div class="slc-bar-track"
+              [style.width.%]="100 - site.progressBar.fillPct"
+              [style.background]="site.progressBar.trackColor ?? 'var(--divider-border-color)'"></div>
+          </div>
+          <div class="slc-chips-row">
+            <span *ngFor="let chip of site.chips" class="slc-chip">
+              {{ chip.label }}: {{ formatChipValue(chip.value) }}{{ chip.unit ? ' ' + chip.unit : '' }}
+            </span>
+          </div>
+        </ng-container>
+
+        <!-- ══════════════════════════════════════
+             watchlist  — optional badge + chips
+             ══════════════════════════════════════ -->
+        <ng-container *ngIf="variant === 'watchlist'">
+          <div class="slc-item-row slc-item-row--space">
+            <div class="slc-site-info">
+
+  <lib-live-status-dot
+    class="slc-live-dot"
+    [isLive]="isSiteLive(site)">
+  </lib-live-status-dot>
+
+  <div class="slc-site-text">
+
+    <span
+      class="slc-site-name"
+      [class.slc-site-name--offline]="!isSiteLive(site)"
+      (click)="navigate(site.id)">
+      {{ site.name }}
+    </span>
+
+    <span class="slc-location" [class.slc-location--offline]="!isSiteLive(site)">
+      {{ site.city }}, {{ site.state }}
+    </span>
+
+  </div>
+
+</div>
+            <span *ngIf="site.badge != null" class="slc-badge" [ngStyle]="getBadgeStyle(site.badge)">
+              {{ site.badge.label }}: {{ site.badge.value }}{{ site.badge.unit ?? '' }}
+            </span>
+          </div>
+          <div *ngIf="site.progressBar" class="slc-bar-wrap">
+            <div class="slc-bar-fill"
+              [style.width.%]="site.progressBar.fillPct"
+              [style.background]="site.progressBar.fillColor ?? 'var(--primary500)'"></div>
+            <div class="slc-bar-track"
+              [style.width.%]="100 - site.progressBar.fillPct"
+              [style.background]="site.progressBar.trackColor ?? 'var(--divider-border-color)'"></div>
+          </div>
+          <div class="slc-chips-row">
+            <span *ngFor="let chip of site.chips" class="slc-chip" [ngStyle]="getChipStyle(chip)">
+              {{ chip.label }}: {{ formatChipValue(chip.value) }}{{ chip.unit ? ' ' + chip.unit : '' }}
+            </span>
+          </div>
+        </ng-container>
+
+        <!-- ══════════════════════════════════════
+             recent-commissioned  — ring badge on right
+             ══════════════════════════════════════ -->
+        <ng-container *ngIf="variant === 'recent-commissioned'">
+          <div class="slc-item-row slc-item-row--space slc-item-row--top">
+
+            <!-- Left: name + location + chips -->
+            <div class="slc-item-col">
+              <div class="slc-site-info">
+
+  <lib-live-status-dot
+    class="slc-live-dot"
+    [isLive]="isSiteLive(site)">
+  </lib-live-status-dot>
+
+  <div class="slc-site-text">
+
+    <span
+      class="slc-site-name"
+      [class.slc-site-name--offline]="!isSiteLive(site)"
+      (click)="navigate(site.id)">
+      {{ site.name }}
+    </span>
+
+    <span class="slc-location" [class.slc-location--offline]="!isSiteLive(site)">
+      {{ site.city }}, {{ site.state }}
+    </span>
+
+  </div>
+
+</div>
+              <div class="slc-chips-row">
+                <span *ngFor="let chip of site.chips" class="slc-chip">
+                  {{ chip.label }}: {{ formatChipValue(chip.value) }}{{ chip.unit ? ' ' + chip.unit : '' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Right Badge -->
+    <span
+      *ngIf="site.badge != null"
+      class="slc-badge"
+      [ngStyle]="getBadgeStyle(site.badge)">
+      {{ site.badge.label }}:
+      {{ site.badge.value }}{{ site.badge.unit ?? '' }}
+    </span>
+
+          </div>
+        </ng-container>
+
+        <mat-divider *ngIf="!last"></mat-divider>
+      </li>
+    </ul>
+
+  </div>
+</mat-card>

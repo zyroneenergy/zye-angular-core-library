@@ -1,0 +1,258 @@
+@use '../../../styles/abstracts/index' as *;
+:host { display: block; }
+
+.slc-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+  width: 100%;
+}
+
+/* ── Header ── */
+.slc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 14px;
+  gap: 8px;
+}
+
+.title {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--primary500);
+  color: var(--primary50);
+  flex-shrink: 0;
+}
+
+.slc-header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.slc-title {
+  font-size: #{map-get(map-get($solar-typography, "body-1"), "font-size")};
+  font-weight: 600;
+  color: var(--solarTextPrimary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slc-subtitle {
+  font-size: #{map-get(map-get($solar-typography, "caption"), "font-size")};
+  color: var(--solarTextThird);
+}
+
+/*
+  Single cycle-sort button.
+  One click advances through the parent-supplied labels.
+  A coloured dot shows which state is active.
+*/
+.slc-sort-btn {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+  font-weight: 500;
+  line-height: 1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--divider-border-color);
+  color: var(--solarTextSecondary);
+  background: var(--mat-chip-bg);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease, color 0.15s ease;
+
+  .isax{
+    font-size: 16px;
+  }
+  &:hover {
+    border-color: var(--primary500);
+    color: var(--primary500);
+  }
+}
+
+.slc-sort-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+/* ── Body ── */
+.slc-body { flex: 1; }
+
+/* ── List ── */
+.slc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 12px;
+}
+
+.slc-list--scrollable {
+  max-height: 420px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--divider-border-color) transparent;
+}
+
+/* ── Item ── */
+.slc-item {
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.slc-item-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slc-item-row--space { justify-content: space-between; }
+.slc-item-row--top   { align-items: flex-start; }
+
+.slc-item-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* ── Site name ── */
+.slc-site-name {
+  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+  font-weight: 500;
+  color: var(--primary500);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  min-width: 0;
+  transition: color 0.2s ease;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.slc-site-name--offline {
+  color: var(--solarTextThird);
+
+  &:hover {
+    color: var(--solarTextSecondary);
+  }
+}
+
+/* ── Location ── */
+.slc-location {
+  font-size: #{map-get(map-get($solar-typography, "caption"), "font-size")};
+  color: var(--solarTextSecondary);
+}
+
+.slc-location--offline {
+  color: var(--solarTextThird);
+}
+/* ── Flat pill badge ── */
+.slc-badge {
+  font-size: #{map-get(map-get($solar-typography, "caption"), "font-size")};
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--divider-border-color);
+  color: var(--solarTextSecondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &.slc-badge--bad { border-color: var(--actionRed);  color: var(--actionRed); }
+  &.slc-badge--good     { border-color: var(--actionGreen);  color: var(--actionGreen); }
+}
+
+/* ── Horizontal progress bar ── */
+.slc-bar-wrap {
+  display: flex;
+  height: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--divider-border-color);
+  margin: 4px 0;
+}
+
+.slc-bar-fill,
+.slc-bar-track {
+  height: 100%;
+  transition: width 0.35s ease;
+}
+
+/* ── Chips ── */
+.slc-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.slc-chip {
+  font-size: #{map-get(map-get($solar-typography, "caption"), "font-size")};
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--divider-border-color);
+  color: var(--solarGreyColor4);
+}
+
+/* ── Empty / Error ── */
+.slc-state-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 240px;
+}
+
+.slc-site-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.slc-live-dot {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slc-site-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}

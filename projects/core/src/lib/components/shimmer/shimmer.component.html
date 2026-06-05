@@ -1,0 +1,163 @@
+<!--
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  Shimmer Component — Zyrone Energy Dashboard                    │
+  │  Supports all presets: auth, dashboard, sites, analytics,       │
+  │  layout, monitoring, report tabs + generic primitives.          │
+  └─────────────────────────────────────────────────────────────────┘
+-->
+
+<!-- ── TABLE-INLINE: flex-row cells outside <mat-table> ────────── -->
+<ng-container *ngIf="isTableInline; else defaultMode">
+  <div *ngFor="let group of renderedGroups(); let gi = index; trackBy: trackByIndex"
+       class="shimmer-tr">
+    <div *ngFor="let item of group; trackBy: trackByIndex"
+         class="shimmer-td">
+      <div class="shimmer-item shimmer-item--line"
+           [ngStyle]="getItemStyle(item)">
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- ── DEFAULT MODE ─────────────────────────────────────────────── -->
+<ng-template #defaultMode>
+  <ng-container *ngFor="let group of renderedGroups(); let gi = index; trackBy: trackByIndex">
+
+    <!-- ── ANALYTICS BAR CHART preset: two-zone layout ─────────── -->
+    <ng-container *ngIf="preset === 'analytics-bar-chart' || preset === 'chart-bar'; else nonBarGroup">
+      <div class="shimmer-group shimmer-group--chart-card"
+           [style.animation-delay]="gi > 0 ? (gi * staggerDelay) + 'ms' : null">
+
+        <!-- header: title + subtitle -->
+        <div class="shimmer-row">
+          <div class="shimmer-header-lines" style="max-width:55%">
+            <div *ngFor="let item of getHeaderLines(group); trackBy: trackByIndex"
+                 class="shimmer-item"
+                 [ngClass]="'shimmer-item--' + item.shape"
+                 [ngStyle]="getItemStyle(item)">
+            </div>
+          </div>
+          <!-- right-side toggle chips -->
+          <div class="shimmer-row shimmer-row--chips shimmer-row--right">
+            <div *ngFor="let chip of getChips(group).slice(0,3); trackBy: trackByIndex"
+                 class="shimmer-item shimmer-item--chip"
+                 [ngStyle]="getItemStyle(chip)">
+            </div>
+          </div>
+        </div>
+
+        <!-- month/range selector chips -->
+        <div class="shimmer-row shimmer-row--chips shimmer-row--left" *ngIf="getChips(group).length > 3">
+          <div *ngFor="let chip of getChips(group).slice(3); trackBy: trackByIndex"
+               class="shimmer-item shimmer-item--chip"
+               [ngStyle]="getItemStyle(chip)">
+          </div>
+        </div>
+
+        <!-- bar chart area -->
+        <div class="shimmer-bar-area">
+          <div *ngFor="let item of getBarItems(group); trackBy: trackByIndex"
+               class="shimmer-item shimmer-item--bar-col"
+               [ngStyle]="getItemStyle(item)">
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- LAYOUT PRESETS: Improved card-style layout blocks -->
+    <ng-template #nonBarGroup>
+      <ng-container *ngIf="preset === 'layout-block' || preset === 'layout-page'; else standardGroup">
+
+        <div class="shimmer-group shimmer-group--layout-card"
+             [style.animation-delay]="gi > 0 ? (gi * staggerDelay) + 'ms' : null">
+
+          <!-- Block Header: Title + Subtitle -->
+          <div class="shimmer-header-lines" style="margin-bottom: 12px">
+            <div *ngFor="let item of getHeaderLines(group); trackBy: trackByIndex"
+                 class="shimmer-item"
+                 [ngClass]="'shimmer-item--' + item.shape"
+                 [ngStyle]="getItemStyle(item)">
+            </div>
+          </div>
+
+          <!-- Inverter Tiles Grid -->
+          <div class="shimmer-row shimmer-row--tiles">
+            <div *ngFor="let item of getBodyItems(group); trackBy: trackByIndex"
+                 class="shimmer-item shimmer-item--block shimmer-item--tile"
+                 [ngStyle]="getItemStyle(item)">
+            </div>
+          </div>
+
+          <!-- Legend at bottom -->
+          <div class="shimmer-legend-row" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--shimmer-base);">
+            <div *ngFor="let item of getChips(group); trackBy: trackByIndex"
+                 class="shimmer-item shimmer-item--chip"
+                 [ngStyle]="getItemStyle(item)">
+            </div>
+            <div *ngIf="getChips(group).length === 0" 
+                 class="shimmer-item shimmer-item--subtitle" 
+                 style="width: 180px;">
+            </div>
+          </div>
+
+        </div>
+      </ng-container>
+
+      <!-- ── STANDARD GROUP: card / list / stat / generic ──────── -->
+      <ng-template #standardGroup>
+        <div
+          class="shimmer-group"
+          [class.shimmer-group--spaced]="
+            preset === 'card' || preset === 'card-compact' ||
+            preset === 'list-item' || preset === 'stat-card' ||
+            preset === 'portfolio-summary-card' ||
+            preset === 'site-issue-item' || preset === 'monitoring-downtime-item' ||
+            preset === 'analytics-loss-card'
+          "
+          [style.animation-delay]="gi > 0 ? (gi * staggerDelay) + 'ms' : null">
+
+          <!-- Header row: circle avatar + title/subtitle lines -->
+          <ng-container *ngIf="hasHeader(group)">
+            <div class="shimmer-row shimmer-row--header">
+              <div class="shimmer-item shimmer-item--circle"
+                   [ngStyle]="getItemStyle(getCircle(group)!)"></div>
+              <div class="shimmer-header-lines">
+                <div *ngFor="let item of getHeaderLines(group); trackBy: trackByIndex"
+                     class="shimmer-item"
+                     [ngClass]="'shimmer-item--' + item.shape"
+                     [ngStyle]="getItemStyle(item)">
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Header lines only (no circle) -->
+          <ng-container *ngIf="!hasHeader(group)">
+            <div *ngFor="let item of getHeaderLines(group); trackBy: trackByIndex"
+                 class="shimmer-item"
+                 [ngClass]="'shimmer-item--' + item.shape"
+                 [ngStyle]="getItemStyle(item)">
+            </div>
+          </ng-container>
+
+          <!-- Body items (lines, blocks) -->
+          <div *ngFor="let item of getBodyItems(group); trackBy: trackByIndex"
+               class="shimmer-item"
+               [ngClass]="'shimmer-item--' + item.shape"
+               [ngStyle]="getItemStyle(item)">
+          </div>
+
+          <!-- Chips footer -->
+          <div *ngIf="getChips(group).length > 0" class="shimmer-row shimmer-row--chips">
+            <div *ngFor="let chip of getChips(group); trackBy: trackByIndex"
+                 class="shimmer-item shimmer-item--chip"
+                 [ngStyle]="getItemStyle(chip)">
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+    </ng-template>
+
+  </ng-container>
+</ng-template>
