@@ -1,0 +1,131 @@
+@use "@angular/material" as mat;
+@use "../abstracts" as *;
+
+:root {
+  --form-border-color: #{map-get($solar-grey-colors, grey-5)};
+  --form-border-hover-color: #{map-get($solar-grey-colors, grey-4)};
+  --form-border-active-color: #{map-get($solar-primary-color, 500)};
+  --form-radius: 8px;
+  --form-height: 40px;
+  --form-padding: 12px;
+  --form-placeholder-color: #{map-get($solar-grey-colors, grey-3)};
+  --form-text-color: var(--solarTextPrimary);
+}
+.mat-mdc-form-field {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  .mat-mdc-form-field-flex {
+    align-items: center;
+  }
+
+  /* remove default filled/outline styles */
+  .mdc-text-field {
+    align-items: center;
+    height: var(--form-height);
+    border: 1px solid var(--form-border-color);
+    border-radius: var(--form-radius);
+    padding: var(--form-padding);
+    background-color: transparent !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-size: 14px;
+
+    &:hover {
+      border-color: var(--form-border-hover-color);
+    }
+
+    &:focus-within {
+      border-color: var(--form-border-active-color);
+      box-shadow: 0 0 0 1px var(--form-border-active-color);
+    }
+  }
+  .mat-mdc-form-field-infix{
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+
+  /* remove underline ripple line */
+  .mdc-line-ripple::before,
+  .mdc-line-ripple::after {
+    display: none !important;
+  }
+  /* control the input and placeholder styles */
+  .mat-mdc-input-element,
+  .mat-mdc-select-value-text {
+    color: var(--solarTextPrimary);
+    font-size: #{$solar-default-font-size}px;
+    padding: 0;
+    // height: var(--form-height);
+    text-align: start;
+  }
+
+  .mat-mdc-input-element::placeholder {
+    color: #{map-get($solar-grey-colors, grey-3)} !important;
+    opacity: 1;
+  }
+
+  /* select arrow icon alignment */
+  .mat-mdc-select-arrow {
+    color: var(--form-placeholder-color);
+    margin-left: auto;
+  }
+
+  /* remove filled appearance background */
+  &.mat-mdc-form-field-type-mat-mdc-form-field {
+    background: transparent !important;
+  }
+}
+
+/* ======= Dropdown menu styling ======= */
+.mat-mdc-select-panel {
+  border-radius: var(--form-radius) !important;
+  background-color: var(--surfaceBackground);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+.mat-mdc-select-trigger{
+font-size: mat.font-size(
+  mat.get-typography-config($solar-typography, "body-2"),
+  "body-2"
+) !important;
+}
+.mat-mdc-select-placeholder {
+color: var(--solarTextThird) !important;
+font-size: mat.font-size(
+  mat.get-typography-config($solar-typography, "body-2"),
+  "body-2"
+) !important;
+}
+
+.mat-mdc-option {
+  color: var(--form-text-color);
+  align-items: center;
+  font-size: mat.font-size(
+    mat.get-typography-config($solar-typography, "body-2"),
+    "body-2"
+  ) !important;
+
+  &:hover {
+    background-color: var(--form-border-hover-color);
+  }
+
+  &.mdc-list-item--selected {
+    background-color: rgba(map-get($solar-primary-color, 500), 0.1);
+    color: var(--form-text-color);
+  }
+}
+
+/* ======= Label behavior ======= */
+.mat-mdc-form-field-label {
+  color: var(--form-placeholder-color) !important;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: #{$solar-default-font-size - 2}px;
+}
+
+/* hide error/hint text spacing */
+.mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}

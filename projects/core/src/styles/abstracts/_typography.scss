@@ -1,0 +1,22 @@
+@use "@angular/material" as mat;
+@use "variables" as *;
+
+$solar-typography: mat.define-typography-config(
+  $font-family: $solar-default-font-family,
+
+  $headline-1: mat.define-typography-level($font-size: #{$solar-default-font-size + 12}px),
+  $headline-2: mat.define-typography-level($font-size: #{$solar-default-font-size + 10}px),
+  $headline-3: mat.define-typography-level($font-size: #{$solar-default-font-size + 8}px),
+  $headline-4: mat.define-typography-level($font-size: #{$solar-default-font-size + 6}px),
+  $headline-5: mat.define-typography-level($font-size: #{$solar-default-font-size + 4}px),
+  $headline-6: mat.define-typography-level($font-size: #{$solar-default-font-size + 2}px),
+
+  $subtitle-1: mat.define-typography-level($font-size: #{$solar-default-font-size + 2}px),
+  $subtitle-2: mat.define-typography-level($font-size: #{$solar-default-font-size + 2}px, $font-weight: 500),
+
+  $body-1:     mat.define-typography-level($font-size: #{$solar-default-font-size + 2}px),
+  $body-2:     mat.define-typography-level($font-size: #{$solar-default-font-size}px),
+
+  $caption:    mat.define-typography-level($font-size: #{$solar-default-font-size - 2}px, $font-weight: 400),
+  $button:     mat.define-typography-level($font-size: #{$solar-default-font-size}px,     $font-weight: 500),
+);

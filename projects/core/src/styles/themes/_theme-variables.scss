@@ -1,0 +1,96 @@
+@use "sass:map";
+@use "../abstracts" as *;
+
+:root {
+  --app-bg: #{map.get($solar-surface-color, 100)};
+  // ── Text ──────────────────────────────────────────────────────────────────
+  --solarTextPrimary:   #{map.get($solar-surface-color, 800)};
+  --solarTextSecondary: #{map.get($solar-surface-color, 700)};
+  --solarTextThird:     #{map.get($solar-surface-color, 600)};
+
+  // ── Base design tokens ────────────────────────────────────────────────────
+  --fontSize:     #{$solar-default-font-size}px;
+  --fontWeight:   #{$solar-default-font-weight};
+  --borderRadius: #{$solar-default-border-radius}px;
+
+  // ── KPI icons ─────────────────────────────────────────────────────────────
+  --kpi-icon-bg-color: #{map.get($solar-primary-color, 50)};
+  --kpi-icon-color:    #{map.get($solar-primary-color, 600)};
+
+  // ── Brand palette shortcuts ───────────────────────────────────────────────
+  --primary50:     #{map.get($solar-primary-color, 50)};
+  --primary500:    #{map.get($solar-primary-color, 500)};
+  --primary-800:   #{map.get($solar-primary-color, 800)};
+  --secondary500:  #{map.get($solar-secondary-color, 500)};
+  --secondary-900: #{map.get($solar-secondary-color, 900)};
+  --whiteColor:    #{map.get($solar-primary-color, A100)};
+
+  // ── Status colors ─────────────────────────────────────────────────────────
+  --green500: #{map.get($solar-green-color, 500)};
+  --red500:   #{map.get($solar-red-color, 500)};
+  --red50:    #{map.get($solar-red-color, 50)};
+  --red100:   #{map.get($solar-red-color, 100)};
+
+  // ── Action colors ─────────────────────────────────────────────────────────
+  --actionRedLight:     #{map.get($solar-action-light-colors, "action-red")};
+  --actionRed:          #{map.get($solar-action-colors,       "action-red")};
+  --actionDarkRedLight: #{map.get($solar-action-light-colors, "action-darkred")};
+  --actionDarkRed:      #{map.get($solar-action-colors,       "action-darkred")};
+  --actionOrangeLight:  #{map.get($solar-action-light-colors, "action-orange")};
+  --actionOrange:       #{map.get($solar-action-colors,       "action-orange")};
+  --actionYellowLight:  #{map.get($solar-action-light-colors, "action-yellow")};
+  --actionYellow:       #{map.get($solar-action-colors,       "action-yellow")};
+  --actionGreenLight:   #{map.get($solar-action-light-colors, "action-green")};
+  --actionGreen:        #{map.get($solar-action-colors,       "action-green")};
+
+  // ── Backgrounds ───────────────────────────────────────────────────────────
+  --solarSiteKpiCardBgColor: #{map.get($solar-indigo-color, 500)};
+  --surfaceBackground:       #{map.get($solar-surface-color, 50)};
+  --primary-dark:            #{map.get($solar-indigo-color, 500)};
+
+  // ── Grey palette ──────────────────────────────────────────────────────────
+  --solarGreyColor1: #{map.get($solar-grey-colors, grey-1)};
+  --solarGreyColor2: #{map.get($solar-grey-colors, grey-2)};
+  --solarGreyColor3: #{map.get($solar-grey-colors, grey-3)};
+  --solarGreyColor4: #{map.get($solar-grey-colors, grey-4)};
+  --solarGreyColor5: #{map.get($solar-grey-colors, grey-5)};
+  --solarGreyColor6: #{map.get($solar-grey-colors, grey-6)};
+  --solarGreyColor7: #{map.get($solar-grey-colors, grey-7)};
+  --solarGreyColor:  #{map.get($solar-grey-colors, grey-3)};
+
+  // ── Dividers ──────────────────────────────────────────────────────────────
+  --divider-border-color: #{map.get($solar-surface-color, 200)};
+
+  // ── Watchlist arrows ──────────────────────────────────────────────────────
+  --solar-watchlist-up-icon-color:   #{map.get($solar-green-color, 500)};
+  --solar-watchlist-down-icon-color: #{map.get($solar-red-color,   500)};
+
+  // ── Gradients ─────────────────────────────────────────────────────────────
+  --primary-linear-gradient: linear-gradient(
+    0deg,
+    #{map.get($solar-primary-color, 800)}   0%,
+    #{map.get($solar-secondary-color, 900)} 100%
+  );
+  --primary-gradient-text-color: #{map.get($solar-primary-color, A100)};
+
+  // ── Scrollbar ─────────────────────────────────────────────────────────────
+  --scroll-thumb:       rgba(120, 120, 120, 0.4);
+  --scroll-thumb-hover: rgba(120, 120, 120, 0.7);
+
+  // ── Material overrides ────────────────────────────────────────────────────
+  --mat-toolbar-container-background-color: transparent;
+  --mat-tab-header-active-label-text-color: #{map.get($solar-surface-color, 50)} !important;
+  --mat-standard-button-toggle-selected-state-background-color: #{map.get($solar-indigo-color, 500)} !important;
+  --mat-standard-button-toggle-selected-state-text-color:       #{map.get($solar-indigo-color, A100)} !important;
+  --mdc-checkbox-selected-checkmark-color:                      #{map.get($solar-indigo-color, A100)} !important;
+  --mat-table-header-background-color: #{map.get($solar-surface-color, 200)} !important;
+  --mat-mdc-chip-border-radius: 10px !important;
+  --mat-chip-bg: #{map.get($solar-surface-color, 200)};
+
+  // ── Action chip colors (loop) ─────────────────────────────────────────────
+  @each $name, $color in $solar-action-light-colors {
+    --#{$name}-bg:   #{$color};
+    --#{$name}-text: #{map.get($solar-action-colors, $name)};
+  }
+
+}

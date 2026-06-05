@@ -1,0 +1,16 @@
+// =============================================================================
+// base/_typography-utils.scss
+// Font weight helpers and semantic text color classes.
+// =============================================================================
+
+// ── Font weight ───────────────────────────────────────────────────────────────
+.fw-n  { font-weight: normal;  }
+.fw-b  { font-weight: 500;     }
+.fw-b2 { font-weight: bolder;  }
+.fw-l  { font-weight: lighter; }
+
+// ── Text color ────────────────────────────────────────────────────────────────
+.dark-grey-text  { color: var(--solarGreyColor3); }
+.grey-text       { color: var(--solarGreyColor4); }
+.primary-text    { color: var(--primary500);      }
+.light-grey-text { color: var(--solarGreyColor5); }

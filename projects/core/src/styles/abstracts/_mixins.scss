@@ -1,0 +1,28 @@
+// =============================================================================
+// abstracts/_mixins.scss
+// Reusable SCSS mixins.
+// NO CSS output — safe to @use in components.
+// =============================================================================
+
+// ── Responsive breakpoints ────────────────────────────────────────────────────
+// Matches Angular CDK Breakpoints: HandsetPortrait + TabletPortrait
+@mixin ht-portrait {
+  @media (max-width: 839.98px) and (orientation: portrait) {
+    @content;
+  }
+}
+
+@mixin ht-desktop {
+  @media (min-width: 839.92px) {
+    @content;
+  }
+}
+
+// ── Mapbox theme helpers ───────────────────────────────────────────────────────
+@mixin mapbox-light() {
+  --mapBgColor: #{#f2f6fa}; // grey-7
+}
+
+@mixin mapbox-dark() {
+  --mapBgColor: #{#7c8fac}; // grey-4
+}

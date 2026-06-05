@@ -1,0 +1,17 @@
+@use "../abstracts" as *;
+
+.material-symbols-rounded {
+  font-size:   #{$solar-default-icon-size}px;
+  height:      #{$solar-default-icon-size}px;
+  width:       #{$solar-default-icon-size}px;
+  line-height: #{$solar-default-icon-size}px;
+}
+
+mat-icon-button {
+  width:   #{$solar-default-icon-size + 2}px;
+  height:  #{$solar-default-icon-size + 2}px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

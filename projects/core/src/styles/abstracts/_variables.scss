@@ -1,0 +1,17 @@
+// =============================================================================
+// abstracts/_variables.scss
+// Design tokens as SCSS variables.
+// NO CSS output — safe to @use in components.
+// =============================================================================
+
+// ── Fonts ─────────────────────────────────────────────────────────────────────
+$solar-iconsax-font-family:   "iconsax";
+$solar-default-font-family:   "Nunito";
+$solar-default-font-size:     14;       // px, unitless for arithmetic
+$solar-default-font-weight:   400;
+$solar-default-font-style:    normal;
+
+// ── Spacing / Shape ───────────────────────────────────────────────────────────
+$solar-default-border-radius: 10;       // px, unitless for arithmetic
+$solar-default-icon-size:     18;       // px, unitless for arithmetic
+$solar-default-stroke-width:  10;

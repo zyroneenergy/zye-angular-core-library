@@ -1,0 +1,46 @@
+@use "@angular/material" as mat;
+@use "../abstracts" as *;
+.table-container {
+  border-radius: 16px !important;
+  background-color: transparent !important;
+  table {
+    table-layout: auto;
+    border-collapse: collapse;
+    overflow-y: scroll;
+  }
+
+  th {
+    background: var(--mat-table-header-background-color) !important;
+    font-weight: #{$solar-default-font-weight + 200};
+    font-size: mat.font-size(
+        mat.get-typography-config($solar-typography, "body-2"),
+        "body-2"
+      );
+    padding: 16px;
+  }
+  td {
+      font-size: mat.font-size(
+        mat.get-typography-config($solar-typography, "body-2"),
+        "body-2"
+      );
+      padding: 12px 16px;
+    }
+  tbody {
+    tr {
+      height: 64px;
+      background-color: var(--mat-table-row-background-color);
+    }
+  }
+    .pagination {
+      width: 100%;
+    border-top: 1px solid var(--solarGreyColor5);
+      font-size: mat.font-size(
+        mat.get-typography-config($solar-typography, "caption"),
+        "caption"
+      );
+      background:  var(--mat-table-row-background-color) !important;
+      position: sticky;
+      bottom: 0;
+      z-index: 2;
+    }
+}

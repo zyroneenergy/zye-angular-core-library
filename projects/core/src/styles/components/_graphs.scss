@@ -1,0 +1,41 @@
+@use "../abstracts" as *;
+
+.e-graph {
+  width: 100%;
+  min-height: 200px;
+
+  .graph-label {
+    text-align: center;
+    padding: 8px 0;
+  }
+
+  .graph-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+
+    .graph-middle-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-style: normal;
+      font-weight: #{$solar-default-font-weight + 200};
+      font-size: #{$solar-default-font-size - 2}px;
+      line-height: 120%;
+      position: absolute;
+      justify-content: center;
+
+      .font-chart-sm {
+        font-style: normal;
+        font-weight: #{$solar-default-font-weight};
+        font-size: #{$solar-default-font-size - 6}px;
+        line-height: 140%;
+      }
+
+      .graph-icon-path-color { stroke: var(--solarGreyColor2); }
+      .graph-icon-fill-color { fill:   var(--solarGreyColor2); }
+    }
+  }
+}

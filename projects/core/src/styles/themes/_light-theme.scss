@@ -1,0 +1,66 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+@use "../abstracts" as *;
+
+$_primary: mat.define-palette($solar-primary-color,   700);
+$_accent:  mat.define-palette($solar-secondary-color, 500, 300, 700);
+$_warn:    mat.define-palette($solar-warn-color,      700);
+
+$solar-light-theme: mat.define-light-theme((
+  color: (
+    primary: $_primary,
+    accent:  $_accent,
+    warn:    $_warn,
+  ),
+  typography: $solar-typography,
+  density: 0,
+));
+
+// ⚠️ .light-theme only re-colors — never re-emits the full theme.
+//    mat.all-component-themes() in styles.scss already covered the full output.
+.light-theme {
+  @include mat.all-component-themes($solar-light-theme);
+  @include mapbox-light();
+
+  @each $name, $color in $solar-action-light-colors {
+    --#{$name}-bg:   #{$color};
+    --#{$name}-text: #{map.get($solar-action-colors, $name)};
+  }
+
+  --solarTextPrimary:   #{map.get($solar-surface-color, 800)};
+  --solarTextSecondary: #{map.get($solar-surface-color, 700)};
+  --solarTextThird:     #{map.get($solar-surface-color, 600)};
+
+  --kpi-icon-bg-color: #{map.get($solar-indigo-color, 50)};
+  --kpi-icon-color:    #{map.get($solar-surface-color, 900)};
+  --divider-border-color: #{map.get($solar-surface-color, 200)};
+
+  --solarActionColorBlue:    #{map.get($solar-action-colors, "action-blue")};
+  --solarActionColorGreen:   #{map.get($solar-action-colors, "action-green")};
+  --solarActionColorYellow:  #{map.get($solar-action-colors, "action-yellow")};
+  --solarActionColorOrange:  #{map.get($solar-action-colors, "action-orange")};
+  --solarActionColorRed:     #{map.get($solar-action-colors, "action-red")};
+  --solarActionColorDarkRed: #{map.get($solar-action-colors, "action-darkred")};
+
+  --solar-watchlist-up-icon-color:   #{map.get($solar-green-color, 500)};
+  --solar-watchlist-down-icon-color: #{map.get($solar-red-color,   500)};
+
+  --solarSiteKpiCardBgColor: #{map.get($solar-indigo-color, 500)};
+  --surfaceBackground:       #{map.get($solar-surface-color, 200)};
+  --primary-dark:            #{map.get($solar-indigo-color, 500)} !important;
+
+  --solarGreyColor:  #{map.get($solar-grey-colors, grey-3)};
+  --solarGreyColor8: #{map.get($solar-grey-colors, grey-8)};
+  --mat-chip-bg:     #{map.get($solar-surface-color, 200)};
+
+  --theme-border-color:        #{map.get($solar-grey-colors, grey-5)};
+  --mat-toolbar-container-background-color: #{map.get($solar-surface-color, 50)}  !important;
+  --mat-sidenav-container-background-color: #{map.get($solar-surface-color, 50)}  !important; 
+  --mat-sidenav-content-background-color:   var(--app-bg) !important;                           // main background color for light theme
+  --mdc-filled-button-container-color:      #{map.get($solar-surface-color, 50)}  !important;
+  --mat-table-header-background-color:      #{map.get($solar-surface-color, 200)} !important;
+
+  mat-card {
+    border: 1px solid #{map.get($solar-grey-colors, grey-5)} !important;
+  }
+}

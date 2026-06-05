@@ -1,0 +1,95 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+@use "../abstracts" as *;
+
+// ── Material palette definitions ──────────────────────────────────────────────
+$_d-primary:    mat.define-palette($solar-primary-color,   500);
+$_d-accent:     mat.define-palette($solar-secondary-color, 300, 500, 700);
+$_d-warn:       mat.define-palette($solar-warn-color,      400);
+$_d-background: mat.define-palette($solar-surface-color,   800);
+
+// ── Theme object ──────────────────────────────────────────────────────────────
+$solar-dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $_d-primary,
+    accent:  $_d-accent,
+    warn:    $_d-warn,
+  ),
+  typography: $solar-typography,
+  density: 0,
+));
+
+// ── Override background palette ───────────────────────────────────────────────
+$_dark-bg-palette: (
+  status-bar:               black,
+  app-bar:                  map.get($_d-background, 900),
+  background:               map.get($_d-background, 800),
+  hover:                    rgba(white, 0.04),
+  card:                     map.get($_d-background, 800),
+  dialog:                   map.get($_d-background, 800),
+  disabled-button:          rgba(white, 0.12),
+  raised-button:            map.get($_d-background, 800),
+  focused-button:           rgba(white, 0.12),
+  selected-button:          map.get($_d-background, 900),
+  selected-disabled-button: map.get($_d-background, 800),
+  disabled-button-toggle:   black,
+  unselected-chip:          map.get($_d-background, 700),
+  disabled-list-option:     rgba(white, 0.12),
+  tooltip:                  map.get($_d-background, 700),
+);
+
+$solar-dark-theme: map.set($solar-dark-theme, "color",      "background", $_dark-bg-palette);
+$solar-dark-theme: map.set($solar-dark-theme, "background",               $_dark-bg-palette);
+
+// ── .dark-theme class ─────────────────────────────────────────────────────────
+.dark-theme {
+  @include mat.all-component-themes($solar-dark-theme); 
+  @include mapbox-dark();
+
+  @each $name, $color in $solar-action-colors {
+    --#{$name}-bg:   #{$color};
+    --#{$name}-text: #{map.get($solar-action-light-colors, $name)};
+  }
+
+  --app-bg: #{map.get($solar-surface-color, 950)} !important;
+  --solarTextPrimary:   #{map.get($solar-surface-color, 50)};
+  --solarTextSecondary: #{map.get($solar-surface-color, 100)};
+  --solarTextThird:     #{map.get($solar-surface-color, 300)};
+  --fontSize:     #{$solar-default-font-size}px;
+  --fontWeight:   #{$solar-default-font-weight};
+  --borderRadius: #{$solar-default-border-radius}px;
+
+  --kpi-icon-bg-color:    #{map.get($solar-surface-color, 900)};
+  --kpi-icon-color:       #{map.get($solar-indigo-color, 50)};
+  --divider-border-color: #{map.get($solar-surface-color, 700)};
+  --actionRedLight:       #{map.get($solar-action-light-colors, "action-red")};
+
+  --solar-watchlist-up-icon-color:   #{map.get($solar-green-color, 500)};
+  --solar-watchlist-down-icon-color: #{map.get($solar-red-color,   500)};
+
+  --solarSiteKpiCardBgColor: #{map.get($solar-indigo-color, 500)};
+  --surfaceBackground:       #{map.get($solar-surface-color, 900)};
+  --primary-dark:            #{map.get($solar-indigo-color, 500)} !important;
+
+  --solarGreyColor:  #{map.get($solar-grey-colors, grey-4)};
+  --solarGreyColor8: #{map.get($solar-grey-colors, grey-2)};
+  --mat-chip-bg:     #{map.get($solar-surface-color, 950)};
+
+  --mat-toolbar-container-background-color:  #{map.get($solar-surface-color, 900)} !important;
+  --mat-sidenav-container-background-color:  #{map.get($solar-surface-color, 900)} !important;
+  --mat-sidenav-content-background-color:    var(--app-bg) !important;                           // main background color for dark theme
+  --mdc-elevated-card-container-color:       #{map.get($solar-surface-color, 800)} !important;
+  --mdc-filled-button-container-color:       #{map.get($solar-surface-color, 800)} !important;
+  --mat-table-header-background-color:       #{map.get($solar-surface-color, 700)} !important;
+  --mat-table-row-background-color:          #{map.get($solar-surface-color, 900)} !important;
+  --mat-table-row-item-outline-color:        #{map.get($solar-surface-color, 700)} !important;
+
+  // Primary button text correction in dark mode
+  .mat-mdc-raised-button.mat-primary,
+  .mat-mdc-outlined-button.mat-primary,
+  .mat-mdc-unelevated-button.mat-primary,
+  .mat-mdc-fab.mat-primary,
+  .mat-mdc-mini-fab.mat-primary {
+    color: var(--solarTextPrimary) !important;
+  }
+}

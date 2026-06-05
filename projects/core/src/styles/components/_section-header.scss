@@ -1,0 +1,18 @@
+@use "../abstracts" as *;
+
+.section-header {
+  display: flex;
+  align-items: center;
+
+  .icon {
+    color: var(--primary500);
+    padding: 8px;
+    height: #{$solar-default-font-size + 8}px;
+    width:  #{$solar-default-font-size + 8}px;
+    border-radius: 8px;
+    background-color: var(--primary50);
+    font-size: #{$solar-default-font-size + 8}px;
+  }
+}
+
+.solar-navbar-spacer { flex: 1 1 auto; }

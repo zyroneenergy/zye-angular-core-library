@@ -1,0 +1,36 @@
+// =============================================================================
+// base/_scrollbar.scss
+// Global scrollbar styles (Chrome / Firefox / Edge).
+// =============================================================================
+
+// Firefox
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) transparent;
+}
+
+// Chrome / Edge / Safari
+::-webkit-scrollbar          { width: 6px; height: 6px; background: transparent; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    { background: var(--scroll-thumb); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
+::-webkit-scrollbar-button   { display: none; height: 0; width: 0; }
+
+// Component-scoped scrollbar helper (visible only on hover)
+.scrollbar,
+.mat-drawer-inner-container {
+  &::-webkit-scrollbar       { visibility: hidden; -webkit-appearance: none; width: 6px; height: 6px; background: transparent; }
+  &::-webkit-scrollbar-thumb { visibility: hidden; border-radius: 3px; background-color: rgba(159, 166, 188, 0.55); }
+
+  &:not(.scrollbar-hide):hover,
+  &:not(.scrollbar-hide):focus {
+    &::-webkit-scrollbar,
+    &::-webkit-scrollbar-thumb { visibility: visible; }
+  }
+}
+
+.scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}

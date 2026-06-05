@@ -1,0 +1,14 @@
+@use "../abstracts" as *;
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  @include mapbox-light();
+
+  mat-card {
+    border-radius: #{$solar-default-border-radius}px !important;
+    overflow: hidden;
+    box-shadow: none !important;
+  }
+}

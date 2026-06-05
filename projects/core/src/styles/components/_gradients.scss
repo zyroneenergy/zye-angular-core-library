@@ -1,0 +1,20 @@
+@use "sass:map";
+@use "../abstracts" as *;
+
+.primary-radial-gradient {
+  background: radial-gradient(
+    circle at top left,
+    #{map.get($solar-primary-color, 800)},
+    #{map.get($solar-secondary-color, 900)}
+  );
+  color: #{map.get($solar-primary-color, A100)};
+}
+
+.primary-linear-gradient {
+  background: linear-gradient(
+    0deg,
+    #{map.get($solar-primary-color, 800)}   0%,
+    #{map.get($solar-secondary-color, 900)} 100%
+  );
+  color: #{map.get($solar-primary-color, A100)};
+}

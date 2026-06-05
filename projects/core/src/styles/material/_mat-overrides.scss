@@ -1,0 +1,154 @@
+@use "../abstracts" as *;
+
+// ── mat-card ──────────────────────────────────────────────────────────────────
+mat-card {
+  border: 1px solid var(--divider-border-color) !important;
+}
+.mat-mdc-card-content {
+  padding-bottom: 16px !important;
+}
+
+// ── mat-select ────────────────────────────────────────────────────────────────
+.mat-mdc-select {
+  display: inline-flex !important;
+  .mat-mdc-select-trigger { align-self: center; }
+}
+
+.mat-mdc-select-arrow {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+
+  &::after {
+    content: "\e92d";
+    font-family: #{$solar-iconsax-font-family};
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    font-size: #{$solar-default-font-size + 2}px;
+  }
+  svg { display: none; }
+}
+
+// ── mat-toolbar ───────────────────────────────────────────────────────────────
+mat-toolbar {
+  .mat-mdc-raised-button { height: 32px; }
+
+  .mdc-line-ripple::before,
+  .mdc-line-ripple::after { border-bottom-width: 0px !important; }
+
+  .mat-mdc-form-field-flex { align-items: center; }
+
+  app-navbar-form .isax { font-size: #{$solar-default-font-size + 2}px; }
+}
+
+// ── mat-form-field ────────────────────────────────────────────────────────────
+.mat-mdc-form-field-subscript-wrapper { display: none; }
+
+// ── mat-button-toggle ─────────────────────────────────────────────────────────
+.mat-button-toggle-label-content { line-height: 40px !important; }
+
+// ── mat-tab-group (pill style) ───────────────────────────────────────────────
+
+.tab-group {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+
+  border: 2px solid var(--divider-border-color);
+  border-radius: 12px;
+  padding: 4px;
+  height: 40px;
+  width: fit-content;
+
+  /* Remove default Material indicator */
+  .mdc-tab-indicator,
+  .mat-mdc-tab-header__indicator {
+    display: none !important;
+  }
+
+  .mat-mdc-tab-header {
+    border: none;
+    height: 40px;
+    padding: 0;
+  }
+
+  .mat-mdc-tab-list,
+  .mat-mdc-tab-labels {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Individual tab */
+  .mat-mdc-tab {
+    min-width: unset;
+    padding: 0 16px;
+    border-radius: 10px;
+    margin: 0;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px !important;
+
+
+    .mdc-tab__text-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    /* Hover */
+    &:not(.mdc-tab--active):hover {
+      background: rgba(93, 135, 255, 0.08);
+    }
+
+    /* Active */
+    &.mdc-tab--active {
+      background: var(--surfaceBackground);
+      border: 1px solid var(--divider-border-color);
+
+      .mdc-tab__text-label {
+        color: var(--primary500) !important;
+      }
+    }
+  }
+
+  /* Remove pagination arrows */
+  .mat-mdc-tab-header-pagination {
+    display: none;
+  }
+}
+
+// ── mat-chip ──────────────────────────────────────────────────────────────────
+// Inherit text color in dynamic chips
+.chip-dynamic.mat-mdc-chip .mdc-evolution-chip__text-label { color: inherit !important; }
+
+// ── mat-snackbar ──────────────────────────────────────────────────────────────
+.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+// ── List panel (scrollable card) ──────────────────────────────────────────────
+.list mat-card {
+  overflow: hidden;
+  height: 100%;
+  box-shadow: none !important;
+
+  .mat-mdc-card-content {
+    padding: 0 !important;
+    overflow-y: auto;
+    height: 100%;
+    scrollbar-width: none;
+  }
+}

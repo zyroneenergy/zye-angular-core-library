@@ -1,0 +1,118 @@
+@use "@angular/material" as mat;
+
+// ── Surface / Neutral ────────────────────────────────────────────────────────
+$solar-surface-color: (
+  50:  #fcfcfd,
+  100: #f7f8fb,
+  200: #eef2f7,
+  300: #8399ba,
+  400: #8197b9,
+  500: #7a8ead,
+  600: #7c8fac,
+  700: #33425c,
+  800: #2a3547,
+  900: #263141,
+  950: #202936,
+  contrast: (
+    50:  rgba(0,0,0,.87),
+    100: rgba(0,0,0,.87),
+    200: rgba(0,0,0,.87),
+    300: white, 400: white, 500: white,
+    600: white, 700: white, 800: white,
+    900: white, 950: white,
+  ),
+);
+
+// ── Semantic status colors ────────────────────────────────────────────────────
+$solar-green-color: (
+  50: #eef4ef, 100: #dde9de, 200: #b1d6b5, 300: #8cc497,
+  400: #69af7d, 500: #24a148, 600: #308258, 700: #1b653f,
+  800: #155635, 900: #0e4328, 950: #052e19,
+);
+
+$solar-red-color: (
+  50: #fcf1ef, 100: #fdd4cd, 200: #fcb5aa, 300: #f6806d,
+  400: #ec5941, 500: #dd2b0e, 600: #c91c00, 700: #ae1800,
+  800: #8d1300, 900: #660e00, 950: #4d0a00,
+);
+
+// ── Brand colors ──────────────────────────────────────────────────────────────
+$solar-indigo-color: (
+  50: #e8eeff, 100: #becfff, 200: #aec3ff, 300: #8eabff,
+  400: #7d9fff, 500: #5d87ff, 600: #547ae6, 700: #4a6ccc,
+  800: #385199, 900: #2f4480, 950: #253666,
+  A100: #ffffff, A200: #ffffff, A400: #dbe1ff, A700: #c2ccff,
+  contrast: (
+    50: #000, 100: #000, 200: #000, 300: #000, 400: #000,
+    500: #000, 600: #000, 700: #fff, 800: #fff, 900: #fff,
+    A100: #000, A200: #000, A400: #000, A700: #000,
+  ),
+);
+
+$solar-primary-color: (
+  50: #ecf2ff, 100: #cedbff, 200: #aec3ff, 300: #8eabff,
+  400: #7599ff, 500: #5d87ff, 600: #557fff, 700: #4b74ff,
+  800: #416aff, 900: #3057ff,
+  A100: #ffffff, A200: #ffffff, A400: #dbe1ff, A700: #c2ccff,
+  contrast: (
+    50: #000, 100: #000, 200: #000, 300: #000, 400: #000,
+    500: #000, 600: #000, 700: #fff, 800: #fff, 900: #fff,
+    A100: #000, A200: #000, A400: #000, A700: #000,
+  ),
+);
+
+$solar-secondary-color: (
+  50: #e8f7ff, 100: #c8ecff, 200: #a4dfff, 300: #80d2ff,
+  400: #64c8ff, 500: #49beff, 600: #42b8ff, 700: #39afff,
+  800: #31a7ff, 900: #2199ff,
+  A100: #ffffff, A200: #ffffff, A400: #d0e8ff, A700: #b7dcff,
+  contrast: (
+    50: #000, 100: #000, 200: #000, 300: #000, 400: #000,
+    500: #000, 600: #000, 700: #000, 800: #000, 900: #000,
+    A100: #000, A200: #000, A400: #000, A700: #000,
+  ),
+);
+
+$solar-warn-color: (
+  50: #feebe5, 100: #fdccbf, 200: #fcaa94, 300: #fa8869,
+  400: #f96f49, 500: #f85529, 600: #f74e24, 700: #f6441f,
+  800: #f53b19, 900: #f32a0f,
+  A100: #ffffff, A200: #ffedeb, A400: #ffbfb8, A700: #ffa89f,
+  contrast: (
+    50: #000, 100: #000, 200: #000, 300: #000, 400: #000,
+    500: #000, 600: #fff, 700: #fff, 800: #fff, 900: #fff,
+    A100: #000, A200: #000, A400: #000, A700: #000,
+  ),
+);
+
+// ── Action / status semantic tokens ──────────────────────────────────────────
+$solar-action-colors: (
+  action-green:   #16ca82,
+  action-yellow:  #ffbf00,
+  action-orange:  #ff4f00,
+  action-red:     #e12f14,
+  action-darkred: #b31b1b,
+  action-blue:    #539bff,
+);
+
+$solar-action-light-colors: (
+  action-green:   #edfdf6,
+  action-yellow:  #fffaeb,
+  action-orange:  #fff1eb,
+  action-red:     #fdf0ed,
+  action-darkred: #fceded,
+  action-blue:    #ebf3fe,
+);
+
+// ── Grey scale ────────────────────────────────────────────────────────────────
+$solar-grey-colors: (
+  grey-1: #202936,
+  grey-2: #2a3547,
+  grey-3: #5a6a85,
+  grey-4: #7c8fac,
+  grey-5: #dfe5ef,
+  grey-6: #eaeff4,
+  grey-7: #f2f6fa,
+  grey-8: #fbfbfb,
+  grey-9: #cad2dc,
+);
