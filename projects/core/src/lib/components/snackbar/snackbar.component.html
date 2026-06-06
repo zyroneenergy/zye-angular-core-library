@@ -1,0 +1,12 @@
+<div class="snackbar-wrapper" [class]="'snackbar-wrapper--' + data.type">
+  <mat-icon class="snackbar-icon">{{ icon }}</mat-icon>
+  <span class="snackbar-message">{{ data.message }}</span>
+
+  <button
+    mat-icon-button
+    class="snackbar-dismiss-btn"
+    (click)="dismiss()"
+    aria-label="Dismiss">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>

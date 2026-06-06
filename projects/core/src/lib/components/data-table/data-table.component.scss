@@ -1,0 +1,128 @@
+
+@use '../../../styles/abstracts/index' as *;
+
+// ── Host ────────────────────────────────────────────────────────────────────
+:host {
+  display: block;
+  width: 100%;
+}
+
+// ── Wrapper ─────────────────────────────────────────────────────────────────
+.sf-table-wrapper {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  background-color: transparent;
+  overflow: hidden;
+  height: 100%;
+  min-height: 0;
+}
+
+// ── Scrollable area ──────────────────────────────────────────────────────────
+.sf-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  min-height: 0;
+}
+
+// ── Table ────────────────────────────────────────────────────────────────────
+.sf-table {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+  flex: 1;
+
+  th.mat-mdc-header-cell {
+    background: var(--mat-table-header-background-color) !important;
+    font-weight: 600;
+    font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+    padding: 16px;
+    white-space: nowrap;
+  }
+
+  td.mat-mdc-cell {
+    font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+    padding: 16px 20px;
+    vertical-align: middle;
+  }
+
+  tbody tr.sf-data-row {
+    height: 64px;
+    background-color: var(--mat-table-row-background-color);
+    transition: background 0.15s ease;
+
+    &:hover {
+      background-color: var(--mat-table-hover-state-layer-color, rgba(0, 0, 0, 0.04));
+    }
+  }
+}
+
+// ── Checkbox column ──────────────────────────────────────────────────────────
+.sf-cell-checkbox {
+  width: 48px;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+// ── Paginator ────────────────────────────────────────────────────────────────
+.sf-paginator {
+  width: 100%;
+  border-top: 1px solid var(--solarGreyColor5, rgba(0, 0, 0, 0.12));
+  font-size: #{map-get(map-get($solar-typography, "caption"), "font-size")};
+  background: var(--mat-table-row-background-color) !important;
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.sf-no-data-row {
+  height: 0;
+}
+
+.sf-no-data-cell {
+  padding: 0 !important;
+  border-bottom: none !important;
+}
+
+.sf-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 8px;
+  text-align: center;
+
+  .sf-empty-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: var(--solarTextSecondary, rgba(0, 0, 0, 0.38));
+    margin-bottom: 8px;
+  }
+
+  .sf-empty-title {
+    font-size: #{map-get(map-get($solar-typography, "body-1"), "font-size")};
+    font-weight: 600;
+    color: var(--solarTextPrimary, rgba(0, 0, 0, 0.87));
+  }
+
+  .sf-empty-desc {
+    font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+    color: var(--solarTextSecondary, rgba(0, 0, 0, 0.6));
+    max-width: 320px;
+  }
+}
+
+// ── Dimmed row (no live data) ─────────────────────────────────────────────────
+.sf-row--dimmed td.mat-mdc-cell {
+  color: var(--solarTextThird) !important;
+
+  // Suppress any child colour overrides inside dimmed rows
+  * {
+    color: inherit !important;
+  }
+}
