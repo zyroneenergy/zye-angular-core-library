@@ -1,0 +1,83 @@
+@use '../../../../styles/abstracts/index' as *;
+:host { display: block; }
+ 
+    .cyp-panel {
+      width:         210px;
+      background:    var(--mat-card-bg, var(--mat-chip-bg));
+      border:        1px solid var(--divider-border-color);
+      border-radius: calc(var(--borderRadius) + 2px);
+      box-shadow:    0 12px 36px rgba(0,0,0,.30);
+      padding:       12px;
+      animation:     cyp-in 0.15s ease;
+    }
+ 
+    @keyframes cyp-in {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    .cyp-header {
+      font-size:      13px;
+      font-weight:    600;
+      color:          var(--solarTextPrimary);
+      padding-bottom: 10px;
+      margin-bottom:  8px;
+      border-bottom:  1px solid var(--divider-border-color);
+      letter-spacing: -0.01em;
+    }
+ 
+    .cyp-section-label {
+      font-size:      10px;
+      font-weight:    700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color:          var(--solarTextSecondary);
+      margin-bottom:  7px;
+    }
+ 
+    .cyp-year-grid {
+      display:               grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:                   3px;
+    }
+ 
+    .cyp-year-cell {
+      padding:       9px 4px;
+      border:        none;
+      border-radius: 5px;
+      background:    transparent;
+      color:         var(--solarTextPrimary);
+      font-size:     11px;
+      font-weight:   500;
+      font-family:   inherit;
+      cursor:        pointer;
+      text-align:    center;
+      transition:    all 0.12s ease;
+      outline:       none;
+ 
+      &:hover:not(.selected):not(.disabled) { background: var(--solarGreyColor5); color: var(--primary500); }
+ 
+      &.selected {
+        background:  var(--primary500);
+        color:       var(--whiteColor);
+        font-weight: 600;
+      }
+ 
+      &.disabled, &:disabled {
+        opacity: 0.35;
+        cursor:  not-allowed;
+        &:hover { background: transparent; }
+      }
+    }
+ 
+    @include ht-portrait {
+      .cyp-panel {
+        position: fixed;
+        left: 0;
+        right: 0;
+        max-width:     340px;
+        border-radius: 14px;
+      }
+      .cyp-year-grid { gap: 6px; }
+      .cyp-year-cell { padding: 12px 4px; font-size: 14px; border-radius: 6px; min-height: 44px; }
+    }

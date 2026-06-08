@@ -1,0 +1,9 @@
+<div class="cts-wrap">
+  @for (opt of options; track opt.key) {
+  <button class="cts-btn" [class.active]="activeType === opt.key" [title]="opt.title" [matTooltip]="opt.title"
+    matTooltipPosition="above" (click)="typeChange.emit(opt.key)">
+    <svg width="14" height="14" viewBox="0 0 24 24" [innerHTML]="getIcon(opt.icon)">
+    </svg>
+  </button>
+  }
+</div>

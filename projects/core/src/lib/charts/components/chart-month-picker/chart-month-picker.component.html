@@ -1,0 +1,40 @@
+<div class="cmp-panel" (click)="$event.stopPropagation()">
+ 
+      @if (title) {
+        <div class="cmp-header">{{ title }}</div>
+      }
+ 
+      <!-- Step 1: Year grid -->
+      <div class="cmp-section-label">Pick year</div>
+      <div class="cmp-year-grid">
+        @for (year of availableYears; track year) {
+          <button
+            class="cmp-year-cell"
+            [class.selected]="year === selectedYear && pendingYear === null"
+            [class.pending]="year === pendingYear"
+            (click)="yearSelect.emit(year); $event.stopPropagation()">
+            {{ year }}
+          </button>
+        }
+      </div>
+ 
+      <!-- Step 2: Month grid — appears once pendingYear is set -->
+      @if (pendingYear !== null) {
+        <div class="cmp-divider"></div>
+        <div class="cmp-section-label">
+          Pick month
+          <span class="cmp-hint">· {{ pendingYear }}</span>
+        </div>
+        <div class="cmp-month-grid">
+          @for (name of monthNames; track $index) {
+            <button
+              class="cmp-month-cell"
+              [class.selected]="$index === selectedMonth && pendingYear === selectedYear"
+              (click)="onMonthClick($index); $event.stopPropagation()">
+              {{ name }}
+            </button>
+          }
+        </div>
+      }
+ 
+    </div>

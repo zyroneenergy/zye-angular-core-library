@@ -1,0 +1,41 @@
+:host { display: inline-flex; }
+ 
+    .cbs-wrap {
+      display:       flex;
+      align-items:   center;
+      background:    var(--mat-chip-bg);
+      border:        1px solid var(--divider-border-color);
+      border-radius: var(--borderRadius);
+      padding:       3px;
+      gap:           2px;
+    }
+ 
+    .cbs-btn {
+      display:       flex;
+      align-items:   center;
+      justify-content: center;
+      height:        28px;
+      padding:       0 12px;
+      border:        none;
+      border-radius: calc(var(--borderRadius) - 2px);
+      background:    transparent;
+      color:         var(--solarTextSecondary);
+      font-size:     12px;
+      font-weight:   500;
+      font-family:   inherit;
+      cursor:        pointer;
+      white-space:   nowrap;
+      transition:    background 0.15s, color 0.15s;
+      outline:       none;
+ 
+      &:hover:not(.active) {
+        background: var(--solarGreyColor5);
+        color:      var(--primary500);
+      }
+ 
+      &.active {
+        background:  var(--primary500);
+        color:       var(--whiteColor);
+        font-weight: 600;
+      }
+    }

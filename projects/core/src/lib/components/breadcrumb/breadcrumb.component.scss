@@ -1,0 +1,32 @@
+@use '../../../styles/abstracts/index' as *;
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+  color: var(--solarTextSecondary);
+
+  overflow-x: none;
+  white-space: nowrap;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .home-icon {
+    font-size: 20px;
+    color: var(--solarTextThird);
+  }
+
+  .breadcrumb-separator {
+    margin: 0 6px;
+  }
+
+  a {
+    color: var(--primary500);
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

@@ -1,0 +1,22 @@
+<nav class="breadcrumb">
+  <mat-icon class="home-icon">home</mat-icon>
+
+  <ng-container *ngFor="let crumb of breadcrumbs; let last = last">
+    <span class="breadcrumb-separator">›</span>
+
+    <!-- Clickable breadcrumb -->
+    <a
+      *ngIf="crumb.url && !last"
+      class="mat-body-2 m-0"
+      [routerLink]="crumb.url">
+      {{ crumb.label }}
+    </a>
+
+    <!-- Last crumb (non-clickable) -->
+    <span
+      *ngIf="!crumb.url || last"
+      class="mat-body-2 m-0">
+      {{ crumb.label }}
+    </span>
+  </ng-container>
+</nav>

@@ -1,0 +1,174 @@
+@use '../../../../styles/abstracts/index' as *;
+:host { display: block; }
+ 
+    .cc-panel {
+      width:         280px;
+      background:    var(--mat-card-bg, var(--mat-chip-bg));
+      border:        1px solid var(--divider-border-color);
+      border-radius: calc(var(--borderRadius) + 4px);
+      box-shadow:    0 16px 48px rgba(0,0,0,.26);
+      padding:       14px;
+      animation:     cc-in 0.16s ease;
+    }
+ 
+    @keyframes cc-in {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    .cc-nav {
+      display:       flex;
+      align-items:   center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+ 
+    .cc-nav-title {
+      font-size:     #{map-get(map-get($solar-typography, "caption"), "font-size")};
+      font-weight:   600;
+      color:         var(--solarTextPrimary);
+      letter-spacing: 0.02em;
+    }
+ 
+    .cc-nav-btn {
+      display:       flex;
+      align-items:   center;
+      justify-content: center;
+      width:         28px;
+      height:        28px;
+      border:        none;
+      border-radius: 6px;
+      background:    transparent;
+      color:         var(--solarTextSecondary);
+      cursor:        pointer;
+      outline:       none;
+      transition:    background 0.13s, color 0.13s;
+ 
+      &:hover:not(.disabled) { background: var(--solarGreyColor5); color: var(--primary500); }
+      &.disabled, &:disabled  { opacity: 0.3; cursor: not-allowed; }
+    }
+ 
+    .cc-phase-hint {
+      display:       flex;
+      align-items:   center;
+      gap:           6px;
+      padding:       5px 8px;
+      border-radius: 6px;
+      background:    color-mix(in srgb, var(--primary500) 8%, transparent);
+      font-size:     10px;
+      font-weight:   500;
+      color:         var(--primary500);
+      margin-bottom: 8px;
+    }
+ 
+    .cc-phase-dot {
+      width:       7px;
+      height:      7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      &--start { background: var(--primary500); }
+      &--end   { background: var(--actionGreen); }
+    }
+ 
+    .cc-weekdays {
+      display:               grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap:                   1px;
+      margin-bottom:         4px;
+    }
+ 
+    .cc-weekday {
+      display:       flex;
+      align-items:   center;
+      justify-content: center;
+      height:        24px;
+      font-size:     10px;
+      font-weight:   700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color:         var(--solarTextSecondary);
+    }
+ 
+    .cc-grid {
+      display:               grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap:                   1px;
+    }
+ 
+    .cc-day {
+      display:       flex;
+      align-items:   center;
+      justify-content: center;
+      height:        26px;
+      border:        none;
+      border-radius: 6px;
+      background:    transparent;
+      color:         var(--solarTextPrimary);
+      font-size:     #{map-get(map-get($solar-typography, "caption"), "font-size")};
+      font-weight:   400;
+      font-family:   inherit;
+      cursor:        pointer;
+      outline:       none;
+      transition:    background 0.1s, color 0.1s;
+ 
+      &--empty { visibility: hidden; pointer-events: none; }
+ 
+      &:hover:not(.is-disabled):not(.is-start):not(.is-end) {
+        background: color-mix(in srgb, var(--primary500) 10%, transparent);
+        color:      var(--primary500);
+      }
+ 
+      &.is-today {
+        font-weight:    700;
+        color:          var(--primary500);
+        outline:        1px solid color-mix(in srgb, var(--primary500) 50%, transparent);
+        outline-offset: -1px;
+      }
+ 
+      &.in-range {
+        background:   color-mix(in srgb, var(--primary500) 12%, transparent);
+        border-radius: 0;
+        color:        var(--solarTextPrimary);
+      }
+ 
+      &.is-start {
+        background:   var(--primary500);
+        color:        var(--whiteColor);
+        font-weight:  600;
+        border-radius: 6px 0 0 6px;
+      }
+ 
+      &.is-end {
+        background:   var(--actionGreen);
+        color:        var(--whiteColor);
+        font-weight:  600;
+        border-radius: 0 6px 6px 0;
+      }
+ 
+      &.is-start.is-end { border-radius: 6px; }
+      &.is-disabled     { opacity: 0.25; cursor: not-allowed; pointer-events: none; }
+    }
+ 
+    .cc-footer {
+      display:       flex;
+      align-items:   center;
+      gap:           6px;
+      margin-top:    10px;
+      padding-top:   10px;
+      border-top:    1px solid var(--divider-border-color);
+      font-size:     11px;
+      font-weight:   500;
+      color:         var(--solarTextSecondary);
+ 
+      svg { color: var(--actionGreen); flex-shrink: 0; }
+    }
+ 
+    @include ht-portrait {
+      .cc-panel {
+        width:         calc(100vw - 24px);
+        max-width:     300px;
+        border-radius: 14px;
+      }
+      .cc-grid { gap: 2px; }
+      .cc-day  { height: 28px; font-size: #{map-get(map-get($solar-typography, "caption"), "font-size")}; border-radius: 7px; }
+    }

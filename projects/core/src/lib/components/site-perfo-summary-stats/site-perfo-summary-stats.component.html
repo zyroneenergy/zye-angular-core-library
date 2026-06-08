@@ -1,0 +1,73 @@
+<mat-card [class]="cardClass" [class.primary-linear-gradient]="variant === 'solid'">
+  <mat-card-content>
+
+    <div class="header">{{ title }}</div>
+
+    @if (status === 'success') {
+      <div class="kpi-stats">
+        @for (stat of stats; track stat.name) {
+          <div class="kpi-stat">
+            <div class="kpi-stat__icon">
+              <mat-icon fontSet="material-symbols-rounded">{{ stat.icon }}</mat-icon>
+            </div>
+            <div class="kpi-stat__content">
+              <span class="kpi-stat__label">{{ stat.name }}</span>
+              <p class="kpi-stat__value">
+                {{ stat.value }}
+                @if (stat.link) {
+                  <br>
+                  <a [href]="stat.link" target="_blank" rel="noopener noreferrer" class="map-link">
+                    See in map
+                  </a>
+                }
+              </p>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @else if (status === 'stale') {
+      <lib-empty-data
+        icon="isax-slash"
+        name="No Live Data Reported!"
+        description="Power generation has not started or data is unavailable"
+        textColor="white">
+      </lib-empty-data>
+    }
+
+    @else if (status === 'loading') {
+      <div class="kpi-stats shimmer-kpi-stats">
+        <lib-shimmer preset="analytics-kpi-strip" [count]="shimmerCount" [staggerDelay]="60" />
+      </div>
+    }
+
+    @else if (status === 'no-generation') {
+      <lib-empty-data
+        icon="isax-slash"
+        name="No Generation Reported!"
+        description="Power generation has not started or data is unavailable for the day"
+        textColor="white">
+      </lib-empty-data>
+    }
+
+    @else if (status === 'empty') {
+      <lib-empty-data
+        icon="isax-folder-open"
+        name="No Data Available"
+        description="No KPI data is available for the selected date"
+        textColor="white">
+      </lib-empty-data>
+    }
+
+    @else if (status === 'error') {
+      <lib-empty-data
+        icon="isax-danger"
+        name="Unable to Load KPIs"
+        description="Something went wrong while fetching KPI data"
+        textColor="white">
+      </lib-empty-data>
+    }
+
+  </mat-card-content>
+</mat-card>

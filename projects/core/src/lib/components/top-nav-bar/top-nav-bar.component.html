@@ -1,0 +1,40 @@
+<mat-toolbar class="top-nav-toolbar">
+  <div class="nav-container">
+    <!-- Left Section: Menu Button & Page Title -->
+    <div class="nav-section nav-section--left">
+      <button
+        mat-stroked-button
+        class="menu-button"
+        (click)="toggleSidenav()"
+        aria-label="Toggle navigation menu"
+      >
+        <span class="isax isax-menu-1"></span>
+      </button>
+      <h1 class="page-title">{{ pageTitle() }}</h1>
+    </div>
+
+    <!-- Right Section: Action Buttons & User Avatar -->
+    <div class="nav-section nav-section--right">
+      <!-- Theme Toggle Button -->
+      <!-- <button
+        mat-stroked-button
+        class="action-button"
+        (click)="toggleTheme()"
+        [attr.aria-label]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'"
+      >
+        <span class="isax isax-setting-2"></span>
+      </button> -->
+
+      <!-- Add/Create Button -->
+      <!-- <button
+        mat-mini-fab
+        color="primary"
+        class="add-button"
+        (click)="navigateToOnboarding()"
+        aria-label="Add new site"
+      >
+        <mat-icon>add</mat-icon>
+      </button> -->
+    </div>
+  </div>
+</mat-toolbar>

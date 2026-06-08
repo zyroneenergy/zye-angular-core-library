@@ -1,0 +1,88 @@
+<!--
+  ══════════════════════════════════════════════════════════════════
+  Layout:
+    ┌─ .tab-shell ──────────────────────────────────────────────────┐
+    │  ┌─ mat-tab-group (visual chrome only) ──┐  ┌─ tab-controls ─┐│
+    │  │  [tab pills / ink-bar]               │  │ [right slot]   ││
+    │  └──────────────────────────────────────┘  └────────────────┘│
+    │  ┌─ .tab-content-outlet ─────────────────────────────────────┐│
+    │  │  <ng-container *ngTemplateOutlet="activeContent">         ││
+    │  └───────────────────────────────────────────────────────────┘│
+    └───────────────────────────────────────────────────────────────┘
+
+  mat-tab-group renders ONLY the tab header.
+  Its body (.mat-mdc-tab-body-wrapper) is hidden via ::ng-deep in the SCSS.
+  All content is rendered in .tab-content-outlet so we keep full control
+  (lazy rendering, custom animations, no portal overhead).
+-->
+
+<div class="tab-shell">
+
+  <!-- ── Header row: mat-tab-group (pill bar) + right-side controls ──────── -->
+  <div class="tab-header-row">
+
+    <!--
+      mat-tab-group drives:
+        • active pill highlight
+        • ink-bar animation
+        • Material ripple
+        • global typography (mat-headline-6 etc.)
+        • keyboard navigation (ArrowLeft/Right, Home/End)
+        • ARIA roles (tablist / tab / tabpanel)
+
+      [selectedIndex] keeps it in sync with the URL-driven activeKey().
+      (selectedIndexChange) writes back on click.
+      mat-stretch-tabs="false" → pills don't stretch full width.
+      [preserveContent]="false" → we never want Mat to render bodies.
+    -->
+    <mat-tab-group
+      class="tab-group"
+      mat-stretch-tabs="false"
+      animationDuration="0ms"
+      [selectedIndex]="activeIndex()"
+      (selectedIndexChange)="onMatTabChange($event)"
+    >
+      @for (tab of tabs; track tab.key) {
+        <mat-tab>
+          <ng-template matTabLabel>
+            @if (tab.icon) {
+              <span class="isax tab-icon" [ngClass]="tab.icon"></span>
+            }
+            <span class="tab-label">{{ tab.label }}</span>
+          </ng-template>
+          <!-- No body content here — rendered in outlet below -->
+        </mat-tab>
+      }
+    </mat-tab-group>
+
+    <!-- Right-side controls slot: renders the tabControls template for the active tab -->
+    <div class="tab-controls-slot">
+
+      <button
+        class="tab-refresh-btn"
+        matRipple
+        [class.tab-refresh-btn--spinning]="isRefreshing()"
+        matTooltip="Refresh"
+        [disabled]="isRefreshing()"
+        (click)="refreshTab()"
+        [attr.aria-label]="'Refresh ' + activeKey() + ' tab'"
+        title="Refresh"
+      >
+        <span class="isax isax-refresh"></span>
+      </button>
+
+      @if (getControls(activeKey()); as ctrl) {
+        <ng-container *ngTemplateOutlet="ctrl"></ng-container>
+      }
+    </div>
+
+  </div>
+
+  <!-- ── Content outlet: renders only the active tab's content ────────────── -->
+  <div class="tab-content-outlet">
+    @if (getContent(activeKey()); as tpl) {
+      <ng-container *ngTemplateOutlet="tpl"></ng-container>
+    }
+  </div>
+
+</div>

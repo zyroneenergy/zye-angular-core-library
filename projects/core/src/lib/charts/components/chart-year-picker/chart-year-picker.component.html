@@ -1,0 +1,22 @@
+<div class="cyp-panel" (click)="$event.stopPropagation()">
+ 
+      @if (title) {
+        <div class="cyp-header">{{ title }}</div>
+      }
+ 
+      <div class="cyp-section-label">Select year</div>
+ 
+      <div class="cyp-year-grid">
+        @for (year of availableYears; track year) {
+          <button
+            class="cyp-year-cell"
+            [class.selected]="year === selectedYear"
+            [class.disabled]="disabledYears.includes(year)"
+            [disabled]="disabledYears.includes(year)"
+            (click)="yearSelect.emit(year); $event.stopPropagation()">
+            {{ year }}
+          </button>
+        }
+      </div>
+ 
+    </div>

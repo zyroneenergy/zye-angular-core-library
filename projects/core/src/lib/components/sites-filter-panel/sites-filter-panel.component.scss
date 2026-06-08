@@ -1,0 +1,523 @@
+@use '../../../styles/abstracts/index' as *;
+// ─────────────────────────────────────────────────────────────────────────────
+// Backdrop
+// ─────────────────────────────────────────────────────────────────────────────
+.fp-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1099;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Panel card
+// ─────────────────────────────────────────────────────────────────────────────
+.fp-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 340px;
+  max-height: 520px;
+  z-index: 1100;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+
+  opacity: 0;
+  transform: translateY(-6px) scale(0.97);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+
+  &--open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  @include ht-portrait {
+    position: fixed;
+    top: auto;
+    right: 5%;
+    left: 5%;
+    bottom: 16px;
+    width: auto;
+    max-height: 80vh;
+    max-width: 90vw;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Header
+// ─────────────────────────────────────────────────────────────────────────────
+.fp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 14px;
+  flex-shrink: 0;
+}
+
+.fp-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--solarTextPrimary);
+  letter-spacing: -0.1px;
+}
+
+.fp-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fp-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  background: var(--primary500);
+  color: var(--whiteColor);
+  font-size: #{map-get(map-get($solar-typography, "caption"), "font-size")};
+  font-weight: 700;
+  line-height: 1;
+}
+
+.fp-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 6px;
+  color: var(--solarTextSecondary);
+  transition: background 0.15s, color 0.15s;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: var(--mat-table-hover-state-layer-color, rgba(0, 0, 0, 0.05));
+    color: var(--solarTextPrimary);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Search
+// ─────────────────────────────────────────────────────────────────────────────
+.fp-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 16px 14px;
+  height: 38px;
+  border: 1px solid var(--divider-border-color);
+  border-radius: 10px;
+  padding: 0 10px;
+  background: var(--mat-table-row-background-color, var(--surfaceBackground));
+  transition: border-color 0.15s;
+
+  &:focus-within { border-color: var(--primary500); }
+}
+
+.fp-search-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--solarTextThird);
+  flex-shrink: 0;
+}
+
+.fp-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+  color: var(--solarTextPrimary);
+  min-width: 0;
+  font-family: inherit;
+
+  &::placeholder { color: var(--solarTextThird); }
+}
+
+.fp-search-clear.mat-mdc-icon-button {
+  width: 20px;
+  height: 20px;
+  --mdc-icon-button-icon-size: 15px;
+  color: var(--solarTextThird);
+  flex-shrink: 0;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Body
+// ─────────────────────────────────────────────────────────────────────────────
+.fp-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section accordion
+// ─────────────────────────────────────────────────────────────────────────────
+.fp-section {
+  &--open .fp-chevron { transform: rotate(180deg); }
+}
+
+.fp-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 13px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+  font-family: inherit;
+
+  &:hover { background: var(--mat-table-hover-state-layer-color, rgba(0, 0, 0, 0.02)); }
+}
+
+.fp-section-label {
+  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+  font-weight: 600;
+  color: var(--solarTextPrimary);
+}
+
+.fp-section-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fp-active-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary500);
+  flex-shrink: 0;
+}
+
+.fp-chevron {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--solarTextSecondary);
+  transition: transform 0.2s ease;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Expanded section body
+// ─────────────────────────────────────────────────────────────────────────────
+.fp-section-body {
+  padding: 2px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px
+}
+.columns {
+  flex: 1 1 0%; min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+// ── Radio operators ───────────────────────────────────────────────────────────
+.fp-operators {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.fp-radio-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.12s;
+
+  &:hover { background: var(--mat-table-hover-state-layer-color, rgba(0, 0, 0, 0.03)); }
+}
+
+.fp-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--divider-border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: border-color 0.15s;
+  background: transparent;
+
+  &:checked {
+    border-color: var(--primary500);
+    background: var(--primary500);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background: var(--whiteColor);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary500);
+    outline-offset: 2px;
+  }
+}
+
+.fp-radio-label {
+  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+  color: var(--solarTextPrimary);
+  user-select: none;
+  line-height: 1.4;
+}
+
+// ── Unit toggle button group ──────────────────────────────────────────────────
+.fp-unit-toggle {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.fp-unit-btn {
+  // Override mat-flat-button for compact segmented look
+  --mdc-filled-button-container-height: 28px;
+  min-width: 0 !important;
+  padding: 0 10px !important;
+  font-size: #{map-get(map-get($solar-typography, "caption"), "font-size")} !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  border-radius: 6px !important;
+  line-height: 28px !important;
+
+  background: var(--mat-table-hover-state-layer-color, rgba(0, 0, 0, 0.05)) !important;
+  color: var(--solarTextSecondary) !important;
+  transition: background 0.15s, color 0.15s !important;
+
+  &--active {
+    background: var(--primary500) !important;
+    color: var(--whiteColor) !important;
+  }
+
+  &:hover:not(.fp-unit-btn--active) {
+    background: var(--mat-table-hover-state-layer-color, rgba(0, 0, 0, 0.08)) !important;
+    color: var(--solarTextPrimary) !important;
+  }
+}
+
+// ── Value inputs ──────────────────────────────────────────────────────────────
+.fp-value-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &--between { flex-wrap: wrap; }
+}
+
+.fp-input-with-unit {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.fp-value-input {
+  width: 100%;
+  height: 36px;
+  border: 1px solid var(--divider-border-color);
+  border-radius: 8px;
+  padding: 0 40px 0 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--solarTextPrimary);
+  background: var(--mat-table-row-background-color, var(--surfaceBackground));
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+
+  &::placeholder { color: var(--solarTextThird); }
+  &:focus { border-color: var(--primary500); }
+
+  &[type='number'] {
+    -moz-appearance: textfield;
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  }
+}
+
+.fp-unit {
+  position: absolute;
+  right: 8px;
+  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+  font-weight: 500;
+  color: var(--solarTextThird);
+  pointer-events: none;
+  white-space: nowrap;
+  background: var(--mat-table-row-background-color, var(--surfaceBackground));
+  padding-left: 2px;
+}
+
+.fp-between-sep {
+  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+  color: var(--solarTextSecondary);
+  flex-shrink: 0;
+  align-self: center;
+}
+
+// ── Clear field (mat-button[color="warn"]) ────────────────────────────────────
+.fp-clear-field {
+  // Compact override for mat-button
+  --mdc-text-button-container-height: 28px;
+  align-self: flex-start;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  line-height: 28px !important;
+  padding: 0 4px !important;
+  min-width: 0 !important;
+
+  mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+    margin-right: 2px;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Footer — mat-stroked-button + mat-flat-button
+// ─────────────────────────────────────────────────────────────────────────────
+.fp-footer {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--divider-border-color);
+  flex-shrink: 0;
+}
+
+.fp-btn {
+  flex: 1;
+  height: 38px !important;
+  border-radius: 10px !important;
+  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")} !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+
+  &--reset {
+    // mat-stroked-button — inherits border from mat theme
+  }
+
+  &--apply {
+    // mat-flat-button[color="primary"] — inherits bg from mat theme
+    &:active { transform: scale(0.98); }
+  }
+}
+
+// ── Native select (replaces mat-form-field in location section) ──────────────
+.fp-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--solarTextSecondary);
+  margin-bottom: 2px;
+  display: block;
+  letter-spacing: 0.2px;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Calendar
+// ─────────────────────────────────────────────────────────────
+
+.fp-calendar-section {
+  position: relative;
+}
+
+.fp-calendar-trigger {
+  width: 100%;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid var(--divider-border-color);
+  border-radius: 10px;
+
+  background: var(--surfaceBackground);
+  color: var(--solarTextPrimary);
+
+  padding: 0 12px;
+
+  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+  font-family: inherit;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+
+  &:hover {
+    border-color: var(--primary500);
+  }
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    color: var(--solarTextSecondary);
+  }
+}
+
+.fp-calendar-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+
+  z-index: 1200;
+
+  animation: fpFadeIn 0.14s ease;
+}
+
+@keyframes fpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.calender{
+  margin-bottom: 10px;
+}

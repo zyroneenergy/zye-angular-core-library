@@ -1,0 +1,34 @@
+:host { display: block; }
+ 
+    .cdo-btn {
+      display:       flex;
+      align-items:   center;
+      gap:           9px;
+      padding:       7px 10px;
+      border:        none;
+      border-radius: calc(var(--borderRadius) - 2px);
+      background:    transparent;
+      color:         var(--solarTextPrimary);
+      font-size:     13px;
+      font-family:   inherit;
+      font-weight:   450;
+      cursor:        pointer;
+      text-align:    left;
+      width:         100%;
+      transition:    background 0.13s, color 0.13s;
+      outline:       none;
+ 
+      .cdo-check { margin-left: auto; color: var(--primary500); flex-shrink: 0; }
+ 
+      &:hover:not(.selected) {
+        background: var(--solarGreyColor5);
+        color:      var(--primary500);
+      }
+ 
+      &.selected {
+        color:       var(--primary500);
+        font-weight: 600;
+      }
+    }
+ 
+    .cdo-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

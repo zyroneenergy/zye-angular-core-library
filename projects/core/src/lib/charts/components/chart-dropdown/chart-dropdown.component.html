@@ -1,0 +1,38 @@
+<div class="cd-wrap" [class.cd-wrap--open]="isOpen">
+ 
+      <!-- Trigger button -->
+      <button
+        class="cd-trigger"
+        [class.open]="isOpen"
+        [class.cd-trigger--icon]="!!leadIcon"
+        (click)="toggle.emit($event)">
+ 
+        @if (leadIcon) {
+          <!-- Caller passes raw SVG path data via leadIcon input -->
+          <span class="cd-lead-icon isax" [ngClass]="leadIcon" >
+          </span>
+        }
+ 
+        <span class="cd-trigger-label" [class.hide-mobile]="hideLabelOnMobile">{{ label }}</span>
+ 
+        <svg class="cd-chevron" [class.open]="isOpen"
+             width="11" height="11" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+ 
+      <!-- Panel -->
+      @if (isOpen) {
+        <div class="cd-panel" [class.cd-panel--left]="align === 'left'" (click)="$event.stopPropagation()">
+          @if (panelTitle) {
+            <div class="cd-panel-header">{{ panelTitle }}</div>
+          }
+          <div class="cd-panel-body">
+            <ng-content></ng-content>
+          </div>
+        </div>
+      }
+ 
+    </div>

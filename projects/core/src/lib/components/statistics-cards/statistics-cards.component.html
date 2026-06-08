@@ -1,0 +1,44 @@
+<div class="kpi-strip primary-linear-gradient" [class.dense]="dense" [class.vertical-mobile]="verticalOnMobile">
+
+  @if (isLoading) {
+    @for (i of [].constructor(shimmerCount); track $index; let last = $last) {
+      <div class="kpi-item">
+        <lib-shimmer preset="analytics-kpi-strip" />
+      </div>
+      @if (showDividers && !last) {
+        <mat-divider vertical class="divider-vertical"></mat-divider>
+        <mat-divider class="divider-horizontal"></mat-divider>
+      }
+    }
+  } 
+  @else {
+    @for (item of items; track item.title; let last = $last) {
+      <div class="kpi-item">
+        <div class="kpi-content">
+          <p class="title mat-body-2">{{ item.title }}</p>
+          <p class="value">
+            {{ item.unit ? (item.value + ' ' + item.unit) : item.value }}
+            @if (item.growth) {
+              <span class="growth" [class.up]="item.trend === 'up'">
+                <mat-icon class="growth-icon">
+                  {{ item.trend === 'up' ? 'trending_up' : 'trending_down' }}
+                </mat-icon>
+                {{ item.growth }}
+              </span>
+            }
+          </p>
+        </div>
+
+        @if (item.icon) {
+          <mat-icon class="kpi-icon">{{ item.icon }}</mat-icon>
+        }
+      </div>
+
+      @if (showDividers && !last) {
+        <mat-divider vertical class="divider-vertical"></mat-divider>
+        <mat-divider class="divider-horizontal"></mat-divider>
+      }
+    }
+  }
+
+</div>

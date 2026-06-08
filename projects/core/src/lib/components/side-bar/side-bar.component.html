@@ -1,0 +1,49 @@
+<div class="sidebar" [class.expanded]="fullSize">
+
+  <!-- Logo & Title -->
+  <div class="menu-list-header">
+    <img [src]="logoUrl" [alt]="title" [width]="logoWidth" [height]="logoHeight" />
+    <span class="sidebar-text" *ngIf="fullSize"><strong>{{ title }}</strong></span>
+  </div>
+
+  <!-- Top Menu -->
+  <div class="mat-list-div">
+    <mat-list>
+      <mat-list-item *ngFor="let item of menuItems" 
+                     [routerLink]="item.path" 
+                     routerLinkActive="active-list-item"
+                     (click)="onItemClick(item)">
+        <div class="menu-list-item">
+          <mat-icon class="sidebar-icon" [ngClass]="item.icon"></mat-icon>
+          <span class="sidebar-text" *ngIf="fullSize">{{ item.name }}</span>
+        </div>
+      </mat-list-item>
+    </mat-list>
+
+    <!-- Theme Toggle -->
+    <mat-list>
+      <mat-list-item class="theme-list-item">
+        <div class="menu-list-item" (click)="toggleTheme()">
+          <mat-icon class="sidebar-icon">
+            {{ isDarkMode ? "dark_mode" : "light_mode" }}
+          </mat-icon>
+          <span class="sidebar-text" *ngIf="fullSize">Theme</span>
+        </div>
+      </mat-list-item>
+
+      <!-- Bottom Menu -->
+      <mat-list-item *ngFor="let item of bottomMenuItems" 
+                     [routerLink]="item.path" 
+                     routerLinkActive="active-list-item"
+                     (click)="onItemClick(item)">
+        <div class="menu-list-item">
+          <mat-icon class="sidebar-icon" [ngClass]="item.icon"></mat-icon>
+          <span class="sidebar-text" *ngIf="fullSize">{{ item.name }}</span>
+        </div>
+      </mat-list-item>
+    </mat-list>
+  </div>
+
+  <!-- Allow extra custom content if needed -->
+  <ng-content></ng-content>
+</div>

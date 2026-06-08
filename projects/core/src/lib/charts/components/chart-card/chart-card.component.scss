@@ -1,0 +1,95 @@
+@use '../../../../styles/abstracts/index' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* ── Card shell ─────────────────────────────────────────────────────── */
+.cc-card {
+  width: 100%;
+
+  mat-card-content {
+    padding: 16px 20px 12px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    isolation: isolate;
+  }
+}
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+.cc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  z-index: 30;
+}
+
+/* ── Titles ─────────────────────────────────────────────────────────── */
+.cc-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.cc-title {
+  margin: 0;
+  font-size: #{map-get(map-get($solar-typography, 'body-2'), 'font-size')};
+  font-weight: 600;
+  color: var(--solarTextPrimary);
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cc-subtitle {
+  margin: 0;
+  font-size: #{map-get(map-get($solar-typography, 'caption'), 'font-size')};
+  color: var(--solarTextSecondary);
+  font-weight: 400;
+
+  white-space: nowrap;
+}
+
+/* ── Right Controls (desktop + header area) ─────────────────────────── */
+.cc-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Mobile Toolbar (rendered conditionally via LayoutService) ─────── */
+.cc-mobile-toolbar {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  position: relative;
+  z-index: 25;
+}
+
+/* ── Optional: compact spacing for smaller screens ─────────────────── */
+/* (pure styling only — no logic control here) */
+@media (max-width: 768px) {
+  .cc-card mat-card-content {
+    padding: 12px 12px 10px !important;
+    gap: 8px;
+  }
+
+  .cc-header {
+    gap: 8px;
+  }
+
+  .cc-header-right {
+    gap: 6px;
+  }
+}

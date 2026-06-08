@@ -1,0 +1,82 @@
+.tab-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.tab-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tab-controls-slot {
+  flex-shrink: 0;
+}
+
+.tab-content-outlet {
+  animation: tabFadeIn 0.2s ease forwards;
+}
+
+@keyframes tabFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+// Append to your existing tab.component.scss
+
+.tab-controls-slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;           // never squish controls when tabs are wide
+}
+
+.tab-refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--solarTextThird);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--solarTextThird);
+  cursor: pointer;
+  transition:
+    background  0.15s ease,
+    color       0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background:    var(--mat-chip-bg);
+    color:         var(--solarTextPrimary);
+    border-color: var(--solarTextPrimary);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .isax {
+    font-size: 20px;
+    display: block;
+    // transition only on transform so layout isn't recalculated
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  // Spin applied while loading
+  &--spinning .isax {
+    animation: tab-spin 0.7s linear infinite;
+  }
+}
+
+@keyframes tab-spin {
+  to { transform: rotate(360deg); }
+}

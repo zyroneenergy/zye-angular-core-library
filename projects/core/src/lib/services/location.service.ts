@@ -11,8 +11,8 @@ export interface State {
   providedIn: 'root'
 })
 export class LocationService {
-  private readonly STATES_PATH = 'assets/states/states.json';
-private readonly CITIES_PATH = 'assets/states';
+  private readonly STATES_PATH = '../assets/states/states.json';
+private readonly CITIES_PATH = '../assets/states';
 
   // Cache for states
   private statesCache$: Observable<State[]> | null = null;

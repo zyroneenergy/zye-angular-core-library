@@ -1,0 +1,85 @@
+:host { display: inline-block; position: relative; }
+ 
+    .cd-wrap { position: relative; }
+ 
+    /* ── Trigger ─────────────────────────────────────────────────────────── */
+    .cd-trigger {
+      display:       inline-flex;
+      align-items:   center;
+      gap:           6px;
+      height:        36px;
+      padding:       0 10px;
+      background:    var(--mat-chip-bg);
+      border:        1px solid var(--divider-border-color);
+      border-radius: var(--borderRadius);
+      color:         var(--solarTextPrimary);
+      font-size:     14px;
+      font-weight:   400;
+      font-family:   inherit;
+      cursor:        pointer;
+      outline:       none;
+      white-space:   nowrap;
+      transition:    border-color 0.15s, color 0.15s;
+ 
+      .cd-lead-icon { color: var(--primary500); flex-shrink: 0; font-size: 16px; }
+ 
+      &:hover, &.open {
+        border-color: var(--primary500);
+        color:        var(--primary500);
+      }
+    }
+ 
+    .cd-trigger-label {
+      overflow:      hidden;
+      text-overflow: ellipsis;
+      max-width:     160px;
+    }
+ 
+    .cd-chevron {
+      flex-shrink: 0;
+      color:       var(--solarTextSecondary);
+      transition:  transform 0.2s ease;
+      &.open { transform: rotate(180deg); }
+    }
+ 
+    /* ── Panel ───────────────────────────────────────────────────────────── */
+    .cd-panel {
+      position:      absolute;
+      top:           calc(100% + 6px);
+      right:         0;
+      z-index:       400;
+      min-width:     200px;
+      background:    var(--mat-card-bg, var(--mat-chip-bg));
+      border:        1px solid var(--divider-border-color);
+      border-radius: var(--borderRadius);
+      box-shadow:    0 10px 32px rgba(0,0,0,.30);
+      overflow:      hidden;
+      animation:     cd-drop-in 0.14s ease;
+ 
+      &--left { right: auto; left: 0; }
+    }
+ 
+    .cd-panel-header {
+      padding:        7px 12px 5px;
+      font-size:      10px;
+      font-weight:    700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color:          var(--solarTextSecondary);
+      border-bottom:  1px solid var(--divider-border-color);
+    }
+ 
+    .cd-panel-body { padding: 6px; }
+ 
+    @keyframes cd-drop-in {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    /* ── Mobile: full-width panel ────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .hide-mobile {
+    display: none;
+  }
+      .cd-trigger { height: 36px; }
+    }

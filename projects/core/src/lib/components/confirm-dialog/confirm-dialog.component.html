@@ -1,0 +1,44 @@
+<div class="confirm-dialog" [class]="'confirm-dialog--' + config.type">
+
+      <!-- Header with icon -->
+      <div class="confirm-dialog__header">
+        <div class="confirm-dialog__icon-wrap">
+          <mat-icon class="confirm-dialog__icon">{{ iconName }}</mat-icon>
+        </div>
+        <p mat-dialog-title class="confirm-dialog__title">{{ config.title }}</p>
+      </div>
+
+      <!-- Body -->
+      <mat-dialog-content class="confirm-dialog__body">
+        <p class="confirm-dialog__message">{{ config.message }}</p>
+        <p *ngIf="config.detail" class="confirm-dialog__detail">{{ config.detail }}</p>
+
+        <div *ngIf="config.warningNote" class="confirm-dialog__warning-note">
+          <mat-icon>warning_amber</mat-icon>
+          <span>{{ config.warningNote }}</span>
+        </div>
+      </mat-dialog-content>
+
+      <!-- Actions -->
+      <mat-dialog-actions align="end" class="confirm-dialog__actions">
+        <button
+          mat-stroked-button
+          *ngIf="config.cancelText"
+          class="confirm-dialog__cancel-btn"
+          [mat-dialog-close]="false"
+          [disabled]="isLoading">
+          {{ config.cancelText }}
+        </button>
+
+        <button
+          mat-raised-button
+          class="confirm-dialog__confirm-btn"
+          [class]="'confirm-btn--' + config.type"
+          (click)="onConfirm()"
+          [disabled]="isLoading">
+          <mat-spinner *ngIf="isLoading" diameter="16" class="btn-spinner"></mat-spinner>
+          <span *ngIf="!isLoading">{{ config.confirmText ?? 'Confirm' }}</span>
+          <span *ngIf="isLoading">Processing...</span>
+        </button>
+      </mat-dialog-actions>
+    </div>

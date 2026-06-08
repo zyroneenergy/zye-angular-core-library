@@ -1,0 +1,284 @@
+<!-- Backdrop -->
+<div class="fp-backdrop" *ngIf="opened" (click)="closePanel.emit()"></div>
+
+<!-- Panel -->
+<mat-card class="fp-panel" [class.fp-panel--open]="opened" role="dialog" aria-label="Filter sites">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <div class="fp-header">
+    <span class="fp-title">Filters</span>
+    <div class="fp-header-right">
+      <span class="fp-badge" *ngIf="draftFilterCount">{{ draftFilterCount }}</span>
+      <button class="fp-close" (click)="closePanel.emit()" aria-label="Close filters">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Panel search ───────────────────────────────────────────────────── -->
+  <div class="fp-search-wrap">
+    <mat-icon class="fp-search-icon">search</mat-icon>
+    <input
+      class="fp-search-input"
+      type="text"
+      placeholder="Search filters"
+      [(ngModel)]="panelSearch"
+      aria-label="Search filter fields"
+    />
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- ── Body ───────────────────────────────────────────────────────────── -->
+  <div class="fp-body">
+
+    <!-- ── LOCATION section (optional, controlled by showLocationFilter) ── -->
+    @if (showLocationFilter) {
+      <div
+        class="fp-section"
+        [class.fp-section--active]="isLocationActive()"
+        [class.fp-section--open]="isExpanded('location')"
+        *ngIf="!panelSearch
+          || 'location'.includes(panelSearch.toLowerCase())
+          || 'state'.includes(panelSearch.toLowerCase())
+          || 'city'.includes(panelSearch.toLowerCase())"
+      >
+        <button
+          class="fp-section-header"
+          (click)="toggle('location')"
+          [attr.aria-expanded]="isExpanded('location')"
+          type="button"
+        >
+          <span class="fp-section-label">Location</span>
+          <div class="fp-section-meta">
+            <span class="fp-active-dot" *ngIf="isLocationActive()" matTooltip="Filter active"></span>
+            <mat-icon class="fp-chevron">expand_more</mat-icon>
+          </div>
+        </button>
+
+        @if (isExpanded('location')) {
+          <div class="fp-section-body">
+            <div class="row">
+
+              <!-- State dropdown -->
+              <div class="columns">
+                <label class="fp-field-label">State</label>
+                <mat-form-field>
+                  <mat-select
+                    [value]="draftState"
+                    (selectionChange)="onStateSelect($event.value)"
+                    panelClass="fp-select-panel"
+                  >
+                    <mat-option value="">— Any —</mat-option>
+                    @for (s of states; track s.name) {
+                      <mat-option [value]="s.name">{{ s.name }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <!-- City dropdown -->
+              <div class="columns">
+                <label class="fp-field-label">City</label>
+                <mat-form-field>
+                  <mat-select
+                    [value]="draftCity"
+                    [disabled]="!draftState || loadingCities"
+                    (selectionChange)="onCitySelect($event.value)"
+                    panelClass="fp-select-panel"
+                  >
+                    <mat-option value="">
+                      {{ loadingCities ? 'Loading…' : '— Any city —' }}
+                    </mat-option>
+                    @for (c of cities; track c) {
+                      <mat-option [value]="c">{{ c }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+            </div>
+
+            @if (isLocationActive()) {
+              <button
+                mat-button color="warn"
+                class="fp-clear-field"
+                (click)="clearLocation()"
+                type="button"
+              >
+                <mat-icon>close</mat-icon> Clear
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <mat-divider></mat-divider>
+    }
+
+    <!-- ── Dynamic field sections (driven entirely by fieldDefs input) ───── -->
+    @for (field of visibleFields; track field.key) {
+      <div
+        class="fp-section"
+        [class.fp-section--active]="isFieldActive(field.key)"
+        [class.fp-section--open]="isExpanded(field.key)"
+      >
+        <button
+          class="fp-section-header"
+          (click)="toggle(field.key)"
+          [attr.aria-expanded]="isExpanded(field.key)"
+          type="button"
+        >
+          <span class="fp-section-label">{{ field.label }}</span>
+          <div class="fp-section-meta">
+            <span class="fp-active-dot" *ngIf="isFieldActive(field.key)" matTooltip="Filter active"></span>
+            <mat-icon class="fp-chevron">expand_more</mat-icon>
+          </div>
+        </button>
+
+        @if (isExpanded(field.key)) {
+          <div class="fp-section-body">
+
+            <!-- ── Operator radio group (shared by numeric + date) ──────── -->
+            <div class="fp-operators">
+              @for (op of field.operators; track op.value) {
+                <label class="fp-radio-row">
+                  <input
+                    type="radio"
+                    class="fp-radio"
+                    [name]="field.key + '_op'"
+                    [value]="op.value"
+                    [checked]="isNumericField(field)
+                      ? (getNumericFilter(field.key).operator === op.value && isFieldActive(field.key))
+                      : (getDateFilter(field.key).operator    === op.value && isFieldActive(field.key))"
+                    (change)="isNumericField(field)
+                      ? activateNumericFilter(field.key, $any(op.value))
+                      : activateDateFilter(field.key, $any(op.value))"
+                  />
+                  <span class="fp-radio-label">{{ op.label }}</span>
+                </label>
+              }
+            </div>
+
+            <!-- ── NUMERIC inputs ─────────────────────────────────────────── -->
+            @if (isNumericField(field) && isFieldActive(field.key)) {
+
+              @if (field.units.length > 1) {
+                <div class="fp-unit-toggle">
+                  @for (u of field.units; track u.value) {
+                    <button
+                      mat-flat-button
+                      class="fp-unit-btn"
+                      [class.fp-unit-btn--active]="getNumericFilter(field.key).unit === u.value"
+                      (click)="setUnit(field.key, u.value)"
+                      type="button"
+                    >{{ u.label }}</button>
+                  }
+                </div>
+              }
+
+              <div class="fp-value-wrap" [class.fp-value-wrap--between]="isBetween(field.key)">
+                <div class="fp-input-with-unit">
+                  <input
+                    class="fp-value-input"
+                    type="number"
+                    [placeholder]="field.placeholder"
+                    [min]="field.min"
+                    [max]="field.max"
+                    [step]="field.step"
+                    [value]="getNumericFilter(field.key).value ?? ''"
+                    (input)="setNumericValue(field.key, $any($event.target).value)"
+                  />
+                  <span class="fp-unit">{{ getNumericFilter(field.key).unit }}</span>
+                </div>
+                @if (isBetween(field.key)) {
+                  <span class="fp-between-sep">–</span>
+                  <div class="fp-input-with-unit">
+                    <input
+                      class="fp-value-input"
+                      type="number"
+                      [placeholder]="field.placeholderTo ?? 'To'"
+                      [min]="field.min"
+                      [max]="field.max"
+                      [step]="field.step"
+                      [value]="getNumericFilter(field.key).valueTo ?? ''"
+                      (input)="setNumericValueTo(field.key, $any($event.target).value)"
+                    />
+                    <span class="fp-unit">{{ getNumericFilter(field.key).unit }}</span>
+                  </div>
+                }
+              </div>
+            }
+
+            <!-- ── DATE CALENDAR ─────────────────────────────────────────── -->
+            @if (isDateField(field) && isFieldActive(field.key)) {
+              <div class="fp-calendar-section">
+
+                <!-- Trigger button -->
+                <button type="button" class="fp-calendar-trigger" (click)="toggleCalendar(field.key)">
+                  <mat-icon>calendar_month</mat-icon>
+                  <span>
+                    @if (getDateFilter(field.key).value) {
+                      @if (
+                        getDateFilter(field.key).operator === 'between' &&
+                        getDateFilter(field.key).valueTo
+                      ) {
+                        {{ formatDate(getDateFilter(field.key).value) }}
+                        →
+                        {{ formatDate(getDateFilter(field.key).valueTo) }}
+                      } @else {
+                        {{ formatDate(getDateFilter(field.key).value) }}
+                      }
+                    } @else {
+                      Select date
+                    }
+                  </span>
+                </button>
+
+                <!-- Calendar popover -->
+                @if (openCalendarKey === field.key) {
+                  <div class="fp-calendar-popover" (click)="$event.stopPropagation()">
+                    <lib-chart-calendar
+                      class="calender"
+                      [initialStart]="getDateFilter(field.key).value ?? ''"
+                      [initialEnd]="getDateFilter(field.key).valueTo ?? ''"
+                      [maxDays]="getDateFilter(field.key).operator === 'between' ? 365 : 1"
+                      (rangeChange)="onCalendarRangeChange(field.key, $event)"
+                    >
+                    </lib-chart-calendar>
+                  </div>
+                }
+
+              </div>
+            }
+
+            <!-- ── Clear field ────────────────────────────────────────────── -->
+            @if (isFieldActive(field.key)) {
+              <button
+                mat-button color="warn"
+                class="fp-clear-field"
+                (click)="clearField(field.key)"
+                type="button"
+              >
+                <mat-icon>close</mat-icon> Clear
+              </button>
+            }
+
+          </div>
+        }
+
+      </div>
+      <mat-divider></mat-divider>
+    }
+
+  </div>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────────── -->
+  <div class="fp-footer">
+    <button mat-stroked-button class="fp-btn fp-btn--reset" (click)="reset()" type="button">Reset</button>
+    <button mat-flat-button color="primary" class="fp-btn fp-btn--apply" (click)="apply()" type="button">
+      Apply{{ draftFilterCount ? ' (' + draftFilterCount + ')' : '' }}
+    </button>
+  </div>
+
+</mat-card>

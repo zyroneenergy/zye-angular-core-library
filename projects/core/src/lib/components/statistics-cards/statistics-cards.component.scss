@@ -1,0 +1,92 @@
+@use '../../../styles/components/gradients' as *;
+@use '../../../styles/abstracts/index' as *;
+
+.kpi-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 12px;
+  border-radius: 12px;
+}
+
+.kpi-item {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 12px;
+  padding: 0 12px;
+}
+
+.kpi-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  margin: 0 0 8px 0;
+}
+
+.value {
+  margin: 0;
+  font-weight: 800;
+  font-size: #{map-get(map-get($solar-typography, "headline-5"), "font-size")};
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.growth {
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.growth.up { color: var(--actionGreen); }
+.growth:not(.up) { color: var(--actionRed); }
+
+.kpi-icon {
+  font-size: 20px;
+    height: 20px;
+    width: 20px;
+    padding: 10px;
+    border-radius: 8px;
+    background: #ffffff1a;
+}
+
+mat-divider {
+  border-color: var(--whiteColor) !important;
+}
+
+.divider-vertical {
+  margin: 0 12px;
+}
+
+.divider-horizontal {
+  display: none;
+  width: 100%;
+  margin: 8px 0;
+}
+
+/* Dense Mode */
+.dense .kpi-item {
+  padding: 10px 14px;
+  min-width: 160px;
+}
+
+/* Mobile Responsive */
+@include ht-portrait {
+  .kpi-strip.vertical-mobile {
+    flex-direction: column;
+  }
+
+  .divider-vertical {
+    display: none;
+  }
+
+  .divider-horizontal {
+    display: block;
+  }
+}

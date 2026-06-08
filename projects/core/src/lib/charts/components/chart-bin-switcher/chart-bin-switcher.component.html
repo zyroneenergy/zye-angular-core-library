@@ -1,0 +1,10 @@
+<div class="cbs-wrap">
+  @for (tab of tabs; track tab.key) {
+    <button
+      class="cbs-btn"
+      [class.active]="activeBin === tab.key"
+      (click)="binChange.emit(tab.key)">
+      {{ tab.label }}
+    </button>
+  }
+</div>

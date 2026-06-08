@@ -1,0 +1,35 @@
+<mat-card class="cc-card" (click)="closeAll()">
+  <mat-card-content class="cc-content">
+
+    <!-- HEADER -->
+    <div class="cc-header">
+
+      <!-- Title -->
+      <div class="cc-titles">
+        <h3 class="cc-title">{{ title }}</h3>
+        @if (subtitle) {
+          <p class="cc-subtitle">{{ subtitle }}</p>
+        }
+      </div>
+
+      @if (layout.isDesktop()) {
+    <ng-content select="[controls]"></ng-content>
+  }
+
+  <ng-content select="[type-switcher]"></ng-content>
+
+    </div>
+
+    <!-- MOBILE TOOLBAR -->
+    @if (!layout.isDesktop()) {
+      <div class="cc-mobile-toolbar">
+        <ng-content select="[mobile-controls]"></ng-content>
+      </div>
+    }
+
+    <!-- CONTENT -->
+    <ng-content select="[content]"></ng-content>
+    <ng-content></ng-content>
+
+  </mat-card-content>
+</mat-card>

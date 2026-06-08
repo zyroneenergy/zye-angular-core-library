@@ -1,0 +1,126 @@
+@use '../../../styles/abstracts/index' as *;
+// =========================
+// Top Navigation Toolbar
+// =========================
+.top-nav-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  z-index: 1000;
+  padding: 0 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  display: none; // Hidden on desktop view
+
+  @include ht-portrait {
+    display: block;
+  }
+}
+
+// =========================
+// Toolbar Layout
+// =========================
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  gap: 16px;
+}
+
+.nav-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &--left {
+    flex: 1;
+    min-width: 0; // Text truncation
+  }
+
+  &--right {
+    flex-shrink: 0;
+  }
+}
+
+// =========================
+// Universal 40×40 Buttons
+// =========================
+.menu-button,
+.action-button {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  padding: 0;
+
+  // Internal MDC structure alignment
+  .mdc-button__ripple,
+  .mdc-button__touch {
+    width: 40px;
+    height: 40px;
+  }
+
+  .mdc-button__label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+  }
+
+  .isax {
+    font-size: 22px;
+    line-height: 1;
+  }
+}
+
+// =========================
+// Page Title
+// =========================
+.page-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// =========================
+// Add/Create Button (Mini FAB)
+// =========================
+.add-button {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px;
+
+  // MDC structure for mini-fab
+  .mdc-fab__ripple,
+  .mdc-fab__touch {
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+// =========================
+// User Avatar
+// =========================
+.user-avatar-button {
+  width: 40px;
+  height: 40px;
+  padding: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
