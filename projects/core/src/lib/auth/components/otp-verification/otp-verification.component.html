@@ -1,0 +1,25 @@
+<lib-auth-layout>
+  <mat-card class="otp-card">
+    <div class="logo">
+      <img src="assets/images/company-logo-primary.png" alt="Zyrone Energy Logo" width="36" height="36"/>
+    </div>
+    <div class="welcome-text">Check your email</div>
+    <p class="instruction-text mat-body-1">We’ve sent a
+      <strong>6-digit code</strong> to your email.
+      Please enter it below to complete the verification process.</p>
+    <form [formGroup]="otpForm" (ngSubmit)="onSubmit()" class="otp-form">
+      <div class="otp-inputs">
+        <input
+        matInput
+          type="text"
+          maxlength="1"
+          *ngFor="let ctrl of otpControls; let i = index"
+          [formControlName]="i"
+          (keyup)="moveFocus($event, i)"
+        />
+      </div>
+
+      <button mat-raised-button color="primary" type="submit" style="height: 40px;" [disabled]="otpForm.invalid">Verify</button>
+    </form>
+  </mat-card>
+</lib-auth-layout>

@@ -1,0 +1,123 @@
+<lib-auth-layout [companyName]="companyName">
+  <mat-card class="login-card">
+
+    <!-- SHIMMER SKELETON -->
+    <ng-container *ngIf="isLoading(); else formContent">
+      <div class="login-shimmer-wrapper">
+        <lib-shimmer preset="auth-login" [count]="1"></lib-shimmer>
+      </div>
+    </ng-container>
+
+    <!-- ACTUAL FORM -->
+    <ng-template #formContent>
+      
+      <!-- Heading — dynamic per project -->
+      <div class="heading">
+         <!-- Logo -->
+         <div class="logo">
+           <img
+             src="assets/images/company-logo-primary.png"
+             alt="Company Logo"
+             width="42"
+             height="42"
+           />
+         </div>
+         <div class="title">
+           <div class="welcome-text">{{ loginTitle }}</div>
+           <div class="sub-title">{{loginSubTitle}}</div>
+          </div>
+        </div>
+      <p class="instruction-text">
+        Enter your email and password to continue
+      </p>
+
+      <!-- Error banner -->
+      <div class="login-error-banner" *ngIf="isError()" role="alert">
+        <mat-icon class="login-error-banner__icon">error_outline</mat-icon>
+        <span class="login-error-banner__text">{{ errorMsg() }}</span>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- Email -->
+        <div class="form-field">
+          <mat-label>Email</mat-label>
+          <mat-form-field floatLabel="always">
+            <input
+              matInput
+              type="email"
+              formControlName="username"
+              placeholder="Enter your email"
+              autocomplete="email"
+            />
+            <mat-error *ngIf="f['username'].hasError('required')">
+              Email address is required
+            </mat-error>
+            <mat-error *ngIf="f['username'].hasError('email') && !f['username'].hasError('required')">
+              Please enter a valid email address
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Password -->
+        <div class="form-field">
+          <mat-label>Password</mat-label>
+          <mat-form-field floatLabel="always">
+            <input
+              matInput
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+            />
+            <mat-icon
+              matSuffix
+              class="isax {{ hidePassword ? 'isax-eye' : 'isax-eye-slash' }}"
+              (click)="togglePasswordVisibility()"
+              style="cursor: pointer;"
+              [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'"
+            >
+            </mat-icon>
+            <mat-error *ngIf="f['password'].hasError('required')">
+              Password is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Forgot password -->
+        <div class="forgot-remember-wrap">
+          <a class="forgot-password-link" [routerLink]="['/auth/forgot-password']">
+            Forgot password?
+          </a>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          class="login-submit-btn"
+          [disabled]="isLoading() || (loginForm.dirty && loginForm.invalid)"
+        >
+          <span [class.login-submit-btn__label--hidden]="isLoading()">
+            Sign In
+          </span>
+          <mat-spinner
+            *ngIf="isLoading()"
+            diameter="20"
+            color="accent"
+          ></mat-spinner>
+        </button>
+
+      </form>
+
+      <!-- Register link -->
+      <!-- <p class="register-text">
+        Don't have an account?
+        <a class="register-link" [routerLink]="['/auth/register']">Register now</a>
+      </p> -->
+    </ng-template>
+
+  </mat-card>
+</lib-auth-layout>

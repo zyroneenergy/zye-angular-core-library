@@ -1,0 +1,91 @@
+/* ── Shimmer skeleton wrapper ────────────────────────────── */
+
+.login-shimmer-wrapper {
+  padding: 4px 0;
+  width: 100%;
+}
+
+/* Error banner */
+.login-error-banner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: rgba(192, 57, 43, 0.08);
+  border: 1px solid rgba(192, 57, 43, 0.25);
+  margin-bottom: 16px;
+
+  &__icon {
+    color: #c0392b;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &__text {
+    color: #c0392b;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+/* Submit button */
+.login-submit-btn {
+  position: relative;
+  height: 42px !important;
+  width: 100%;
+
+  mat-spinner {
+    position: absolute;
+  }
+
+  &__label--hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.forgot-remember-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.forgot-password-link {
+  color: var(--primary500);
+  font-weight: 500;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+.heading{
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.title{
+  font-size: var(--fontSize);
+  font-weight: 600;
+  color: var(--solarTextPrimary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.register-text {
+  text-align: center;
+  color: var(--solarTextPrimary);
+}
+
+.register-link {
+  color: var(--primary500);
+  font-weight: 500;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

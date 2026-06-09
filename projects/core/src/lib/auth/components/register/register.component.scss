@@ -1,0 +1,91 @@
+@use "../../../../styles/abstracts/index" as *; 
+
+.register-card {
+  form {
+    .signup-form-fields {
+      display: flex;
+      flex-direction: column;
+
+      .form-field {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-field-row {
+        flex-direction: row;
+        gap: 16px;
+
+        .form-field-col {
+          flex: 1 1 0%;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+  }
+}
+
+.register-shimmer-wrapper {
+  padding: 8px 0;
+  width: 100%;
+}
+
+/* Reuse error banner styles from login (or move to shared stylesheet) */
+.login-error-banner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: rgba(192, 57, 43, 0.08);
+  border: 1px solid rgba(192, 57, 43, 0.25);
+  margin-bottom: 16px;
+
+  &__icon { color: #c0392b; font-size: 18px; }
+  &__text { color: #c0392b; font-size: 14px; line-height: 1.5; }
+}
+
+.register-submit-btn {
+  width: 100%;
+  height: 42px !important;
+  position: relative;
+  margin-top: 8px;
+
+  mat-spinner {
+    position: absolute;
+  }
+
+  &__label--hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.register-text {
+  text-align: center;
+  margin-top: 24px;
+  color: var(--solarTextPrimary);
+}
+
+.register-link {
+  color: var(--primary500);
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+@include ht-portrait {
+  .register-card form .signup-form-fields .form-field-row {
+    flex-direction: column;
+    gap: 16px;
+
+    .form-field-col {
+      width: 100%;
+    }
+  }
+}

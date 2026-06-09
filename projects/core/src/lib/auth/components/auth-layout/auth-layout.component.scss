@@ -1,0 +1,211 @@
+@use "@angular/material" as mat;
+@use "../../../../styles/abstracts/index" as *;
+@use "../../../../styles/components/gradients";
+@use "../../../../styles/layout/form-field";
+
+:host { display: block; }
+
+/* layout shell */
+.auth-container {
+  display: flex;
+  min-height: 100vh;
+  background: var(--surfaceBackground);
+  position: relative;
+}
+
+.auth-left {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.auth-right {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 2rem;
+
+  .info-box {
+    max-width: 600px;
+    margin-bottom: 4rem;
+
+    .accent-line {
+      width: 40px;
+      height: 4px;
+      border-radius: 2px;
+      margin-bottom: 1rem;
+      background-color: var(--whiteColor);
+    }
+
+    h2 {
+      font-size: calc(var(--fontSize) + 18px) ;;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: calc(var(--fontSize) + 2px) ;;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin:0;
+    }
+  }
+}
+
+/* footer */
+.auth-footer {
+  position: absolute;
+  bottom: 1rem;
+  left: 2rem;
+  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+  font-weight: 500;
+  color: var(--solarTextThird);
+}
+
+/* ===========================
+   Shared "card" and form styles
+   - This covers .login-card, .register-card, .update-card so you don't need duplicates
+   - Child pages keep the same HTML structure but remove repeated scss
+   =========================== */
+
+.login-card,
+.register-card,
+.update-card,
+.forgot-card,
+.otp-card,
+.auth-card {
+  padding: 24px 36px;
+  border-radius: var(--borderRadius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 449px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+/* typography used inside the cards */
+.welcome-text {
+  font-size: mat.font-size(
+      mat.get-typography-config($solar-typography, 'headline-1'),
+      'headline-1'
+  );
+  font-weight: 800;
+  color: var(--solarTextPrimary);
+  text-align: start;
+  margin: 0;
+  line-height: 1.2;
+}
+.instruction-text {
+  color: var(--solarTextSecondary);
+  text-align: start;
+  margin: 0 !important;
+}
+
+/* form basics used everywhere */
+.login-card form,
+.register-card form,
+.otp-card form,
+.update-card form,
+.forgot-card form,
+.auth-card form {
+  color: var(--solarTextPrimary);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  mat-label{
+    margin-bottom: 6px;
+
+  }
+}
+
+.form-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+/* two-column layout helper (register page) */
+.form-field-row {
+  display: flex;
+  gap: 12px;
+}
+.form-field-col {
+  flex: 1;
+}
+
+/* common buttons and helpers */
+.mat-mdc-raised-button{
+  width: 100%;
+  height: 42px;
+  font-weight: 600 !important;
+  font-size: calc(var(--fontSize) + 2px) !important;
+  margin-bottom: 24px;
+}
+.register-text {
+  width: 100%;
+  text-align: center;
+  color: var(--solarTextSecondary);
+  font-size: calc(var(--fontSize) + 2px) !important;
+  margin: 0;
+}
+
+.register-link {
+  color: var(--primary500);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* small reusable messages */
+.error-text {
+  color: var(--actionRed);
+  padding: 6px 0;
+}
+.success-text {
+  color: var(--actionGreen);
+  padding: 6px 0;
+}
+
+@include ht-portrait {
+  .auth-container{
+    flex-direction: column;
+    background: var(--primary-linear-gradient);
+    color: var(--primary-gradient-text-color);
+  }
+  .auth-right{
+    background: transparent;
+    color: inherit;
+  }
+  .auth-right .info-box {
+    h2{
+      font-size: calc(var(--fontSize) + 10px) ;
+    }
+  }
+
+  .auth-left {
+    flex: unset;
+    padding: 1rem;
+  }
+  .welcome-text {
+    font-size: mat.font-size(
+        mat.get-typography-config($solar-typography, 'headline-3'),
+        'headline-3'
+    );
+  }
+  .instruction-text,
+  .register-text
+  {
+    font-size: var(--fontSize) !important;
+  }
+  .auth-footer {
+    text-align: center;
+    font-size: #{map-get(map-get($solar-typography, "caption"), "font-size")} ;
+    left: 0;
+    width: 100%;
+    color: var(--whiteColor);
+  }
+}

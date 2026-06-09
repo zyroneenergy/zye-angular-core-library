@@ -10,3 +10,4 @@ export * from './lib/config/core-config.token';
 export * from './lib/config/provide-core';
 export * from './lib/shared-map/map.component';
 export * from './lib/shared-map/map-popup/map-popup.component';
+export * from './lib/auth';

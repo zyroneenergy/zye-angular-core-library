@@ -1,0 +1,156 @@
+<lib-auth-layout>
+  <mat-card class="register-card">
+
+    <!-- SHIMMER SKELETON -->
+    <ng-container *ngIf="isLoading(); else formContent">
+      <div class="register-shimmer-wrapper">
+        <!-- <app-shimmer preset="auth-register" [count]="1"></app-shimmer> -->
+      </div>
+    </ng-container>
+
+    <!-- ACTUAL FORM -->
+    <ng-template #formContent>
+      <!-- Header -->
+      <div class="logo">
+        <img
+          src="assets/images/company-logo-primary.png"
+          alt="Zyrone Energy Logo"
+          width="36"
+          height="36"
+        />
+      </div>
+      <div class="welcome-text">Welcome to<br>Zyrone Energy</div>
+      <p class="instruction-text mat-body-1">
+        Create Your Account to access Your Dashboard
+      </p>
+
+      <!-- Error banner -->
+      <div class="login-error-banner" *ngIf="isError()" role="alert">
+        <mat-icon class="login-error-banner__icon">error_outline</mat-icon>
+        <span class="login-error-banner__text">{{ errorMsg() }}</span>
+      </div>
+
+      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+
+        <div class="signup-form-fields">
+
+          <!-- Company Name -->
+          <div class="form-field">
+            <mat-label>Company Name</mat-label>
+            <mat-form-field floatLabel="always" >
+              <input
+                matInput
+                type="text"
+                placeholder="My Company"
+                formControlName="companyName"
+                (blur)="checkCompanyNameAvailability($event)"
+              />
+            </mat-form-field>
+          </div>
+
+          <!-- Email -->
+          <div class="form-field">
+            <mat-label>Email</mat-label>
+            <mat-form-field floatLabel="always" >
+              <input matInput placeholder="someone@example.com" formControlName="email" />
+            </mat-form-field>
+          </div>
+
+          <!-- Password -->
+          <div class="form-field">
+            <mat-label>Password</mat-label>
+            <mat-form-field floatLabel="always" >
+              <input
+                matInput
+                [type]="hidePassword ? 'password' : 'text'"
+                placeholder="Enter your password"
+                formControlName="password"
+              />
+              <mat-icon
+                matSuffix
+                class="isax {{ hidePassword ? 'isax-eye' : 'isax-eye-slash' }}"
+                (click)="togglePasswordVisibility()"
+                style="cursor: pointer;"
+                [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'"
+              >
+              </mat-icon>
+            </mat-form-field>
+          </div>
+
+          <!-- First & Last Name -->
+          <div class="form-field form-field-row">
+            <div class="form-field-col">
+              <mat-label>First Name</mat-label>
+              <mat-form-field floatLabel="always" >
+                <input matInput placeholder="John" formControlName="firstName" />
+              </mat-form-field>
+            </div>
+            <div class="form-field-col">
+              <mat-label>Last Name</mat-label>
+              <mat-form-field floatLabel="always" >
+                <input matInput placeholder="Doe" formControlName="lastName" />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- State & City -->
+          <div class="form-field form-field-row">
+            <div class="form-field-col">
+              <mat-label>State</mat-label>
+              <mat-form-field floatLabel="always" >
+                <input
+                  matInput
+                  placeholder="Type or select state"
+                  [formControl]="stateControl"
+                  [matAutocomplete]="stateAuto"
+                />
+                <mat-autocomplete #stateAuto="matAutocomplete">
+                  <mat-option *ngFor="let state of (filteredStates$ | async)" [value]="state">
+                    {{ state }}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+            <div class="form-field-col">
+              <mat-label>City</mat-label>
+              <mat-form-field floatLabel="always" >
+                <input
+                  matInput
+                  placeholder="Type or select city"
+                  [formControl]="cityControl"
+                  [matAutocomplete]="cityAuto"
+                />
+                <mat-autocomplete #cityAuto="matAutocomplete">
+                  <mat-option *ngFor="let city of (filteredCities$ | async)" [value]="city">
+                    {{ city }}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          class="register-submit-btn"
+          [disabled]="isLoading() || registrationForm.invalid"
+        >
+          <span [class.register-submit-btn__label--hidden]="isLoading()">Sign Up</span>
+          <mat-spinner *ngIf="isLoading()" diameter="20" color="accent"></mat-spinner>
+        </button>
+
+      </form>
+
+      <!-- Login link -->
+      <p class="register-text">
+        Already have an Account?
+        <a class="register-link" [routerLink]="['../']">Sign In</a>
+      </p>
+    </ng-template>
+
+  </mat-card>
+</lib-auth-layout>

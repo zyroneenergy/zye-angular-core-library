@@ -1,0 +1,36 @@
+@use '../../../../styles/abstracts/index' as *;
+.otp-inputs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+  @include ht-portrait{
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+}
+
+.otp-inputs input {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  background-color: inherit;
+  color: var(--solarTextPrimary);
+  font-weight: 600;
+  font-size: 20px;
+  border: 1px solid var(--divider-border-color);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s;
+  @include ht-portrait{
+    width: 38px;
+    height: 40px;
+    font-size: 16px;
+  }
+}
+
+.otp-inputs input:focus {
+  border-color: var(--primary500);
+  box-shadow: 0 0 3px var(--primary500);
+}
+
