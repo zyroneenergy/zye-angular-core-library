@@ -5,3 +5,8 @@ export * from './lib/models';
 export * from './lib/services';
 export * from './lib/charts';
 export * from './styles/custom_style_variables';
+export * from './lib/config/core-config';
+export * from './lib/config/core-config.token';
+export * from './lib/config/provide-core';
+export * from './lib/shared-map/map.component';
+export * from './lib/shared-map/map-popup/map-popup.component';

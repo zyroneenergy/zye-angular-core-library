@@ -1,0 +1,135 @@
+<div class="map-popup">
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       HEADER — always visible
+  ══════════════════════════════════════════════════════════════════════ -->
+  <div class="popup-header">
+    <div class="header-icon">
+      <mat-icon class="site-icon">factory</mat-icon>
+    </div>
+
+    <div class="site-info">
+      <div class="title-row">
+        <ng-container *ngIf="popupState === 'loading'; else nameBlock">
+          <lib-shimmer [items]="[{ shape: 'title', width: '140px', delay: 0 }]"></lib-shimmer>
+        </ng-container>
+        <ng-template #nameBlock>
+          <h3 class="site-name">{{ siteName }}</h3>
+          <mat-icon *ngIf="bookmarked" class="bookmark-icon" matTooltip="Bookmarked">star</mat-icon>
+        </ng-template>
+      </div>
+
+      <ng-container *ngIf="popupState === 'loading'; else locationBlock">
+        <lib-shimmer [items]="[{ shape: 'line', width: '160px', delay: 40 }]"></lib-shimmer>
+      </ng-container>
+      <ng-template #locationBlock>
+        <p class="meta-row">{{ location }}</p>
+      </ng-template>
+    </div>
+
+    <button class="close-btn" (click)="onClose()" matTooltip="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       BODY — switches on popupState
+  ══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- ── LOADING ───────────────────────────────────────────────────────── -->
+  <ng-container *ngIf="popupState === 'loading'">
+    <div class="metrics-skeleton">
+      <div class="skeleton-card" *ngFor="let _ of [0, 1, 2, 3]">
+        <lib-shimmer
+          [items]="[
+            { shape: 'circle',   width: '32px', height: '32px', delay: 0  },
+            { shape: 'subtitle', width: '52px', delay: 20 },
+            { shape: 'title',    width: '44px', delay: 40 }
+          ]">
+        </lib-shimmer>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ── ERROR ─────────────────────────────────────────────────────────── -->
+  <ng-container *ngIf="popupState === 'error'">
+    <div class="state-wrap">
+      <div class="retry-wrap">
+        <button mat-stroked-button class="retry-btn" (click)="onRetry()">
+          <mat-icon>refresh</mat-icon> Retry
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ── EMPTY ─────────────────────────────────────────────────────────── -->
+  <ng-container *ngIf="popupState === 'empty'">
+    <div class="state-wrap">
+      <p class="empty-msg">No metrics recorded yet for this site.</p>
+    </div>
+  </ng-container>
+
+  <!-- ── DATA ──────────────────────────────────────────────────────────── -->
+  <ng-container *ngIf="popupState === 'data'">
+    <div class="metrics-grid">
+
+      <!-- CUF -->
+      <div class="metric-card">
+        <div class="metric-icon"
+             [style.background]="getCufIconBg()">
+          <mat-icon [style.color]="getCufIconColor()">bolt</mat-icon>
+        </div>
+        <div class="metric-content">
+          <span class="metric-label">CUF</span>
+          <div class="metric-value-row">
+            <span class="metric-value">{{ cuf !== null ? (cuf | number:'1.1-2') + '%' : 'N/A' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today Energy -->
+      <div class="metric-card">
+        <div class="metric-icon metric-icon--energy">
+          <mat-icon>electrical_services</mat-icon>
+        </div>
+        <div class="metric-content">
+          <span class="metric-label">Today Energy</span>
+          <span class="metric-value">{{ formatEnergy(acEnergy) }}</span>
+        </div>
+      </div>
+
+      <!-- Power -->
+      <div class="metric-card">
+        <div class="metric-icon metric-icon--power">
+          <mat-icon>speed</mat-icon>
+        </div>
+        <div class="metric-content">
+          <span class="metric-label">Power</span>
+          <span class="metric-value">{{ formatPower(acPower) }}</span>
+        </div>
+      </div>
+
+      <!-- Online Inverters -->
+      <div class="metric-card">
+        <div class="metric-icon"
+             [style.background]="inverterIconBg">
+          <mat-icon [style.color]="inverterIconColor">developer_board</mat-icon>
+        </div>
+        <div class="metric-content">
+          <span class="metric-label">Online Inv</span>
+          <span class="metric-value">{{ inverterDisplay }}</span>
+        </div>
+      </div>
+
+    </div>
+  </ng-container>
+
+  <!-- ── Actions — always visible ──────────────────────────────────────── -->
+  <div class="popup-actions">
+    <button mat-stroked-button class="btn-close" (click)="onClose()">Close</button>
+    <button mat-raised-button color="primary" class="btn-open" (click)="onOpenSite()">
+      Open Site
+    </button>
+  </div>
+
+</div>
