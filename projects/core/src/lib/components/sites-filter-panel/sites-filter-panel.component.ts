@@ -32,90 +32,17 @@ import {
   ENERGY_UNITS,
   POWER_UNITS,
   UnitOption,
+  FilterFieldDef,
+  SITES_FILTER_FIELDS,
+  NumericFieldDef,
+  DateFieldDef,
 } from '../../models/components/site-filter.model';
 
 import { LocationService, State } from '../../services/location.service';
 import { ChartCalendarComponent } from '../../charts/components/chart-calendar/chart-calendar.component';
 import { DailyRange } from '../../charts/models/chart.model';
 
-// ── Field descriptors ─────────────────────────────────────────────────────────
-// Exported so parent components can compose their own field sets.
 
-export interface NumericFieldDef {
-  kind: 'numeric';
-  key: keyof Pick<SiteFilterState, 'cuf' | 'pr' | 'acE' | 'acETotal' | 'acP'>;
-  label: string;
-  defaultUnit: string;
-  units: UnitOption[];
-  placeholder: string;
-  placeholderTo?: string;
-  min: number;
-  max: number;
-  step: number;
-  operators: { value: NumericOperator; label: string }[];
-}
-
-export interface DateFieldDef {
-  kind: 'date';
-  key: 'commissionedDate';
-  label: string;
-  operators: { value: DateOperator; label: string }[];
-}
-
-export type FilterFieldDef = NumericFieldDef | DateFieldDef;
-
-// ── Operator sets (exported for reuse in parent field configs) ────────────────
-
-export const NUMERIC_OPERATORS: { value: NumericOperator; label: string }[] = [
-  { value: 'equal_to',     label: 'Equal to (=)'   },
-  { value: 'greater_than', label: 'Greater than (>)' },
-  { value: 'less_than',    label: 'Less than (<)'   },
-  { value: 'between',      label: 'Between'          },
-];
-
-export const DATE_OPERATORS: { value: DateOperator; label: string }[] = [
-  { value: 'on',      label: 'On date'      },
-  { value: 'after',   label: 'After date'   },
-  { value: 'before',  label: 'Before date'  },
-  { value: 'between', label: 'Between dates' },
-];
-
-// ── Default field set (kept as a named export so existing callers don't break) ─
-
-const PCT_UNITS: UnitOption[] = [{ value: '%', label: '%', toK: 1 }];
-
-export const SITES_FILTER_FIELDS: FilterFieldDef[] = [
-  {
-    kind: 'numeric', key: 'cuf', label: 'CUF',
-    defaultUnit: '%', units: PCT_UNITS,
-    placeholder: 'Value', min: 0, max: 100, step: 0.1,
-    operators: NUMERIC_OPERATORS,
-  },
-  {
-    kind: 'numeric', key: 'pr', label: 'PR',
-    defaultUnit: '%', units: PCT_UNITS,
-    placeholder: 'Value', min: 0, max: 100, step: 0.1,
-    operators: NUMERIC_OPERATORS,
-  },
-  {
-    kind: 'numeric', key: 'acE', label: 'Today Energy',
-    defaultUnit: 'kWh', units: ENERGY_UNITS,
-    placeholder: 'From', placeholderTo: 'To',
-    min: 0, max: 1_000_000_000, step: 1,
-    operators: NUMERIC_OPERATORS,
-  },
-  {
-    kind: 'numeric', key: 'acP', label: 'Today Power',
-    defaultUnit: 'kW', units: POWER_UNITS,
-    placeholder: 'Value',
-    min: 0, max: 1_000_000_000, step: 1,
-    operators: NUMERIC_OPERATORS,
-  },
-  {
-    kind: 'date', key: 'commissionedDate', label: 'Commissioned Date',
-    operators: DATE_OPERATORS,
-  },
-];
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Component
@@ -202,15 +129,31 @@ export class SitesFilterPanelComponent implements OnChanges, OnDestroy {
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
-  ngOnChanges(c: SimpleChanges): void {
-    if (c['filters']) {
-      this.draft = structuredClone(this.filters);
-      // Auto-expand sections that already have an active filter
-      for (const field of this.fieldDefs) {
-        if ((this.draft as any)[field.key] !== null) {
-          this.expanded[field.key] = true;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['filters']) {
+      this.draft = structuredClone(this.filters || DEFAULT_FILTER_STATE);
+
+      // Initialize missing fields from fieldDefs (critical for new fields)
+      this.fieldDefs.forEach(field => {
+        if ((this.draft as any)[field.key] === undefined) {
+          (this.draft as any)[field.key] = null;
         }
-      }
+      });
+
+      // Auto-expand ONLY fields that actually have active values
+      this.expanded = {};
+      this.fieldDefs.forEach(field => {
+        const value = (this.draft as any)[field.key];
+        if (value) {
+          if (field.kind === 'numeric' && (value as NumericFilter).value !== null) {
+            this.expanded[field.key] = true;
+          }
+          if (field.kind === 'date' && (value as DateFilter).value) {
+            this.expanded[field.key] = true;
+          }
+        }
+      });
+
       if (this.draft.location?.state) {
         this._loadCities(this.draft.location.state);
       }
@@ -233,9 +176,18 @@ export class SitesFilterPanelComponent implements OnChanges, OnDestroy {
   // ── Section helpers ────────────────────────────────────────────────────────
 
   toggle(key: string):           void    { this.expanded[key] = !this.expanded[key]; }
-  isExpanded(key: string):       boolean { return !!this.expanded[key]; }
-  isFieldActive(key: string):    boolean { return (this.draft as any)[key] !== null; }
-  isLocationActive():            boolean { return this.draft.location !== null; }
+  isExpanded(key: string): boolean { return !!this.expanded[key]; }
+  isFieldActive(key: string): boolean {
+    const val = (this.draft as any)[key];
+    if (!val) return false;
+    if (typeof val === 'object') {
+      if ('value' in val) return val.value !== null && val.value !== undefined;
+      if ('operator' in val) return true; // fallback
+    }
+    return false;
+  }
+
+  isLocationActive(): boolean { return this.draft.location !== null; }
 
   // ── Type guards ────────────────────────────────────────────────────────────
 
@@ -355,15 +307,24 @@ export class SitesFilterPanelComponent implements OnChanges, OnDestroy {
   }
 
   reset(): void {
-    this.draft        = structuredClone(DEFAULT_FILTER_STATE);
-    this.expanded     = {};
-    this.panelSearch  = '';
-    this.cities       = [];
+    this.draft = structuredClone(DEFAULT_FILTER_STATE);
+
+    // Re-initialize all fields from current fieldDefs
+    this.fieldDefs.forEach(field => {
+      (this.draft as any)[field.key] = null;
+    });
+
+    this.expanded = {};
+    this.panelSearch = '';
+    this.cities = [];
+
     this.filtersChange.emit(structuredClone(this.draft));
     this.closePanel.emit();
   }
 
-  get draftFilterCount(): number { return activeFilterCount(this.draft); }
+  get draftFilterCount(): number {
+    return activeFilterCount(this.draft, this.fieldDefs);
+  }
 
   // ── Calendar helpers ───────────────────────────────────────────────────────
 

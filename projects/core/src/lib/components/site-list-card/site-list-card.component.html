@@ -49,6 +49,14 @@
     </lib-empty-data>
 
     <lib-empty-data
+      *ngIf="status === 'no-generation'"
+      class="slc-state-center"
+      icon="isax-slash"
+          name="No Generation Reported !"
+          description="Power generation has not started or data is unavailable for the day">
+    </lib-empty-data>
+
+    <lib-empty-data
       *ngIf="status === 'error'"
       class="slc-state-center"
       [icon]="'isax-danger'"

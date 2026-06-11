@@ -82,7 +82,7 @@ export type CardVariant =
   | 'performance'        // chips-only, no badge, no bar
   | 'recent-commissioned'; // ring badge on the right
 
-export type CardStatus = 'loading' | 'success' | 'empty' | 'error';
+export type CardStatus = 'loading' | 'success' | 'empty' | 'error' | 'no-generation';
 
 // ─── Ring geometry ─────────────────────────────────────────────────────────
 
@@ -135,6 +135,7 @@ export class SiteListCardComponent implements OnChanges {
   /** Emits the key of the newly-active sort option after each click. */
   @Output() sortChange = new EventEmitter<string>();
 
+  @Input() navigationFactory?: (site: SiteListItem) => any[];
   // ── Internal ──────────────────────────────────────────────────────────────
 
   _activeSortIndex = 0;
@@ -160,10 +161,18 @@ export class SiteListCardComponent implements OnChanges {
   }
 
   navigate(id: string): void {
-    const item = this.items.find(i => i.id === id);
-    if (item) this.siteClick.emit(item);
-    this.router.navigate(['/sites', id]);
-  }
+  const item = this.items.find(i => i.id === id);
+
+  if (!item) return;
+
+  this.siteClick.emit(item);
+
+  const route = this.navigationFactory
+    ? this.navigationFactory(item)
+    : ['/sites', item.id];
+
+  this.router.navigate(route);
+}
 
   getBadgeStyle(badge: SiteListBadge) {
   return createColoredSurfaceStyle(badge.color,{

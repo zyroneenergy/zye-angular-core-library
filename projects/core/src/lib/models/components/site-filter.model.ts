@@ -1,4 +1,3 @@
-// ── Operator sets ─────────────────────────────────────────────────────────────
 
 export type NumericOperator = 'equal_to' | 'greater_than' | 'less_than' | 'between';
 export type DateOperator    = 'on' | 'after' | 'before' | 'between';
@@ -52,40 +51,49 @@ export interface LocationFilter {
 
 export interface SiteFilterState {
   search: string;
-
-  location:        LocationFilter | null;
-  cuf:             NumericFilter  | null;
-  pr:              NumericFilter  | null;
-  acE:             NumericFilter  | null;
-  acETotal:        NumericFilter  | null;
-  acP:             NumericFilter  | null;
-  commissionedDate: DateFilter    | null;
+  location: LocationFilter | null;
+  [key: string]: NumericFilter | DateFilter | LocationFilter | null | string | any; // Fully dynamic
 }
 
 // ── Defaults ──────────────────────────────────────────────────────────────────
 
 export const DEFAULT_FILTER_STATE: SiteFilterState = {
-  search:           '',
-  location:         null,
-  cuf:              null,
-  pr:               null,
-  acE:              null,
-  acETotal:         null,
-  acP:              null,
-  commissionedDate: null,
+  search: '',
+  location: null,
 };
-
 // ── Utility helpers ───────────────────────────────────────────────────────────
 
-export function hasActiveFilters(f: SiteFilterState): boolean {
-  return !!(f.location || f.cuf || f.pr || f.acE || f.acETotal || f.acP || f.commissionedDate);
+export function hasActiveFilters(f: SiteFilterState, fieldDefs: FilterFieldDef[] = []): boolean {
+  if (f.location) return true;
+  if (f.search?.trim()) return true;
+
+  return fieldDefs.some(def => {
+    const val = (f as any)[def.key];
+    if (!val) return false;
+    if (def.kind === 'numeric') {
+      return (val as NumericFilter).value !== null;
+    }
+    if (def.kind === 'date') {
+      return !!(val as DateFilter).value;
+    }
+    return false;
+  });
 }
 
-export function activeFilterCount(f: SiteFilterState): number {
-  return [f.location, f.cuf, f.pr, f.acE, f.acETotal, f.acP, f.commissionedDate]
-    .filter(Boolean).length;
-}
+export function activeFilterCount(f: SiteFilterState, fieldDefs: FilterFieldDef[] = []): number {
+  let count = 0;
+  if (f.location) count++;
+  if (f.search?.trim()) count++;
 
+  fieldDefs.forEach(def => {
+    const val = (f as any)[def.key];
+    if (!val) return;
+    if (def.kind === 'numeric' && (val as NumericFilter).value !== null) count++;
+    if (def.kind === 'date' && !!(val as DateFilter).value) count++;
+  });
+
+  return count;
+}
 /**
  * Converts a NumericFilter → API range object.
  *
@@ -184,3 +192,79 @@ function formatLocalISOString(date: Date): string {
     'Z'
   );
 }
+
+export interface NumericFieldDef {
+  kind: 'numeric';
+  key: string;
+  label: string;
+  defaultUnit: string;
+  units: UnitOption[];
+  placeholder: string;
+  placeholderTo?: string;
+  min: number;
+  max: number;
+  step: number;
+  operators: { value: NumericOperator; label: string }[];
+}
+
+export interface DateFieldDef {
+  kind: 'date';
+  key: string;
+  label: string;
+  operators: { value: DateOperator; label: string }[];
+}
+
+export type FilterFieldDef = NumericFieldDef | DateFieldDef;
+
+// ── Operator sets (exported for reuse in parent field configs) ────────────────
+
+export const NUMERIC_OPERATORS: { value: NumericOperator; label: string }[] = [
+  { value: 'equal_to',     label: 'Equal to (=)'   },
+  { value: 'greater_than', label: 'Greater than (>)' },
+  { value: 'less_than',    label: 'Less than (<)'   },
+  { value: 'between',      label: 'Between'          },
+];
+
+export const DATE_OPERATORS: { value: DateOperator; label: string }[] = [
+  { value: 'on',      label: 'On date'      },
+  { value: 'after',   label: 'After date'   },
+  { value: 'before',  label: 'Before date'  },
+  { value: 'between', label: 'Between dates' },
+];
+
+// ── Default field set (kept as a named export so existing callers don't break) ─
+
+const PCT_UNITS: UnitOption[] = [{ value: '%', label: '%', toK: 1 }];
+
+export const SITES_FILTER_FIELDS: FilterFieldDef[] = [
+  {
+    kind: 'numeric', key: 'cuf', label: 'CUF',
+    defaultUnit: '%', units: PCT_UNITS,
+    placeholder: 'Value', min: 0, max: 100, step: 0.1,
+    operators: NUMERIC_OPERATORS,
+  },
+  {
+    kind: 'numeric', key: 'pr', label: 'PR',
+    defaultUnit: '%', units: PCT_UNITS,
+    placeholder: 'Value', min: 0, max: 100, step: 0.1,
+    operators: NUMERIC_OPERATORS,
+  },
+  {
+    kind: 'numeric', key: 'acE', label: 'Today Energy',
+    defaultUnit: 'kWh', units: ENERGY_UNITS,
+    placeholder: 'From', placeholderTo: 'To',
+    min: 0, max: 1_000_000_000, step: 1,
+    operators: NUMERIC_OPERATORS,
+  },
+  {
+    kind: 'numeric', key: 'acP', label: 'Today Power',
+    defaultUnit: 'kW', units: POWER_UNITS,
+    placeholder: 'Value',
+    min: 0, max: 1_000_000_000, step: 1,
+    operators: NUMERIC_OPERATORS,
+  },
+  {
+    kind: 'date', key: 'commissionedDate', label: 'Commissioned Date',
+    operators: DATE_OPERATORS,
+  },
+];
