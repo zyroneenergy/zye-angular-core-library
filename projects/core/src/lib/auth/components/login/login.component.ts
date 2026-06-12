@@ -15,6 +15,8 @@ import { UserService } from '../../services/user.service';
 import { mapAuthError } from '../../utils/auth-error.mapper';
 import { ShimmerComponent } from '../../../components/shimmer/shimmer.component';
 import { SnackbarService } from '../../../services/components/snackbar.service';
+import { CoreConfig } from '../../../config/core-config';
+import { CORE_CONFIG } from '../../../config/core-config.token';
 
 @Component({
   selector: 'lib-login',
@@ -47,9 +49,6 @@ export class LoginComponent {
   isError = computed(() => this.uiState().status === 'error');
   errorMsg = computed(() => this.uiState().errorMessage ?? '');
 
-  /** Company name resolved from env for auth-layout input */
-  companyName: string;
-
   /** Welcome title for the login card */
   loginTitle: string;
   loginSubTitle?: string;
@@ -60,11 +59,11 @@ export class LoginComponent {
     private authService: AuthService,
     private snackbar: SnackbarService,
     private userService: UserService,
+    @Inject(CORE_CONFIG)
+    protected config: CoreConfig
   ) {
-    this.companyName =  'Aegis';
-    this.loginTitle = `${this.companyName}`;
-    this.loginSubTitle = `Portfolio Intelligence for Renewable Finance`;
-
+    this.loginTitle = this.config.auth.loginTitle ?? `Aegis`;
+    this.loginSubTitle = this.config.auth.loginSubtitle ?? `Portfolio Intelligence for Renewable Finance`;
     this.initializeForm();
   }
 

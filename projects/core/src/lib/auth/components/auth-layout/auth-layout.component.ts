@@ -1,4 +1,6 @@
 import { Component, Inject, Input, Optional, ViewEncapsulation } from '@angular/core';
+import { CORE_CONFIG } from '../../../config/core-config.token';
+import { CoreConfig } from '../../../config/core-config';
 
 @Component({
   selector: 'lib-auth-layout',
@@ -11,27 +13,22 @@ import { Component, Inject, Input, Optional, ViewEncapsulation } from '@angular/
 export class AuthLayoutComponent {
   currentYear = new Date().getFullYear();
 
-  /**
-   * Company/app name shown in the right panel heading and footer.
-   * Falls back to the appName from the injected environment.
-   */
-  @Input() companyName?: string;
-
-  /**
-   * Tagline / description shown in the right panel.
-   * Falls back to the appDescription from the injected environment.
-   */
-  @Input() description?: string;
-
-  get displayCompanyName(): string {
-    return 'Aegis by Zyrone Energy';
+  constructor(
+    @Inject(CORE_CONFIG)
+    protected config: CoreConfig
+  ) {
   }
 
-  get displayDescription(): string {
-    return (
-      this.description ??
-      "A centralized remote monitoring and analytics platform that enables banks and financial institutions to oversee financed renewable energy assets in real time. Monitor performance, track portfolio health, identify risks early, and make informed lending decisions with confidence."
-    );
+  get layoutTitle(): string {
+    return this.config.auth.layoutTitle ?? 'Protecting Renewable Energy Investments Through Intelligent Monitoring';
+  }
+
+  get layoutSubtitle(): string {
+    return this.config.auth.layoutSubtitle ?? 'A centralized remote monitoring and analytics platform that enables banks and financial institutions to oversee financed renewable energy assets in real time. Monitor performance, track portfolio health, identify risks early, and make informed lending decisions with confidence.';
+  }
+
+  get footerText(): string {
+    return this.config.auth.footerText ?? 'Aegis by Zyrone Energy';
   }
 
 }

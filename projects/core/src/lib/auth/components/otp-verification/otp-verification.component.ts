@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthLayoutComponent } from '../auth-layout/auth-layout.component';
+import { AuthApiService } from '../../services/auth.api.service';
 
 @Component({
   selector: 'lib-otp-verification',
@@ -23,7 +24,7 @@ export class OtpVerificationComponent {
   isSubmitting = false;
 
   constructor(private fb: FormBuilder, private router: Router, 
-    // private apiService: AuthApiService, 
+    private apiService: AuthApiService, 
     private route: ActivatedRoute, private _snackBar: MatSnackBar) {}
 
   ngOnInit() {
@@ -66,26 +67,26 @@ export class OtpVerificationComponent {
     const emailCode = Object.values(this.otpForm.value).join('');
     this.isSubmitting = true;
 
-    // this.apiService.verifyEmail(this.email, emailCode).subscribe({
-    //   next: (res) => {
-    //     this._snackBar.open('Email verified successfully! Please log in.', 'Close', {
-    //       duration: 3000,
-    //       horizontalPosition: 'right',
-    //       verticalPosition: 'top',
-    //     });
-    //     this.router.navigate(['/auth/login']);
-    //   },
-    //   error: (err) => {
-    //     console.error('OTP verification failed:', err);
-    //     this._snackBar.open('Invalid or expired OTP. Please try again.', 'Close', {
-    //       duration: 3000,
-    //       horizontalPosition: 'right',
-    //       verticalPosition: 'top',
-    //     });
-    //   },
-    //   complete: () => {
-    //     this.isSubmitting = false;
-    //   }
-    // });
+    this.apiService.verifyEmail(this.email, emailCode).subscribe({
+      next: (res) => {
+        this._snackBar.open('Email verified successfully! Please log in.', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+        });
+        this.router.navigate(['/auth/login']);
+      },
+      error: (err) => {
+        console.error('OTP verification failed:', err);
+        this._snackBar.open('Invalid or expired OTP. Please try again.', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'right',
+          verticalPosition: 'top',
+        });
+      },
+      complete: () => {
+        this.isSubmitting = false;
+      }
+    });
   }
 }
