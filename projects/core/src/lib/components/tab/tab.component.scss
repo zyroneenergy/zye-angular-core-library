@@ -34,14 +34,16 @@
   align-items: center;
   gap: 8px;
   flex-shrink: 0;           // never squish controls when tabs are wide
+  flex-direction: row-reverse;
+  align-items: flex-start;
 }
 
 .tab-refresh-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px !important;
+  height: 40px !important;
   padding: 0;
   border: 1px solid var(--solarTextThird);
   border-radius: 8px;

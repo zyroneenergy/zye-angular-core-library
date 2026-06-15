@@ -26,7 +26,8 @@
       </button> -->
 
       <!-- Add/Create Button -->
-      <!-- <button
+       @if (onboardBtn && isMobile) {
+      <button
         mat-mini-fab
         color="primary"
         class="add-button"
@@ -34,7 +35,8 @@
         aria-label="Add new site"
       >
         <mat-icon>add</mat-icon>
-      </button> -->
+      </button>
+    }
     </div>
   </div>
 </mat-toolbar>

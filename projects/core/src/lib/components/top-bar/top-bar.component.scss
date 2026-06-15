@@ -26,6 +26,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.title-actions{
+  display: flex;
+  align-items: center;
+}
 
 .top-bar-subtitle {
   margin: 4px 0 0 0;
@@ -40,4 +44,7 @@
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+}
+.onboardBtn{
+  border-radius: 12px;
 }
