@@ -1,18 +1,25 @@
 <div class="top-bar">
   <div class="top-bar-left">
+  <div class="title-row">
     <h1 class="top-page-title">{{ title }}</h1>
-    <p class="top-bar-subtitle">{{ subtitle }}</p>
+
+    <ng-content class="title-actions" select="[title-actions]"></ng-content>
   </div>
 
+  <p class="top-bar-subtitle">{{ subtitle }}</p>
+</div>
+
   <div class="top-bar-right">
-    <!-- <button 
+    @if (onboardBtn && !isMobile) {
+    <button 
       color="primary" 
+      class="onboardBtn"
       mat-raised-button 
       (click)="navigateToOnboarding()">
       <mat-icon>add</mat-icon>
       <span class="button-label">Create site</span>
-    </button> -->
-
+    </button>
+  }
     <ng-content select="[right]"></ng-content>
   </div>
 </div>

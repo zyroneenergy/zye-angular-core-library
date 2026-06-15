@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { LayoutService } from '../../services';
 
 @Component({
   selector: 'lib-top-bar',
@@ -17,8 +18,12 @@ export class TopBarComponent {
 
   @Input() title: string = 'My Portfolio';
   @Input() subtitle: string = 'A high level overview of your portfolio';
+  @Input() onboardBtn: boolean = false;
 
-  constructor(private router: Router) { }
+  get isMobile(){
+    return this.layout.isMobile();
+  }
+  constructor(private router: Router, private layout: LayoutService) { }
 
   navigateToOnboarding() {
     this.router.navigateByUrl("/sites/onboard");

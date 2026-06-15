@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, Input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -7,6 +7,7 @@ import { filter, map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventNames, EventsService } from '../../services/frontend/events.service';
 import { ThemeService } from '../../services/frontend/theme.service';
+import { LayoutService } from '../../services';
 
 @Component({
   selector: 'lib-top-nav-bar',
@@ -16,11 +17,13 @@ import { ThemeService } from '../../services/frontend/theme.service';
   styleUrl: './top-nav-bar.component.scss',
 })
 export class TopNavBarComponent {
+  @Input() onboardBtn: boolean = false;
   // Inject services using modern inject() function
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly eventsService = inject(EventsService);
   private readonly themeService = inject(ThemeService);
+  private readonly layout = inject(LayoutService);
 
   // Signals for reactive state management
   readonly pageTitle = signal<string>('Dashboard');
@@ -28,6 +31,9 @@ export class TopNavBarComponent {
     this.themeService.getSystemTheme() as 'light' | 'dark'
   );
 
+  get isMobile() {
+    return this.layout.isMobile();
+  }
   // Computed values if needed
   readonly isDarkMode = computed(() => this.currentTheme() === 'dark');
   readonly themeIcon = computed(() => 
