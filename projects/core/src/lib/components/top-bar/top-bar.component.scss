@@ -16,6 +16,11 @@
   min-width: 0;                      
 }
 
+.title-row , .title-actions{
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 .top-page-title {
   margin: 0;
   font-size: #{map-get(map-get($solar-typography, "headline-6"), "font-size")};               
@@ -25,10 +30,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-.title-actions{
-  display: flex;
-  align-items: center;
 }
 
 .top-bar-subtitle {

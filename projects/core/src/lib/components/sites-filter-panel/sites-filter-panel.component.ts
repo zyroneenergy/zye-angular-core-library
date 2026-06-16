@@ -359,4 +359,14 @@ export class SitesFilterPanelComponent implements OnChanges, OnDestroy {
     }
     this.closeCalendar();
   }
+  /**
+ * True as soon as the user has picked an operator for this field —
+ * even before they've entered a value. This gates the input controls.
+ * (isFieldActive is kept for badges/dots/clear buttons.)
+ */
+isOperatorSelected(key: string): boolean {
+  const val = (this.draft as any)[key];
+  if (!val || typeof val !== 'object') return false;
+  return 'operator' in val;           // operator key present = user interacted
+}
 }
