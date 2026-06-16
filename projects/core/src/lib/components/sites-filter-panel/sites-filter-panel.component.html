@@ -161,7 +161,7 @@
             </div>
 
             <!-- ── NUMERIC inputs ─────────────────────────────────────────── -->
-            @if (isNumericField(field) && isFieldActive(field.key)) {
+            @if (isNumericField(field) && isOperatorSelected(field.key)) {
 
               @if (field.units.length > 1) {
                 <div class="fp-unit-toggle">
@@ -211,7 +211,7 @@
             }
 
             <!-- ── DATE CALENDAR ─────────────────────────────────────────── -->
-            @if (isDateField(field) && isFieldActive(field.key)) {
+            @if (isDateField(field) &&  isOperatorSelected(field.key)) {
               <div class="fp-calendar-section">
 
                 <!-- Trigger button -->
