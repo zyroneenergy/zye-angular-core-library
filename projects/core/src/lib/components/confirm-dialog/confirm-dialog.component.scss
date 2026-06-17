@@ -1,6 +1,6 @@
 @use '../../../styles/abstracts/index' as *;
 .confirm-dialog {
-  min-width: 260px;
+  min-width: 300px;
   max-width: min(90vw, 480px);
   padding: 8px 0;
   box-sizing: border-box;
@@ -83,7 +83,7 @@
 }
 
 .confirm-dialog__actions {
-  padding: 12px ;
+  padding: 12px 18px;
   gap: 10px;
 }
 

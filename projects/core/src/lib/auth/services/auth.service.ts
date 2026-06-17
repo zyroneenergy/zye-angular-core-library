@@ -6,6 +6,7 @@ import { AuthApiService } from "./auth.api.service";
 import { LoginCredentials } from "../models/login-credentials";
 import { LoginSuccessResponse } from "../models/login-success-response";
 import { RegistrationDetails } from "../models/registration-details";
+import { SessionService } from "./session.service";
 
 /**
  * Core authentication service that manages user authentication state
@@ -24,14 +25,23 @@ export class AuthService {
   /** Emits the access token (or null) to callers waiting for a refresh. */
   private refreshSubject = new Subject<string | null>();
 
+  private sessionTimer?: ReturnType<typeof setTimeout>;
+
   constructor(
     private readonly api: AuthApiService,
     private readonly tokenService: AuthTokenService,
     private readonly router: Router,
+    private readonly sessionService: SessionService
   ) {
     // Initialize auth state now that tokenService is available
-    const initial = !!this.tokenService.getAccessToken() && !this.tokenService.isAccessTokenExpired();
-    this.authState$ = new BehaviorSubject<boolean>(initial);
+    const initial =
+    !!this.tokenService.getAccessToken() &&
+    !this.tokenService.isAccessTokenExpired();
+
+  this.authState$ =
+    new BehaviorSubject<boolean>(initial);
+
+  this.restoreSessionTimer();
   }
 
   /**
@@ -61,11 +71,26 @@ export class AuthService {
   }
 
   /** Clear tokens and navigate to the provided route*/
-  logout(navigateTo = '/auth/login'): void {
+  logout(
+    navigateTo = '/auth/login',
+    clearReturnUrl = true
+): void {
+
+    if (this.sessionTimer) {
+        clearTimeout(this.sessionTimer);
+        this.sessionTimer = undefined;
+    }
+
     this.tokenService.clear();
+
     this.authState$.next(false);
+
+    if (clearReturnUrl) {
+        sessionStorage.removeItem('returnUrl');
+    }
+
     this.router.navigate([navigateTo]);
-  }
+}
 
 
   /** Synchronous check for a valid (non-expired) access token. */
@@ -89,8 +114,10 @@ export class AuthService {
   /** Persist tokens from login response and set auth state to true. */
   private handleLoginResponse(res: LoginSuccessResponse, rememberMe = true) {
     if (!res) return;
+    // const expiresIn = 2 * 60; // 2 minutes
     const expiresIn = res.expiresIn || 3600; // fallback 1 hour
     this.tokenService.setAccessToken(res.accessToken, expiresIn, rememberMe);
+    this.startSessionTimer(expiresIn);
 
     if (res.refreshToken) this.tokenService.setRefreshToken(res.refreshToken, rememberMe);
 
@@ -122,6 +149,7 @@ export class AuthService {
       tap((res) => {
         // Respect the user's original storage choice (rememberMe) when storing refreshed tokens
         this.tokenService.setAccessToken(res.accessToken, res.expiresIn, rememberMe);
+        this.startSessionTimer(res.expiresIn!);
         if (res.refreshToken) this.tokenService.setRefreshToken(res.refreshToken, rememberMe);
 
         this.refreshSubject.next(res.accessToken);
@@ -139,4 +167,54 @@ export class AuthService {
       switchMap((res) => of(res.accessToken))
     );
   }
+
+  private startSessionTimer(
+  expiresInSeconds: number
+): void {
+
+  if (this.sessionTimer) {
+    clearTimeout(this.sessionTimer);
+  }
+
+  const warningBeforeExpiry =
+    60 * 1000;
+
+  const timeout =
+    (expiresInSeconds * 1000) -
+    warningBeforeExpiry;
+
+  if (timeout <= 0) {
+    return;
+  }
+
+  this.sessionTimer = setTimeout(() => {
+
+    console.warn('Session Expiring');
+
+    this.sessionService.markExpired();
+
+  }, timeout);
+}
+private restoreSessionTimer(): void {
+
+  const expiresAt =
+    this.tokenService.getTokenExpiryTime();
+
+  if (!expiresAt) {
+    return;
+  }
+
+  const timeout =
+    expiresAt - Date.now() - 60000;
+
+  if (timeout <= 0) {
+    return;
+  }
+
+  this.sessionTimer = setTimeout(() => {
+
+    this.sessionService.markExpired();
+
+  }, timeout);
+}
 }

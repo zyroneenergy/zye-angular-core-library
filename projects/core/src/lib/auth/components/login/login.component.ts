@@ -95,7 +95,28 @@ export class LoginComponent {
         this.userService.setToken(res.accessToken);
         this.uiState.set({ status: 'success' });
         this.snackbar.success('Welcome back!');
-        this.router.navigate(['/dashboard']);
+       const returnUrl =
+  sessionStorage.getItem(
+    'returnUrl'
+  );
+
+if (returnUrl) {
+
+  sessionStorage.removeItem(
+    'returnUrl'
+  );
+
+  this.router.navigateByUrl(
+    returnUrl
+  );
+
+} else {
+
+  this.router.navigate([
+    '/dashboard'
+  ]);
+
+}
       },
       error: (err: any) => {
         const message = mapAuthError(err);
