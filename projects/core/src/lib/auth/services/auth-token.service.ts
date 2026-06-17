@@ -108,4 +108,13 @@ export class AuthTokenService {
   private getOtherStorage(storage: Storage): Storage {
     return storage === localStorage ? sessionStorage : localStorage;
   }
+
+  getTokenExpiryTime(): number {
+  const value =
+    localStorage.getItem(this.EXPIRES_AT_KEY)
+    ??
+    sessionStorage.getItem(this.EXPIRES_AT_KEY);
+
+  return Number(value ?? 0);
+}
 }

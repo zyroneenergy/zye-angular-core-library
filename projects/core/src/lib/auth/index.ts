@@ -15,3 +15,4 @@ export * from './services/user.service';
 export * from './services/auth-token.service';
 export * from './services/time-zone.service';
 export * from './interceptors/auth.interceptor';
+export * from './services/session.service';
