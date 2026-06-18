@@ -24,7 +24,7 @@
         <button
           mat-stroked-button
           *ngIf="config.cancelText"
-          class="confirm-dialog__cancel-btn"
+          class="confirm-dialog__cancel-btn btn"
           [mat-dialog-close]="false"
           [disabled]="isLoading">
           {{ config.cancelText }}
@@ -32,7 +32,7 @@
 
         <button
           mat-raised-button
-          class="confirm-dialog__confirm-btn"
+          class="confirm-dialog__confirm-btn btn"
           [class]="'confirm-btn--' + config.type"
           (click)="onConfirm()"
           [disabled]="isLoading">

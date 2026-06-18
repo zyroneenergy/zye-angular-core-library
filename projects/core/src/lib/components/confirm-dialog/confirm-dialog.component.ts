@@ -156,7 +156,8 @@ export class ConfirmDialogService {
     const ref = this.dialog.open(ConfirmDialogComponent, {
       data: config,
       disableClose: true,
-      panelClass: 'confirm-dialog-panel'
+      panelClass: 'confirm-dialog-panel',
+      backdropClass: 'confirm-dialog-backdrop'
     });
     const result = await lastValueFrom(ref.afterClosed());
     return result === true;
