@@ -1,71 +1,70 @@
 @use '../../../styles/abstracts/index' as *;
 
-/* ==================== BACKDROP OVERRIDE ==================== */
 ::ng-deep .confirm-dialog-backdrop {
   background: rgba(0, 0, 0, 0.72) !important;
 }
 
-/* Extra specificity in case of conflicts */
 ::ng-deep .cdk-overlay-backdrop.confirm-dialog-backdrop {
   background: rgba(0, 0, 0, 0.72) !important;
 }
+
+/*
+ * MDC's dialog surface owns the actual clipped border-radius via
+ * --mdc-dialog-container-shape, NOT the host element's own border-radius.
+ * Setting radius on .confirm-dialog alone clips nothing — the surface
+ * underneath stays square. Both must be set together.
+ */
+::ng-deep .confirm-dialog-panel .mat-mdc-dialog-container {
+  --mdc-dialog-container-shape: 16px;
+}
+
+::ng-deep .confirm-dialog-panel .mat-mdc-dialog-surface {
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
 .confirm-dialog {
   min-width: 50vw;
-  max-width: min(90vw, 480px);
-  padding: 24px;
+  max-width: min(90vw, 520px);
+  padding: 40px 32px 32px;
+  text-align: center;
   box-sizing: border-box;
-  overflow-x: hidden;
-  @include ht-portrait{
-    padding: 16px;
+  border-radius: 16px;
+
+  @include ht-portrait {
+    padding: 32px 24px 24px;
+    min-width: auto;
   }
 }
 
-:host mat-mdc-dialog-container {
-  max-width: min(90vw, 480px) !important;
-  padding: 0 !important;
-  overflow-x: hidden !important;
-}
-
-.confirm-dialog__header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-}
-
-.confirm-dialog__icon-wrap {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+/* ==================== ICON ==================== */
+.confirm-dialog__icon-container {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  border-radius: 12px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
 }
 
-.confirm-dialog__icon {
-  font-size: 22px;
-  width: 22px;
-  height: 22px;
-}
-
+/* ==================== TYPOGRAPHY ==================== */
 .confirm-dialog__title {
-  margin: 0 !important;
-  font-size: #{map-get(map-get($solar-typography, "headline-6"), "font-size")};;
+  margin: 0 0 16px !important;
+  font-size: 22px;
   font-weight: 600;
-  padding: 0 !important;
-  display: flex;
-  align-items: center;
   color: var(--solarTextPrimary);
-}
-
-.confirm-dialog__body {
-  padding: 12px 18px !important;
+  line-height: 1.3;
 }
 
 .confirm-dialog__message {
   margin: 0 0 8px;
-  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+  font-size: #{map-get(map-get($solar-typography, "body-1"), "font-size")};
   line-height: 1.5;
   color: var(--solarTextPrimary);
 }
@@ -73,99 +72,92 @@
 .confirm-dialog__detail {
   margin: 0;
   font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
-  color: var(--solarTextSecondary);
-  line-height: 1.4;
+  color: var(--solarTextThird);
+  line-height: 1.45;
 }
 
+/* ==================== WARNING NOTE ==================== */
 .confirm-dialog__warning-note {
+  margin-top: 20px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--actionOrange) 10%, transparent);
+  color: var(--actionOrange);
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: rgba(255, 152, 0, 0.15);
-  color: var(--actionOrange);
-  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
-  
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
+  gap: 10px;
+  font-size: 14px;
 }
 
+/* ==================== ACTIONS ==================== */
 .confirm-dialog__actions {
-  padding: 12px 18px;
-  gap: 10px;
-  @include ht-portrait{
-    justify-content: flex-start;
-    .btn{
+  padding: 24px 0 0 !important;
+  gap: 12px;
+  justify-content: center !important;
+  flex-wrap: wrap;
+
+  @include ht-portrait {
+    .mat-mdc-button-base {
       flex: 1;
+      min-width: 110px;
     }
   }
 }
 
-.confirm-dialog__cancel-btn {
-  color: var(--solarTextSecondary, #666);
+.confirm-dialog__cancel {
+  color: var(--solarTextSecondary);
+  border-color: var(--divider-border-color);
 }
 
-.confirm-dialog__confirm-btn {
-  min-width: 120px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.confirm-dialog__confirm {
+  min-width: 140px;
+  font-weight: 500;
 }
 
+/* ==================== TYPE VARIANTS ==================== */
+/* Icon container tint + confirm button fill, derived from theme tokens */
+
+.confirm-dialog--danger {
+  .confirm-dialog__icon-container {
+    background: color-mix(in srgb, var(--actionRed) 8%, transparent);
+  }
+  .confirm-btn--danger {
+    background: var(--actionRed) !important;
+    color: var(--whiteColor) !important;
+  }
+}
+
+.confirm-dialog--warning {
+  .confirm-dialog__icon-container {
+    background: color-mix(in srgb, var(--actionOrange) 8%, transparent);
+  }
+  .confirm-btn--warning {
+    background: var(--actionOrange) !important;
+    color: var(--whiteColor) !important;
+  }
+}
+
+.confirm-dialog--info {
+  .confirm-dialog__icon-container {
+    background: color-mix(in srgb, var(--primary500) 8%, transparent);
+  }
+  .confirm-btn--info {
+    background: var(--primary500) !important;
+    color: var(--whiteColor) !important;
+  }
+}
+
+.confirm-dialog--success {
+  .confirm-dialog__icon-container {
+    background: color-mix(in srgb, var(--actionGreen) 8%, transparent);
+  }
+  .confirm-btn--success {
+    background: var(--actionGreen) !important;
+    color: var(--whiteColor) !important;
+  }
+}
+
+/* Spinner */
 .btn-spinner {
-  display: inline-block;
-}
-.confirm-dialog--danger .confirm-dialog__icon {
-  color: var(--actionRed);
-}
-.confirm-btn--danger {
-  background: var(--actionRed) !important;
-  color: var(--whiteColor) !important;
-}
-
-/* Type: warning */
-.confirm-dialog--warning .confirm-dialog__icon-wrap {
-  background: rgba(255, 152, 0, 0.1);
-}
-.confirm-dialog--warning .confirm-dialog__icon {
-  color: var(--actionOrange);
-}
-.confirm-btn--warning {
-  background: var(--actionOrange) !important;
-  color: var(--whiteColor) !important;
-}
-
-/* Type: info */
-.confirm-dialog--info .confirm-dialog__icon-wrap {
-  background: rgba(33, 150, 243, 0.1);
-
-}
-.confirm-dialog--info .confirm-dialog__icon {
-  color: var(--primary500);
-}
-.confirm-btn--info {
-  background: var(--primary500) !important;
-  color: var(--whiteColor) !important;
-}
-
-/* Type: success */
-.confirm-dialog--success .confirm-dialog__icon-wrap {
-  background: rgba(76, 175, 80, 0.1);
-}
-
-/* Type: success */
-.confirm-dialog--success .confirm-dialog__icon-wrap {
-  background: rgba(76, 175, 80, 0.1);
-}
-.confirm-dialog--success .confirm-dialog__icon {
-  color: var(--actionGreen);
-}
-.confirm-btn--success {
-  background: var(--actionGreen) !important;
-  color: var(--whiteColor) !important;
+  margin-right: 8px;
 }

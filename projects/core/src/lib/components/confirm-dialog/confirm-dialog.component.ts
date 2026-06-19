@@ -1,33 +1,34 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CONFIRM_DIALOG_ICONS, ConfirmDialogIcon } from './confirm-dialog-icons';
+import { lastValueFrom } from 'rxjs';
 
-// ─── Config interface ─────────────────────────────────────────
 export type ConfirmDialogType = 'danger' | 'warning' | 'info' | 'success';
 
 export interface ConfirmDialogConfig {
-  /** Dialog title */
   title: string;
-  /** Main message body */
   message: string;
-  /** Optional secondary detail text */
   detail?: string;
-  /** Confirm button label (default: 'Confirm') */
   confirmText?: string;
-  /** Cancel button label (default: 'Cancel') */
   cancelText?: string;
-  /** Visual tone (default: 'danger') */
+  /** Drives color of icon bg / confirm button. @default 'danger' */
   type?: ConfirmDialogType;
-  /** Show a warning note below the message */
+  /**
+   * Overrides which illustration renders, independent of `type`.
+   * Use this when the icon doesn't match the semantic type — e.g. a
+   * 'refresh' icon on a 'warning'-colored session-expired dialog.
+   * Falls back to `type` when omitted.
+   */
+  icon?: ConfirmDialogIcon;
   warningNote?: string;
-  /** If true, confirm button stays loading until dialog is programmatically closed */
   asyncConfirm?: boolean;
 }
 
-// ─── Helper factory functions for common dialogs ─────────────
 export const ConfirmDialogs = {
   delete: (itemName: string, itemType = 'item'): ConfirmDialogConfig => ({
     title: `Delete ${itemType}`,
@@ -98,55 +99,61 @@ export const ConfirmDialogs = {
     confirmText: 'Save Changes',
     cancelText: 'Cancel',
     type: 'info'
+  }),
+
+  sessionExpired: (): ConfirmDialogConfig => ({
+    title: 'Your session has expired',
+    message: 'The current session has ended and you have been automatically logged out.',
+    detail: 'Please log back in to resume your work.',
+    confirmText: 'Login',
+    cancelText: 'Close',
+    type: 'info',
+    icon: 'refresh'
   })
 };
+
 @Component({
   selector: 'lib-confirm-dialog',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule],
+    MatProgressSpinnerModule
+  ],
   templateUrl: './confirm-dialog.component.html',
   styleUrl: './confirm-dialog.component.scss'
 })
 export class ConfirmDialogComponent {
-isLoading = false;
+  isLoading = false;
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public config: ConfirmDialogConfig
+    @Inject(MAT_DIALOG_DATA) public config: ConfirmDialogConfig,
+    private sanitizer: DomSanitizer
   ) {
-    // Apply default type
     if (!this.config.type) this.config.type = 'danger';
   }
 
-  get iconName(): string {
-    switch (this.config.type) {
-      case 'danger':  return 'delete_forever';
-      case 'warning': return 'warning_amber';
-      case 'info':    return 'info';
-      case 'success': return 'check_circle';
-      default:        return 'help_outline';
-    }
+  /**
+   * Illustration to render. `icon` overrides `type` when both are set,
+   * so the visual and the color/button semantics can differ.
+   */
+  get illustration(): SafeHtml {
+    const key = this.config.icon ?? this.config.type ?? 'danger';
+    const svg = CONFIRM_DIALOG_ICONS[key];
+    return this.sanitizer.bypassSecurityTrustHtml(svg);
   }
 
   onConfirm(): void {
     if (this.config.asyncConfirm) {
       this.isLoading = true;
-      // Caller closes the dialog when the async operation completes
     } else {
       this.dialogRef.close(true);
     }
   }
 }
-
-// ─── Service wrapper for convenience ─────────────────────────
-// Usage:  const ok = await this.confirmSvc.open(ConfirmDialogs.delete('My Site', 'Site'));
-import { Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { lastValueFrom } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ConfirmDialogService {
