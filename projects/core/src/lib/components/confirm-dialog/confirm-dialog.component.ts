@@ -103,8 +103,7 @@ export const ConfirmDialogs = {
 
   sessionExpired: (): ConfirmDialogConfig => ({
     title: 'Your session has expired',
-    message: 'The current session has ended and you have been automatically logged out.',
-    detail: 'Please log back in to resume your work.',
+    message: 'The current session has ended and you have been automatically logged out. Please log back in to resume your work.',
     confirmText: 'Login',
     cancelText: 'Close',
     type: 'info',
