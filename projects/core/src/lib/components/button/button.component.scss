@@ -1,0 +1,79 @@
+@use '../../../styles/abstracts/index' as *;
+
+// Map semantic presets to your existing design tokens.
+// Centralized here so changing a brand color updates every button project-wide.
+.lib-btn {
+  --lib-btn-color: var(--primary500);
+}
+.lib-btn--primary   { --lib-btn-color: var(--primary500); }
+.lib-btn--secondary { --lib-btn-color: var(--solarTextSecondary); }
+.lib-btn--danger    { --lib-btn-color: var(--actionRed); }
+.lib-btn--success   { --lib-btn-color: var(--actionGreen); }
+.lib-btn--warning   { --lib-btn-color: var(--actionOrange); }
+.lib-btn--info      { --lib-btn-color: var(--primary500); }
+
+.lib-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px !important;
+  font-weight: 500;
+  line-height: 1;
+  transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+
+  &.lib-btn--full { width: 100%; }
+
+  &.lib-btn--sm { height: 40px; min-width: 96px;  padding: 0 14px !important; font-size: 13px; }
+  &.lib-btn--md { height: 40px; min-width: 120px; padding: 0 20px !important; font-size: 14px; }
+  &.lib-btn--lg { height: 40px; min-width: 150px; padding: 0 28px !important; font-size: 15px; }
+
+  &.lib-btn--icon {
+    min-width: 0 !important;
+    padding: 0 !important;
+    border-radius: 10px !important;
+    &.lib-btn--sm { width: 36px; }
+    &.lib-btn--md { width: 44px; }
+    &.lib-btn--lg { width: 52px; }
+  }
+
+  // Preset color application per variant — driven entirely by --lib-btn-color
+  &.lib-btn--raised[class*='lib-btn--'] {
+    background: var(--lib-btn-color) !important;
+    color: var(--whiteColor) !important;
+  }
+  &.lib-btn--stroked[class*='lib-btn--'] {
+    color: var(--lib-btn-color) !important;
+    border-color: var(--lib-btn-color) !important;
+  }
+  &.lib-btn--flat[class*='lib-btn--'],
+  &.lib-btn--icon[class*='lib-btn--'] {
+    color: var(--lib-btn-color) !important;
+  }
+}
+
+.lib-btn__content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.lib-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  line-height: 1;
+  &.lib-btn__icon--trailing { margin-left: 2px; }
+}
+
+.lib-btn__spinner { display: inline-flex; }
+.lib-btn__label { white-space: nowrap; }
+
+.lib-btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

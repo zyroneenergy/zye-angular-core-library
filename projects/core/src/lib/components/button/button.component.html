@@ -1,0 +1,70 @@
+<ng-template #btnContent>
+  <span class="lib-btn__content">
+    @if (loading) {
+      <mat-spinner diameter="18" class="lib-btn__spinner"></mat-spinner>
+    } @else {
+      @if (icon && iconType === 'mat') {
+        <mat-icon class="lib-btn__icon">{{ icon }}</mat-icon>
+      }
+      @if (icon && iconType === 'isax') {
+        <span class="lib-btn__icon isax" [ngClass]="icon"></span>
+      }
+    }
+
+    @if (variant !== 'icon') {
+      <span class="lib-btn__label">
+        <ng-content></ng-content>
+      </span>
+    }
+
+    @if (trailingIcon && trailingIconType === 'mat') {
+      <mat-icon class="lib-btn__icon lib-btn__icon--trailing">{{ trailingIcon }}</mat-icon>
+    }
+    @if (trailingIcon && trailingIconType === 'isax') {
+      <span class="lib-btn__icon lib-btn__icon--trailing isax" [ngClass]="trailingIcon"></span>
+    }
+  </span>
+</ng-template>
+
+@switch (variant) {
+  @case ('raised') {
+    <button mat-raised-button [type]="type" class="lib-btn"
+      [ngClass]="['lib-btn--raised', 'lib-btn--' + size, colorClass, fullWidth ? 'lib-btn--full' : '']"
+      [ngStyle]="combinedStyle"
+      [disabled]="disabled || loading"
+      [matTooltip]="tooltip ?? ''" [matTooltipPosition]="tooltipPosition"
+      [attr.aria-label]="ariaLabel ?? tooltip ?? null">
+      <ng-container *ngTemplateOutlet="btnContent"></ng-container>
+    </button>
+  }
+  @case ('stroked') {
+    <button mat-stroked-button [type]="type" class="lib-btn"
+      [ngClass]="['lib-btn--stroked', 'lib-btn--' + size, colorClass, fullWidth ? 'lib-btn--full' : '']"
+      [ngStyle]="combinedStyle"
+      [disabled]="disabled || loading"
+      [matTooltip]="tooltip ?? ''" [matTooltipPosition]="tooltipPosition"
+      [attr.aria-label]="ariaLabel ?? tooltip ?? null">
+      <ng-container *ngTemplateOutlet="btnContent"></ng-container>
+    </button>
+  }
+  @case ('flat') {
+    <button mat-flat-button [type]="type" class="lib-btn"
+      [ngClass]="['lib-btn--flat', 'lib-btn--' + size, colorClass, fullWidth ? 'lib-btn--full' : '']"
+      [ngStyle]="combinedStyle"
+      [disabled]="disabled || loading"
+      [matTooltip]="tooltip ?? ''" [matTooltipPosition]="tooltipPosition"
+      [attr.aria-label]="ariaLabel ?? tooltip ?? null">
+      <ng-container *ngTemplateOutlet="btnContent"></ng-container>
+    </button>
+  }
+  @case ('icon') {
+    <button mat-icon-button [type]="type" class="lib-btn"
+      [ngClass]="['lib-btn--icon', 'lib-btn--' + size, colorClass]"
+      [ngStyle]="combinedStyle"
+      [disabled]="disabled || loading"
+      [matTooltip]="tooltip ?? ''" [matTooltipPosition]="tooltipPosition"
+      [attr.aria-label]="ariaLabel ?? tooltip ?? null">
+      <ng-container *ngTemplateOutlet="btnContent"></ng-container>
+    </button>
+  }
+}
