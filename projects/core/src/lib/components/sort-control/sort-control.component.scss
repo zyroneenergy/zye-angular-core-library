@@ -1,0 +1,183 @@
+@use "../../../styles/abstracts/index" as *;
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.sort-dropdown-wrap {
+  position: relative;
+}
+
+// ── Trigger button ────────────────────────────────────────────────────────────
+
+.sort-select-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 10px;
+  background: var(--mat-chip-bg);
+  border: 1px solid var(--divider-border-color);
+  border-radius: 6px;
+  color: var(--solarTextPrimary);
+  font-size: #{map-get(map-get($solar-typography, "caption"), "font-size")};
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  white-space: nowrap;
+  transition: border-color 0.15s ease, color 0.15s ease;
+
+  &:hover,
+  &.open {
+    border-color: var(--primary500);
+    color: var(--primary500);
+  }
+}
+
+.sort-btn-prefix {
+  color: var(--solarTextThird);
+  font-weight: 400;
+}
+
+.sort-btn-label {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.sort-chevron {
+  flex-shrink: 0;
+  color: var(--solarTextThird);
+  transition: transform 0.2s ease;
+  margin-left: auto;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+// ── Dropdown panel ────────────────────────────────────────────────────────────
+
+.sort-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 300;
+  width: 200px;
+  background: var(--mat-card-bg, var(--mat-chip-bg));
+  border: 1px solid var(--divider-border-color);
+  border-radius: var(--borderRadius);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+  animation: sort-drop-in 0.14s ease;
+}
+
+@keyframes sort-drop-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sort-dropdown-header {
+  padding: 9px 12px 7px;
+  border-bottom: 1px solid var(--divider-border-color);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--solarTextThird);
+}
+
+.sort-option-list {
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  gap: 2px;
+}
+
+.sort-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: calc(var(--borderRadius) - 2px);
+  background: transparent;
+  color: var(--solarTextPrimary);
+  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+  font-family: inherit;
+  font-weight: 450;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background 0.13s ease, color 0.13s ease;
+  outline: none;
+
+  &:hover:not(.selected) {
+    background: var(--solarGreyColor5);
+    color: var(--primary500);
+  }
+
+  &.selected {
+    color: var(--primary500);
+    font-weight: 600;
+    background: color-mix(in srgb, var(--primary500) 6%, transparent);
+  }
+}
+
+.sort-option-check {
+  flex-shrink: 0;
+  color: var(--primary500);
+}
+
+// ── Direction toggle ──────────────────────────────────────────────────────────
+
+.sort-direction-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--divider-border-color);
+  border-radius: 6px;
+  background: var(--mat-chip-bg);
+  color: var(--primary500);
+  cursor: pointer;
+  outline: none;
+  flex-shrink: 0;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: var(--primary500);
+    background: color-mix(in srgb, var(--primary500) 6%, var(--mat-chip-bg));
+  }
+}
+
+.sort-direction-arrow {
+  transition: transform 0.2s ease;
+  transform: rotate(0deg);
+
+  &.desc {
+    transform: rotate(180deg);
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+
+@include ht-portrait {
+  .sort-controls {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .sort-dropdown-panel {
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+}

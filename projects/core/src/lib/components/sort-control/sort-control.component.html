@@ -1,0 +1,64 @@
+<div class="sort-controls" (click)="stopProp($event)">
+
+  <!-- ── Field selector ─────────────────────────────────────────────────── -->
+  <div class="sort-dropdown-wrap">
+
+    <button
+      class="sort-select-btn"
+      [class.open]="panelOpen()"
+      (click)="togglePanel($event)"
+      type="button">
+      <span class="sort-btn-prefix">Sort by</span>
+      <span class="sort-btn-label">{{ currentLabel() }}</span>
+      <svg class="sort-chevron" [class.open]="panelOpen()"
+           width="11" height="11" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor"
+           stroke-width="2.5" stroke-linecap="round">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </button>
+
+    @if (panelOpen()) {
+      <div class="sort-dropdown-panel" (click)="stopProp($event)">
+        <div class="sort-dropdown-header">Sort by</div>
+        <div class="sort-option-list">
+          @for (opt of options; track opt.field) {
+            <button
+              class="sort-option"
+              [class.selected]="isActive(opt.field)"
+              (click)="selectField(opt.field, $event)"
+              type="button">
+              <span>{{ opt.label }}</span>
+              @if (isActive(opt.field)) {
+                <svg class="sort-option-check"
+                     width="12" height="12" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor"
+                     stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              }
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ── Direction toggle ────────────────────────────────────────────────── -->
+  <button
+    class="sort-direction-btn"
+    type="button"
+    (click)="toggleDirection($event)"
+    [matTooltip]="direction === 'asc' ? 'Sort descending' : 'Sort ascending'"
+    matTooltipPosition="below">
+    <svg class="sort-direction-arrow"
+         [class.desc]="direction === 'desc'"
+         width="13" height="13" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor"
+         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="19" x2="12" y2="5" />
+      <polyline points="5 12 12 5 19 12" />
+    </svg>
+  </button>
+
+</div>

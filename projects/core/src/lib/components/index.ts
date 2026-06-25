@@ -13,3 +13,4 @@ export * from './confirm-dialog/confirm-dialog.component';
 export * from './sites-filter-panel/sites-filter-panel.component';
 export * from './side-bar/side-bar.component';
 export * from './site-perfo-summary-stats/site-perfo-summary-stats.component';
+export * from './sort-control/sort-control.component';
