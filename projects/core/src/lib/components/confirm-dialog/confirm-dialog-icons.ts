@@ -1,5 +1,8 @@
 export type ConfirmDialogType = 'danger' | 'warning' | 'info' | 'success';
-export type ConfirmDialogIcon = ConfirmDialogType | 'refresh';
+export type ConfirmDialogIcon = ConfirmDialogType | 'refresh' | any;
+export function isPresetIcon(icon: string): icon is ConfirmDialogIcon {
+  return icon in CONFIRM_DIALOG_ICONS;
+}
 
 /**
  * Custom illustrated icons per dialog type, matching the Solar design system
@@ -81,5 +84,22 @@ export const CONFIRM_DIALOG_ICONS: Record<ConfirmDialogIcon, string> = {
       <circle cx="58" cy="22" r="13" fill="var(--primary500)" stroke="white" stroke-width="2.5"/>
       <path d="M52 16.5 a8 8 0 1 1 -2.3 9.3" stroke="white" stroke-width="2.4" stroke-linecap="round" fill="none"/>
       <path d="M52 13.5 v4.5 h4.3" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>`,
+    discardForm: `
+    <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="40" cy="68" rx="22" ry="4" fill="var(--solarShadow, #E2E8F0)" opacity="0.5"/>
+      <rect x="20" y="14" width="40" height="50" rx="6" fill="color-mix(in srgb, var(--actionOrange) 22%, transparent)"/>
+      <rect x="20" y="14" width="40" height="50" rx="6" fill="none" stroke="var(--actionOrange)" stroke-width="2"/>
+      <path d="M28 26h24 M28 34h24 M28 42h16" stroke="var(--actionOrange)" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="58" cy="56" r="13" fill="var(--actionOrange)" stroke="white" stroke-width="2.5"/>
+      <path d="M53 51l10 10 M63 51l-10 10" stroke="white" stroke-width="2.6" stroke-linecap="round"/>
+    </svg>`,
+
+  logout: `
+    <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="40" cy="68" rx="22" ry="4" fill="var(--solarShadow, #E2E8F0)" opacity="0.5"/>
+      <rect x="14" y="16" width="32" height="44" rx="6" fill="color-mix(in srgb, var(--actionOrange) 22%, transparent)" stroke="var(--actionOrange)" stroke-width="2"/>
+      <path d="M38 30v18" stroke="var(--actionOrange)" stroke-width="2.4" stroke-linecap="round" opacity="0.4"/>
+      <path d="M42 39h22 M56 31l8 8-8 8" stroke="var(--actionOrange)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     </svg>`
 };

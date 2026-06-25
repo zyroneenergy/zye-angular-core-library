@@ -5,7 +5,7 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angu
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { CONFIRM_DIALOG_ICONS, ConfirmDialogIcon } from './confirm-dialog-icons';
+import { CONFIRM_DIALOG_ICONS, ConfirmDialogIcon, isPresetIcon } from './confirm-dialog-icons';
 import { lastValueFrom } from 'rxjs';
 
 export type ConfirmDialogType = 'danger' | 'warning' | 'info' | 'success';
@@ -16,15 +16,15 @@ export interface ConfirmDialogConfig {
   detail?: string;
   confirmText?: string;
   cancelText?: string;
-  /** Drives color of icon bg / confirm button. @default 'danger' */
   type?: ConfirmDialogType;
   /**
-   * Overrides which illustration renders, independent of `type`.
-   * Use this when the icon doesn't match the semantic type — e.g. a
-   * 'refresh' icon on a 'warning'-colored session-expired dialog.
-   * Falls back to `type` when omitted.
+   * Preset key ('danger' | 'warning' | 'info' | 'success' | 'refresh') OR
+   * raw inline SVG markup for a one-off illustration. Falls back to `type`
+   * when omitted. Use raw SVG when no preset fits semantically
+   * (e.g. logout/exit-door, discard-form) rather than growing this file
+   * with one-off keys per call site.
    */
-  icon?: ConfirmDialogIcon;
+  icon?: ConfirmDialogIcon | string;
   warningNote?: string;
   asyncConfirm?: boolean;
 }
@@ -59,11 +59,11 @@ export const ConfirmDialogs = {
 
   discard: (): ConfirmDialogConfig => ({
     title: 'Discard Changes',
-    message: 'Are you sure you want to leave?',
-    detail: 'Any unsaved progress will be lost.',
+    message: 'Are you sure you want to leave? Any unsaved progress will be lost.',
     confirmText: 'Discard',
     cancelText: 'Keep Editing',
-    type: 'warning'
+    type: 'warning',
+    icon: 'discardForm'
   }),
 
   removeInverter: (name: string): ConfirmDialogConfig => ({
@@ -108,6 +108,15 @@ export const ConfirmDialogs = {
     cancelText: 'Close',
     type: 'info',
     icon: 'refresh'
+  }),
+
+  logout: (): ConfirmDialogConfig => ({
+    title: 'Logout',
+    message: 'Are you sure you want to log out? You will need to log in again to access your account.',
+    confirmText: 'Logout',
+    cancelText: 'Cancel',
+    type: 'warning',
+    icon: 'logout'
   })
 };
 
@@ -140,10 +149,10 @@ export class ConfirmDialogComponent {
    * so the visual and the color/button semantics can differ.
    */
   get illustration(): SafeHtml {
-    const key = this.config.icon ?? this.config.type ?? 'danger';
-    const svg = CONFIRM_DIALOG_ICONS[key];
-    return this.sanitizer.bypassSecurityTrustHtml(svg);
-  }
+  const requested = this.config.icon ?? this.config.type ?? 'danger';
+  const svg = isPresetIcon(requested) ? CONFIRM_DIALOG_ICONS[requested] : requested;
+  return this.sanitizer.bypassSecurityTrustHtml(svg);
+}
 
   onConfirm(): void {
     if (this.config.asyncConfirm) {
