@@ -2,29 +2,32 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { CORE_CONFIG } from '../../config/core-config.token';
+import { CoreConfig } from '../../config/core-config';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
+  const config = inject(CORE_CONFIG) as CoreConfig;
   const token = auth.getAccessToken();
 
   const clonedReq = token
     ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
     : req;
 
+  const refreshEndpoint = `${config.apiUrl}/auth/refresh`;
+  const isRefreshRequest = req.url === refreshEndpoint || req.url.endsWith('/auth/refresh');
+
   return next(clonedReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Only handle 401s that aren’t from refresh endpoints
-      if (error.status === 401 && !req.url.includes('/auth/refresh')) {
-        // Prevent refresh attempts if there’s no refresh token
-        if (!auth.isAuthenticated()) {
-          console.warn(' No valid session — logging out');
+      if (error.status === 401 && !isRefreshRequest) {
+        if (!auth.canRefresh()) {
+          console.warn('No refreshable session available. Logging out.');
           auth.logout();
           return throwError(() => error);
         }
 
         console.warn('Access token expired — attempting refresh...');
 
-        // Try refreshing
         return auth.refreshToken().pipe(
           switchMap((newToken) => {
             if (!newToken) {
@@ -33,10 +36,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
               return throwError(() => error);
             }
 
-            console.info(' Refresh successful — retrying request');
-            const retryReq = req.clone({
-              setHeaders: { Authorization: `Bearer ${newToken}` },
-            });
+            const retryReq = req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } });
             return next(retryReq);
           }),
           catchError((refreshError) => {

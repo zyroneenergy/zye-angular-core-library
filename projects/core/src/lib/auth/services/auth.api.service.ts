@@ -8,6 +8,7 @@ import { ForgotPassword } from "../models/password-service";
 import { ResendEmail, VerificationEmail } from "../models/email-service";
 import { CORE_CONFIG } from '../../config/core-config.token';
 import {  CoreConfig } from '../../config/core-config';
+import { RefreshTokenRequest } from "../models/refresh-token-request";
 
 /**
  * Service responsible for handling all authentication-related API calls.
@@ -104,12 +105,17 @@ export class AuthApiService {
   }
 
   /**
- * Refreshes the access token using a valid refresh token
- * @param refreshToken - The refresh token to use for getting a new access token
- * @returns Observable<LoginSuccessResponse> containing new access and refresh tokens
- */
-  refreshToken(refreshToken: string): Observable<LoginSuccessResponse> {
-    return this.http.post<LoginSuccessResponse>(`${this.base}/refresh`, { refreshToken });
+   * Refreshes the access token using a valid refresh token
+   * @param payload - payload containing the refresh token, tenant code, session id, and activity flag
+   */
+  refreshToken(payload: RefreshTokenRequest): Observable<LoginSuccessResponse> {
+    return this.http.post<LoginSuccessResponse>(`${this.base}/refresh`, payload);
   }
 
+  /**
+   * Logs out the current user session on the server.
+   */
+  logout(): Observable<{ success: boolean }> {
+    return this.http.post<{ success: boolean }>(`${this.base}/logout`, {});
+  }
 }

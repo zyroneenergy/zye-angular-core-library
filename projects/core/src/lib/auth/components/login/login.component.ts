@@ -71,6 +71,7 @@ export class LoginComponent {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
+      rememberMe: [false]
     });
   }
 
@@ -90,9 +91,9 @@ export class LoginComponent {
 
     const credentials: any = this.loginForm.value;
 
-    this.authService.login(credentials, true).subscribe({
+    this.authService.login(credentials).subscribe({
       next: (res: LoginSuccessResponse) => {
-        this.userService.setToken(res.accessToken);
+        // this.userService.setToken(res.accessToken);
         this.uiState.set({ status: 'success' });
         this.snackbar.success('Welcome back!');
        const returnUrl =

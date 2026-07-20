@@ -152,3 +152,15 @@ mat-toolbar {
     scrollbar-width: none;
   }
 }
+
+//button
+.mat-mdc-button:disabled,
+.mat-mdc-raised-button:disabled,
+.mat-mdc-flat-button:disabled,
+.mat-mdc-unelevated-button:disabled,
+.mat-mdc-outlined-button:disabled,
+.mat-mdc-fab:disabled,
+.mat-mdc-mini-fab:disabled,
+.mat-mdc-icon-button:disabled{
+  background-color: var(--surfaceBackground) !important;
+}

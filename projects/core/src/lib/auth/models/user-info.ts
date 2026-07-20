@@ -5,3 +5,13 @@ export interface UserInfo{
   tenantCode: string;
   roles: string | string[];
 }
+
+export interface SessionInfo {
+
+    sessionId: string;
+
+    tenantCode: string;
+
+    rememberMe: boolean;
+
+}

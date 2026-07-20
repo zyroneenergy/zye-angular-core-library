@@ -7,4 +7,5 @@ accessToken: string;
 refreshToken?: string;
 expiresIn?: number; // seconds
 tenantId?: string;
+refreshExpires?: number;
 }

@@ -17,5 +17,6 @@ export interface CoreConfig {
     loginSubtitle: string;
     footerText: string;
     logoUrl?: string;
+    enableActivitySilentRefresh?: boolean;
   }
 }

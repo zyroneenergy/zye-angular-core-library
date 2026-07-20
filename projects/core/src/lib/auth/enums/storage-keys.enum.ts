@@ -3,11 +3,22 @@
  * Centralized to avoid typos and improve maintainability
  */
 export enum StorageKey {
+
   ACCESS_TOKEN = 'access_token',
+
   REFRESH_TOKEN = 'refresh_token',
+
   TOKEN_EXPIRES_AT = 'token_expires_at',
+
+  REFRESH_TOKEN_EXPIRES_AT = 'refreshExpires',
+
   CURRENT_USER = 'current_user',
-  REMEMBER_ME = 'remember_me'
+
+  REMEMBER_ME = 'remember_me',
+
+  SESSION_ID = 'session_id',
+
+  TENANT_CODE = 'tenant_code'
 }
 
 /**
