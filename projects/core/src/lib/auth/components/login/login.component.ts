@@ -17,6 +17,8 @@ import { ShimmerComponent } from '../../../components/shimmer/shimmer.component'
 import { SnackbarService } from '../../../services/components/snackbar.service';
 import { CoreConfig } from '../../../config/core-config';
 import { CORE_CONFIG } from '../../../config/core-config.token';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { LoginCredentials } from '../../models/login-credentials';
 
 @Component({
   selector: 'lib-login',
@@ -31,7 +33,8 @@ import { CORE_CONFIG } from '../../../config/core-config.token';
     CommonModule,
     ReactiveFormsModule,
     MatProgressSpinner,
-    ShimmerComponent
+    ShimmerComponent,
+    MatCheckboxModule 
 ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
@@ -80,52 +83,50 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-    if (this.isLoading()) return;
+  if (this.isLoading()) return;
 
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
-      return;
-    }
-
-    this.uiState.set({ status: 'loading' });
-
-    const credentials: any = this.loginForm.value;
-
-    this.authService.login(credentials).subscribe({
-      next: (res: LoginSuccessResponse) => {
-        // this.userService.setToken(res.accessToken);
-        this.uiState.set({ status: 'success' });
-        this.snackbar.success('Welcome back!');
-       const returnUrl =
-  sessionStorage.getItem(
-    'returnUrl'
-  );
-
-if (returnUrl) {
-
-  sessionStorage.removeItem(
-    'returnUrl'
-  );
-
-  this.router.navigateByUrl(
-    returnUrl
-  );
-
-} else {
-
-  this.router.navigate([
-    '/dashboard'
-  ]);
-
-}
-      },
-      error: (err: any) => {
-        const message = mapAuthError(err);
-        this.uiState.set({ status: 'error', errorMessage: message });
-        this.snackbar.error(message);
-      },
-    });
+  if (this.loginForm.invalid) {
+    this.loginForm.markAllAsTouched();
+    return;
   }
+
+  this.uiState.set({ status: 'loading' });
+
+  const rawValue = this.loginForm.value;
+
+  // Remember-me is only a genuine user choice on projects with the
+  // activity-based silent refresh flow enabled. Elsewhere we preserve the
+  // legacy "always persisted" behavior — no checkbox is rendered, so the
+  // control's value is never a real signal.
+  const rememberMe = this.config.auth.enableActivitySilentRefresh
+    ? !!rawValue.rememberMe
+    : true;
+
+  const credentials: LoginCredentials = {
+    ...rawValue,
+    rememberMe,
+  };
+
+  this.authService.login(credentials, rememberMe).subscribe({
+    next: (res: LoginSuccessResponse) => {
+      this.uiState.set({ status: 'success' });
+      this.snackbar.success('Welcome back!');
+
+      const returnUrl = sessionStorage.getItem('returnUrl');
+      if (returnUrl) {
+        sessionStorage.removeItem('returnUrl');
+        this.router.navigateByUrl(returnUrl);
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
+    },
+    error: (err: any) => {
+      const message = mapAuthError(err);
+      this.uiState.set({ status: 'error', errorMessage: message });
+      this.snackbar.error(message);
+    },
+  });
+}
 
   togglePasswordVisibility(): void {
     this.hidePassword = !this.hidePassword;

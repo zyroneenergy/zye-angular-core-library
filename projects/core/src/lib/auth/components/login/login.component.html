@@ -86,7 +86,16 @@
         </div>
 
         <!-- Forgot password -->
-        <div class="forgot-remember-wrap">
+        <div class="forgot-remember-wrap" [class.has-remember-me]="config.auth.enableActivitySilentRefresh">
+          <mat-checkbox
+            *ngIf="config.auth.enableActivitySilentRefresh"
+            class="remember-me-checkbox"
+            formControlName="rememberMe"
+            color="primary"
+          >
+            Remember me
+          </mat-checkbox>
+
           <a class="forgot-password-link" [routerLink]="['/auth/forgot-password']">
             Forgot password?
           </a>

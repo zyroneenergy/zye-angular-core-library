@@ -15,11 +15,22 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     : req;
 
   const refreshEndpoint = `${config.apiUrl}/auth/refresh`;
+  const logoutEndpoint = `${config.apiUrl}/auth/logout`;
   const isRefreshRequest = req.url === refreshEndpoint || req.url.endsWith('/auth/refresh');
+  const isLogoutRequest = req.url === logoutEndpoint || req.url.endsWith('/auth/logout');
 
   return next(clonedReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !isRefreshRequest) {
+      // A 401 on logout means the session was already dead server-side (or
+      // the token expired the instant before this call). There's nothing to
+      // refresh-and-retry for — we're tearing the session down either way,
+      // so just let it fail and let AuthService.logout()'s own
+      // catchError(() => of(null)) + finalize() handle local cleanup.
+      if (error.status === 401 && (isRefreshRequest || isLogoutRequest)) {
+        return throwError(() => error);
+      }
+
+      if (error.status === 401) {
         if (!auth.canRefresh()) {
           console.warn('No refreshable session available. Logging out.');
           auth.logout();

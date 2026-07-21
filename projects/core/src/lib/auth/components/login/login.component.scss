@@ -49,8 +49,18 @@
 
 .forgot-remember-wrap {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: flex-end; // unchanged for projects without the flag
   margin-bottom: 16px;
+
+  &.has-remember-me {
+    justify-content: space-between;
+  }
+}
+
+.remember-me-checkbox {
+  font-size: 14px;
+  color: var(--solarTextPrimary);
 }
 
 .forgot-password-link {

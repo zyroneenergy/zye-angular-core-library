@@ -66,11 +66,11 @@ export class AuthService {
     this.listenToStorageEvents();
   }
 
-  login(payload: LoginCredentials): Observable<LoginSuccessResponse> {
-    return this.api.login(payload).pipe(
-      tap((res) => this.handleLoginResponse(res))
-    );
-  }
+  login(payload: LoginCredentials, rememberMe: boolean): Observable<LoginSuccessResponse> {
+  return this.api.login(payload).pipe(
+    tap((res) => this.handleLoginResponse(res, rememberMe))
+  );
+}
 
   register(payload: RegistrationDetails): Observable<RegistrationDetails> {
     return this.api.register(payload);
@@ -112,77 +112,104 @@ export class AuthService {
 
   /** Interceptor-triggered (e.g. on 401) refresh — still supported, now uses the new payload contract. */
   refreshToken(): Observable<string | null> {
-    if (!this.canRefresh()) {
-      this.logout();
-      return of(null);
-    }
-
-    const request = this.buildRefreshRequest();
-    if (!request) {
-      this.logout();
-      return of(null);
-    }
-
-    if (this.isRefreshing) {
-      return this.refreshSubject.pipe(take(1));
-    }
-
-    if (!this.tryAcquireRefreshLock()) {
-      return this.waitForExternalRefresh();
-    }
-
-    this.isRefreshing = true;
-    // const rememberMe = this.tokenService.isRemembered();
-
-    return this.api.refreshToken(request).pipe(
-      switchMap((res) => {
-        this.handleLoginResponse(res);
-        this.refreshSubject.next(res.accessToken);
-        return of(res.accessToken);
-      }),
-      catchError((err) => {
-        this.refreshSubject.next(null);
-        this.logout();
-        return throwError(() => err);
-      }),
-      finalize(() => {
-        this.isRefreshing = false;
-        this.clearRefreshLock();
-      })
-    );
+  if (!this.canRefresh()) {
+    this.logout();
+    return of(null);
   }
 
-  private handleLoginResponse(res: LoginSuccessResponse): void {
-    if (!res) {
-      return;
-    }
+  // Single enforcement point for the 5-minute, tab-level activity rule.
+  // attemptSilentRefresh() already checks this before calling in, but the
+  // interceptor calls refreshToken() directly on a 401 — gating here too
+  // means neither path can bypass it. Only applies to projects that opted
+  // into the activity-based flow; legacy timer-based projects are unaffected.
+  if (
+    this.config?.auth?.enableActivitySilentRefresh
+    && !this.tabActivity.isActiveWithin(this.ACTIVITY_WINDOW_MS)
+  ) {
+    this.logout();
+    return of(null);
+  }
 
-    const session = this.extractSessionInfo(res.accessToken);
-    if (!session) {
+  const request = this.buildRefreshRequest();
+  if (!request) {
+    this.logout();
+    return of(null);
+  }
+
+  if (this.isRefreshing) {
+    return this.refreshSubject.pipe(take(1));
+  }
+
+  if (!this.tryAcquireRefreshLock()) {
+    return this.waitForExternalRefresh();
+  }
+
+  this.isRefreshing = true;
+
+  return this.api.refreshToken(request).pipe(
+    switchMap((res) => {
+      const rememberMe = this.tokenService.isRemembered();
+      this.handleLoginResponse(res, rememberMe);
+      this.refreshSubject.next(res.accessToken);
+      return of(res.accessToken);
+    }),
+    catchError((err) => {
+      this.refreshSubject.next(null);
       this.logout();
-      return;
-    }
+      return throwError(() => err);
+    }),
+    finalize(() => {
+      this.isRefreshing = false;
+      this.clearRefreshLock();
+    })
+  );
+}
 
-    this.persistTokens(res, session);
-    this.userService.setUser(this.buildUserFromToken(res.accessToken));
-    this.authState$.next(true);
-    this.scheduleTokenLifecycle(res.expiresIn ?? 3600);
+  private handleLoginResponse(res: LoginSuccessResponse, rememberMe: boolean): void {
+  if (!res) {
+    return;
   }
 
-  private persistTokens(res: LoginSuccessResponse, session: SessionInfo): void {
-    const expiresIn = res.expiresIn ?? 3600;
-    this.tokenService.setAccessToken(res.accessToken, expiresIn);
-    this.tokenService.setSession(session);
-
-    if (res.refreshToken) {
-      const refreshExpiresIn = typeof res.refreshExpires === 'number' && Number.isFinite(res.refreshExpires)
-        ? res.refreshExpires
-        : expiresIn;
-      this.tokenService.setRefreshToken(res.refreshToken, refreshExpiresIn);
-    } else {
-      this.tokenService.setRefreshToken(null, 0);
-    }
+  const session = this.extractSessionInfo(res.accessToken, rememberMe);
+  if (!session) {
+    this.logout();
+    return;
   }
+
+  this.persistTokens(res, session, rememberMe);
+  this.userService.setUser(this.buildUserFromToken(res.accessToken));
+  this.authState$.next(true);
+  this.scheduleTokenLifecycle(res.expiresIn ?? 3600);
+}
+
+private persistTokens(res: LoginSuccessResponse, session: SessionInfo, rememberMe: boolean): void {
+  const expiresIn = res.expiresIn ?? 3600;
+  this.tokenService.setAccessToken(res.accessToken, expiresIn, rememberMe);
+  this.tokenService.setSession(session);
+
+  if (res.refreshToken) {
+    const refreshExpiresIn = typeof res.refreshExpires === 'number' && Number.isFinite(res.refreshExpires)
+      ? res.refreshExpires
+      : expiresIn;
+    this.tokenService.setRefreshToken(res.refreshToken, refreshExpiresIn, rememberMe);
+  } else {
+    this.tokenService.setRefreshToken(null, 0);
+  }
+}
+
+private extractSessionInfo(accessToken: string, rememberMe: boolean): SessionInfo | null {
+  const payload = this.decodeJwt<JwtPayload>(accessToken);
+  if (!payload?.sessionId || !payload?.tenantCode) {
+    return null;
+  }
+
+  return {
+    sessionId: payload.sessionId,
+    tenantCode: payload.tenantCode,
+    rememberMe,
+  };
+}
+
 
   private buildRefreshRequest(): RefreshTokenRequest | null {
     const refreshToken = this.tokenService.getRefreshToken();
@@ -383,19 +410,6 @@ export class AuthService {
       tenantId: payload.tenantId ?? '',
       tenantCode: payload.tenantCode ?? '',
       roles: Array.isArray(payload.roles) ? payload.roles : payload.roles ? [payload.roles] : [],
-    };
-  }
-
-  private extractSessionInfo(accessToken: string): SessionInfo | null {
-    const payload = this.decodeJwt<JwtPayload>(accessToken);
-    if (!payload?.sessionId || !payload?.tenantCode) {
-      return null;
-    }
-
-    return {
-      sessionId: payload.sessionId,
-      tenantCode: payload.tenantCode,
-      rememberMe: this.tokenService.getRememberMe(),
     };
   }
 

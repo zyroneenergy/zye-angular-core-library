@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Inject, Injectable, Optional } from "@angular/core";
 import { LoginCredentials } from "../models/login-credentials";
 import { LoginSuccessResponse } from "../models/login-success-response";
@@ -9,6 +9,7 @@ import { ResendEmail, VerificationEmail } from "../models/email-service";
 import { CORE_CONFIG } from '../../config/core-config.token';
 import {  CoreConfig } from '../../config/core-config';
 import { RefreshTokenRequest } from "../models/refresh-token-request";
+import { AuthTokenService } from "./auth-token.service";
 
 /**
  * Service responsible for handling all authentication-related API calls.
@@ -20,6 +21,7 @@ import { RefreshTokenRequest } from "../models/refresh-token-request";
 export class AuthApiService {
   constructor(
     private http: HttpClient,
+    private readonly tokenService: AuthTokenService,
     @Inject(CORE_CONFIG)
       protected config: CoreConfig
   ) { }
@@ -116,6 +118,11 @@ export class AuthApiService {
    * Logs out the current user session on the server.
    */
   logout(): Observable<{ success: boolean }> {
-    return this.http.post<{ success: boolean }>(`${this.base}/logout`, {});
+    const token = this.tokenService.getAccessToken();
+    const headers = token
+      ? new HttpHeaders({ Authorization: `Bearer ${token}` })
+      : undefined;
+
+    return this.http.post<{ success: boolean }>(`${this.base}/logout`, {}, { headers });
   }
 }
