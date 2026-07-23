@@ -7,7 +7,11 @@
 
   <!-- ── Data Table ────────────────────────────────────────────────────────── -->
   @if (!loading) {
-    <div class="sf-table-scroll">
+    <div
+      class="sf-table-scroll"
+      [class.sf-table-scroll--capped]="maxBodyHeight !== null"
+      [style.max-height.px]="maxBodyHeight"
+    >
       <table
         mat-table
         [dataSource]="dataSource"
@@ -44,12 +48,6 @@
         @for (col of columns; track col.key) {
           <ng-container [matColumnDef]="col.key">
 
-            <!-- Header
-                 Always provide a valid sort identifier to [mat-sort-header].
-                 Use col.sortKey when available (for API field mapping),
-                 otherwise fall back to col.key.
-                 The [disabled] attribute controls whether sorting is enabled.
-            -->
             <th
               mat-header-cell
               *matHeaderCellDef
@@ -60,7 +58,6 @@
               {{ col.label }}
             </th>
 
-            <!-- Cell -->
             <td mat-cell *matCellDef="let row">
               @if (templateMap.has(col.key)) {
                 <ng-container

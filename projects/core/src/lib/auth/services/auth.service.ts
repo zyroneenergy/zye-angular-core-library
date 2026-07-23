@@ -67,10 +67,10 @@ export class AuthService {
   }
 
   login(payload: LoginCredentials, rememberMe: boolean): Observable<LoginSuccessResponse> {
-  return this.api.login(payload).pipe(
-    tap((res) => this.handleLoginResponse(res, rememberMe))
-  );
-}
+    return this.api.login(payload).pipe(
+      tap((res) => this.handleLoginResponse(res, rememberMe))
+    );
+  }
 
   register(payload: RegistrationDetails): Observable<RegistrationDetails> {
     return this.api.register(payload);
@@ -81,17 +81,25 @@ export class AuthService {
   }
 
   logout(navigateTo = '/auth/login', clearReturnUrl = true): void {
-    this.api.logout().pipe(
-      catchError(() => of(null)),
-      take(1),
-      finalize(() => {
-        this.cleanupOnLogout();
-        if (clearReturnUrl) {
-          sessionStorage.removeItem('returnUrl');
-        }
-        this.router.navigate([navigateTo]);
-      })
-    ).subscribe();
+    if (this.config.auth.enableActivitySilentRefresh) {
+      this.api.logout().pipe(
+        catchError(() => of(null)),
+        take(1),
+        finalize(() => {
+          this.cleanupOnLogout();
+          if (clearReturnUrl) {
+            sessionStorage.removeItem('returnUrl');
+          }
+          this.router.navigate([navigateTo]);
+        })
+      ).subscribe();
+    } else {
+      this.cleanupOnLogout();
+      if (clearReturnUrl) {
+        sessionStorage.removeItem('returnUrl');
+      }
+      this.router.navigate([navigateTo]);
+    }
   }
 
   isAuthenticated(): boolean {
@@ -112,104 +120,112 @@ export class AuthService {
 
   /** Interceptor-triggered (e.g. on 401) refresh — still supported, now uses the new payload contract. */
   refreshToken(): Observable<string | null> {
-  if (!this.canRefresh()) {
-    this.logout();
-    return of(null);
-  }
-
-  // Single enforcement point for the 5-minute, tab-level activity rule.
-  // attemptSilentRefresh() already checks this before calling in, but the
-  // interceptor calls refreshToken() directly on a 401 — gating here too
-  // means neither path can bypass it. Only applies to projects that opted
-  // into the activity-based flow; legacy timer-based projects are unaffected.
-  if (
-    this.config?.auth?.enableActivitySilentRefresh
-    && !this.tabActivity.isActiveWithin(this.ACTIVITY_WINDOW_MS)
-  ) {
-    this.logout();
-    return of(null);
-  }
-
-  const request = this.buildRefreshRequest();
-  if (!request) {
-    this.logout();
-    return of(null);
-  }
-
-  if (this.isRefreshing) {
-    return this.refreshSubject.pipe(take(1));
-  }
-
-  if (!this.tryAcquireRefreshLock()) {
-    return this.waitForExternalRefresh();
-  }
-
-  this.isRefreshing = true;
-
-  return this.api.refreshToken(request).pipe(
-    switchMap((res) => {
-      const rememberMe = this.tokenService.isRemembered();
-      this.handleLoginResponse(res, rememberMe);
-      this.refreshSubject.next(res.accessToken);
-      return of(res.accessToken);
-    }),
-    catchError((err) => {
-      this.refreshSubject.next(null);
+    if (!this.canRefresh()) {
       this.logout();
-      return throwError(() => err);
-    }),
-    finalize(() => {
-      this.isRefreshing = false;
-      this.clearRefreshLock();
-    })
-  );
-}
+      return of(null);
+    }
+
+    // Single enforcement point for the 5-minute, tab-level activity rule.
+    // attemptSilentRefresh() already checks this before calling in, but the
+    // interceptor calls refreshToken() directly on a 401 — gating here too
+    // means neither path can bypass it. Only applies to projects that opted
+    // into the activity-based flow; legacy timer-based projects are unaffected.
+    if (
+      this.config?.auth?.enableActivitySilentRefresh
+      && !this.tabActivity.isActiveWithin(this.ACTIVITY_WINDOW_MS)
+    ) {
+      this.logout();
+      return of(null);
+    }
+
+    const request = this.buildRefreshRequest();
+    if (!request) {
+      this.logout();
+      return of(null);
+    }
+
+    if (this.isRefreshing) {
+      return this.refreshSubject.pipe(take(1));
+    }
+
+    if (!this.tryAcquireRefreshLock()) {
+      return this.waitForExternalRefresh();
+    }
+
+    this.isRefreshing = true;
+
+    return this.api.refreshToken(request).pipe(
+      switchMap((res) => {
+        const rememberMe = this.tokenService.isRemembered();
+        this.handleLoginResponse(res, rememberMe);
+        this.refreshSubject.next(res.accessToken);
+        return of(res.accessToken);
+      }),
+      catchError((err) => {
+        this.refreshSubject.next(null);
+        this.logout();
+        return throwError(() => err);
+      }),
+      finalize(() => {
+        this.isRefreshing = false;
+        this.clearRefreshLock();
+      })
+    );
+  }
 
   private handleLoginResponse(res: LoginSuccessResponse, rememberMe: boolean): void {
-  if (!res) {
-    return;
+    if (!res) {
+      return;
+    }
+
+    // sessionId/tenantCode on the JWT are only required to build refresh
+    // requests for the activity-based silent-refresh flow. Projects that
+    // don't use that flow (or have no refresh token at all) must still be
+    // able to log in even if the token doesn't carry those claims.
+    const requiresSession = !!this.config?.auth?.enableActivitySilentRefresh;
+    const session = this.extractSessionInfo(res.accessToken, rememberMe);
+
+    if (requiresSession && !session) {
+      this.logout();
+      return;
+    }
+
+    this.persistTokens(res, session, rememberMe);
+    this.userService.setUser(this.buildUserFromToken(res.accessToken));
+    this.authState$.next(true);
+    this.scheduleTokenLifecycle(res.expiresIn ?? 3600);
   }
 
-  const session = this.extractSessionInfo(res.accessToken, rememberMe);
-  if (!session) {
-    this.logout();
-    return;
+  private persistTokens(res: LoginSuccessResponse, session: SessionInfo | null, rememberMe: boolean): void {
+    const expiresIn = res.expiresIn ?? 3600;
+    this.tokenService.setAccessToken(res.accessToken, expiresIn, rememberMe);
+
+    if (session) {
+      this.tokenService.setSession(session);
+    }
+
+    if (res.refreshToken) {
+      const refreshExpiresIn = typeof res.refreshExpires === 'number' && Number.isFinite(res.refreshExpires)
+        ? res.refreshExpires
+        : expiresIn;
+      this.tokenService.setRefreshToken(res.refreshToken, refreshExpiresIn, rememberMe);
+    } else {
+      this.tokenService.setRefreshToken(null, 0);
+    }
   }
 
-  this.persistTokens(res, session, rememberMe);
-  this.userService.setUser(this.buildUserFromToken(res.accessToken));
-  this.authState$.next(true);
-  this.scheduleTokenLifecycle(res.expiresIn ?? 3600);
-}
+  private extractSessionInfo(accessToken: string, rememberMe: boolean): SessionInfo | null {
+    const payload = this.decodeJwt<JwtPayload>(accessToken);
+    if (!payload?.sessionId || !payload?.tenantCode) {
+      return null;
+    }
 
-private persistTokens(res: LoginSuccessResponse, session: SessionInfo, rememberMe: boolean): void {
-  const expiresIn = res.expiresIn ?? 3600;
-  this.tokenService.setAccessToken(res.accessToken, expiresIn, rememberMe);
-  this.tokenService.setSession(session);
-
-  if (res.refreshToken) {
-    const refreshExpiresIn = typeof res.refreshExpires === 'number' && Number.isFinite(res.refreshExpires)
-      ? res.refreshExpires
-      : expiresIn;
-    this.tokenService.setRefreshToken(res.refreshToken, refreshExpiresIn, rememberMe);
-  } else {
-    this.tokenService.setRefreshToken(null, 0);
+    return {
+      sessionId: payload.sessionId,
+      tenantCode: payload.tenantCode,
+      rememberMe,
+    };
   }
-}
-
-private extractSessionInfo(accessToken: string, rememberMe: boolean): SessionInfo | null {
-  const payload = this.decodeJwt<JwtPayload>(accessToken);
-  if (!payload?.sessionId || !payload?.tenantCode) {
-    return null;
-  }
-
-  return {
-    sessionId: payload.sessionId,
-    tenantCode: payload.tenantCode,
-    rememberMe,
-  };
-}
-
 
   private buildRefreshRequest(): RefreshTokenRequest | null {
     const refreshToken = this.tokenService.getRefreshToken();

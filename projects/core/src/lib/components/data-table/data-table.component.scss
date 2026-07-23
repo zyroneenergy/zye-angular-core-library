@@ -20,10 +20,12 @@
 
 // ── Scrollable area ──────────────────────────────────────────────────────────
 .sf-table-scroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  flex: 1;
-  min-height: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+
+.sf-table th.mat-mdc-header-cell:last-child {
+  padding-right: calc(16px + var(--scrollbar-width, 14px));
 }
 
 // ── Table ────────────────────────────────────────────────────────────────────
