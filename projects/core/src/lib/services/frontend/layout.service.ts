@@ -2,7 +2,7 @@ import { Injectable, signal, inject, NgZone, OnDestroy, computed } from "@angula
 
 @Injectable({ providedIn: "root" })
 export class LayoutService implements OnDestroy {
-  private mobileWidth = 768;
+  private mobileWidth = 1024;
   private tabletWidth = 1024;
 
   private zone = inject(NgZone);

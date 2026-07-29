@@ -7,7 +7,7 @@
 // ── Responsive breakpoints ────────────────────────────────────────────────────
 // Matches Angular CDK Breakpoints: HandsetPortrait + TabletPortrait
 @mixin ht-portrait {
-  @media (max-width: 839.98px) and (orientation: portrait) {
+  @media (max-width: 1024px) and (orientation: portrait) {
     @content;
   }
 }
