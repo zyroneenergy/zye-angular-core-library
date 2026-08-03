@@ -9,7 +9,7 @@ import { NormalizeResult } from "../../utils";
 
 export type BinType       = 'daily' | 'monthly';
 export type ChartTypeKey  = 'bar' | 'line' | 'area';
-export type KpiKey        = 'ac_e' | 'dc_e' | 'dc_cap_e' | 'pr' | 'cuf';
+export type KpiKey        = 'ac_e' | 'dc_e' | 'dc_cap_e' | 'pr' | 'cuf' | 'cuf_daylight';
 
 export function isEnergyKpi(kpi: KpiKey): boolean {
   return kpi === 'ac_e' || kpi === 'dc_e' || kpi === 'dc_cap_e';
@@ -26,9 +26,10 @@ export interface KpiOption {
 export const KPI_OPTIONS: readonly KpiOption[] = [
   { key: 'ac_e',     label: 'AC Energy',                        short: 'AC Energy' },
   { key: 'dc_e',     label: 'DC Energy',                        short: 'DC Energy' },
-  { key: 'dc_cap_e', label: 'DC Capacity Energy',               short: 'DC Cap'    },
-  { key: 'pr',       label: 'Performance Ratio (PR)',           short: 'PR (%)'    },
-  { key: 'cuf',      label: 'Capacity Utilisation Factor (CUF)',short: 'CUF (%)'   },
+  { key: 'dc_cap_e', label: 'DC Capacity Energy',               short: 'DC Cap. Energy'    },
+  { key: 'pr',       label: 'PR',           short: 'PR (%)'    },
+  { key: 'cuf',      label: 'Day CUF',short: 'Day CUF (%)'   },
+  { key: 'cuf_daylight', label: 'Daylight CUF', short: 'Daylight CUF (%)' },
 ] as const;
 
 // ── Chart type catalogue ──────────────────────────────────────────────────────

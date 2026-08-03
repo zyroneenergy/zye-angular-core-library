@@ -1,21 +1,30 @@
 @use '../../../../styles/abstracts/index' as *;
 
 :host {
-  display: block;
-  width: 100%;
+  display: flex;      // was implicit inline — the whole fix hinges on this
+  height:  100%;
+  width:   100%;
 }
 
 /* ── Card shell ─────────────────────────────────────────────────────── */
 .cc-card {
-  width: 100%;
+  width:  100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
   mat-card-content {
-    padding: 16px 20px 12px !important;
-    display: flex;
+    padding:  16px 20px 12px !important;
+    display:  flex;
     flex-direction: column;
-    gap: 10px;
+    gap:      10px;
     position: relative;
     isolation: isolate;
+
+    flex:      1;      // fill the card
+    min-height: 0;      // the flex trick: without this, flex children can't
+                        // shrink below their content size, so overflow:auto
+                        // downstream never actually kicks in
   }
 }
 
@@ -27,6 +36,7 @@
   gap: 12px;
   position: relative;
   z-index: 30;
+  flex-shrink: 0;   // header never shrinks to make room for the body
 }
 
 /* ── Titles ─────────────────────────────────────────────────────────── */
@@ -45,7 +55,6 @@
   color: var(--solarTextPrimary);
   letter-spacing: -0.01em;
   line-height: 1.35;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -54,9 +63,8 @@
 .cc-subtitle {
   margin: 0;
   font-size: #{map-get(map-get($solar-typography, 'caption'), 'font-size')};
-  color: var(--solarTextSecondary);
+  color: var(--solarTextThird);
   font-weight: 400;
-
   white-space: nowrap;
 }
 
@@ -68,17 +76,26 @@
   flex-shrink: 0;
 }
 
-/* ── Mobile Toolbar (rendered conditionally via LayoutService) ─────── */
+/* ── Mobile Toolbar ──────────────────────────────────────────────────── */
 .cc-mobile-toolbar {
   display: flex;
   flex-direction: row;
   gap: 8px;
   position: relative;
   z-index: 25;
+  flex-shrink: 0;
 }
 
-/* ── Optional: compact spacing for smaller screens ─────────────────── */
-/* (pure styling only — no logic control here) */
+/* ── Body — the single scroll/growth boundary for all projected content ── */
+.cc-body {
+  flex:      1;       // takes all remaining height after header/toolbar
+  min-height: 0;       // required for descendant overflow:auto to work
+  display:   flex;
+  flex-direction: column;
+  overflow:  hidden;   // clip here; individual content (e.g. .lc-list)
+                       // opts into its own overflow-y:auto internally
+}
+
 @media (max-width: 768px) {
   .cc-card mat-card-content {
     padding: 12px 12px 10px !important;
