@@ -13,10 +13,10 @@
       </div>
 
       @if (layout.isDesktop()) {
-    <ng-content select="[controls]"></ng-content>
-  }
+        <ng-content select="[controls]"></ng-content>
+      }
 
-  <ng-content select="[type-switcher]"></ng-content>
+      <ng-content select="[type-switcher]"></ng-content>
 
     </div>
 
@@ -27,9 +27,12 @@
       </div>
     }
 
-    <!-- CONTENT -->
-    <ng-content select="[content]"></ng-content>
-    <ng-content></ng-content>
+    <!-- BODY — the only part that grows/scrolls. Header and mobile
+         toolbar stay a fixed size above it, always. -->
+    <div class="cc-body">
+      <ng-content select="[content]"></ng-content>
+      <ng-content></ng-content>
+    </div>
 
   </mat-card-content>
 </mat-card>
