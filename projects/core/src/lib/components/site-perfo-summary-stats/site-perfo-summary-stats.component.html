@@ -1,7 +1,9 @@
 <mat-card [class]="cardClass" [class.primary-linear-gradient]="variant === 'solid'">
   <mat-card-content>
 
-    <div class="header">{{ title }}</div>
+    @if (title) {
+      <div class="header">{{ title }}</div>
+    }
 
     @if (status === 'success') {
       <div class="kpi-stats">
@@ -21,6 +23,7 @@
                   </a>
                 }
               </p>
+              <span class="kpi-stat__subvalue">{{stat.subvalue}}</span>
             </div>
           </div>
         }

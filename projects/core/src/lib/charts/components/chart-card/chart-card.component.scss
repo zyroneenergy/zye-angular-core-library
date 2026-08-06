@@ -37,6 +37,7 @@
   position: relative;
   z-index: 30;
   flex-shrink: 0;   // header never shrinks to make room for the body
+  flex-wrap: wrap
 }
 
 /* ── Titles ─────────────────────────────────────────────────────────── */

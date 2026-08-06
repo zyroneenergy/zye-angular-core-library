@@ -4,6 +4,7 @@ export interface KpiStat {
   value: string;
   icon: string;
   link?: string;
+  subvalue?: string;
 }
 
 export type StatCardVariant = 'normal' | 'solid';

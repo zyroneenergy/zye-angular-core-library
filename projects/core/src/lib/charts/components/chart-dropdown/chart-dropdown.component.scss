@@ -69,7 +69,8 @@
       border-bottom:  1px solid var(--divider-border-color);
     }
  
-    .cd-panel-body { padding: 6px; }
+    .cd-panel-body { padding: 6px;max-height: 220px;
+    overflow: auto; }
  
     @keyframes cd-drop-in {
       from { opacity: 0; transform: translateY(-6px); }

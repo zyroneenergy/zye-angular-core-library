@@ -1,5 +1,5 @@
+@use "../../../../styles/abstracts/index" as *; 
 /* ── Shimmer skeleton wrapper ────────────────────────────── */
-
 .login-shimmer-wrapper {
   padding: 4px 0;
   width: 100%;
@@ -7,7 +7,7 @@
 
 /* Error banner */
 .login-error-banner {
-  width: 100%;
+  width: calc(100% - 28px);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -18,15 +18,15 @@
   margin-bottom: 16px;
 
   &__icon {
-    color: #c0392b;
+    color: var(--actionRed);
     font-size: 18px;
     width: 18px;
     height: 18px;
   }
 
   &__text {
-    color: #c0392b;
-    font-size: 14px;
+    color: var(--actionRed);
+    font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
     line-height: 1.5;
   }
 }
@@ -59,7 +59,7 @@
 }
 
 .remember-me-checkbox {
-  font-size: 14px;
+  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
   color: var(--solarTextPrimary);
 }
 
