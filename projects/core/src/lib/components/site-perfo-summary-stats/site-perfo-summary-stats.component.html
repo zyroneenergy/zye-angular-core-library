@@ -2,19 +2,21 @@
   <mat-card-content>
 
     @if (title) {
-      <div class="header">{{ title }}</div>
+      <div class="header" [style.color]="titleColor">{{ title }}</div>
     }
 
     @if (status === 'success') {
       <div class="kpi-stats">
         @for (stat of stats; track stat.name) {
           <div class="kpi-stat">
-            <div class="kpi-stat__icon">
+            <div class="kpi-stat__icon"
+                 [style.background]="stat.iconBackground"
+                 [style.color]="stat.iconColor">
               <mat-icon fontSet="material-symbols-rounded">{{ stat.icon }}</mat-icon>
             </div>
             <div class="kpi-stat__content">
-              <span class="kpi-stat__label">{{ stat.name }}</span>
-              <p class="kpi-stat__value">
+              <span class="kpi-stat__label" [style.color]="stat.labelColor">{{ stat.name }}</span>
+              <p class="kpi-stat__value" [style.color]="stat.valueColor">
                 {{ stat.value }}
                 @if (stat.link) {
                   <br>
@@ -23,7 +25,26 @@
                   </a>
                 }
               </p>
-              <span class="kpi-stat__subvalue">{{stat.subvalue}}</span>
+
+              @if (stat.subvalue) {
+                <span class="kpi-stat__subvalue">
+                  @if (isSubvalueObject(stat.subvalue)) {
+                    @if (asSubvalueObject(stat.subvalue).icon) {
+                      <mat-icon
+                        class="kpi-stat__subvalue-icon"
+                        fontSet="material-symbols-rounded"
+                        [style.color]="asSubvalueObject(stat.subvalue).color">
+                        {{ asSubvalueObject(stat.subvalue).icon }}
+                      </mat-icon>
+                    }
+                    <span [style.color]="asSubvalueObject(stat.subvalue).color">
+                      {{ asSubvalueObject(stat.subvalue).text }}
+                    </span>
+                  } @else {
+                    {{ stat.subvalue }}
+                  }
+                </span>
+              }
             </div>
           </div>
         }
@@ -31,11 +52,8 @@
     }
 
     @else if (status === 'stale') {
-      <lib-empty-data
-        icon="isax-slash"
-        name="No Live Data Reported!"
-        description="Power generation has not started or data is unavailable"
-        textColor="white">
+      <lib-empty-data icon="isax-slash" name="No Live Data Reported!"
+        description="Power generation has not started or data is unavailable" textColor="white">
       </lib-empty-data>
     }
 
@@ -46,29 +64,20 @@
     }
 
     @else if (status === 'no-generation') {
-      <lib-empty-data
-        icon="isax-slash"
-        name="No Generation Reported!"
-        description="Power generation has not started or data is unavailable for the day"
-        textColor="white">
+      <lib-empty-data icon="isax-slash" name="No Generation Reported!"
+        description="Power generation has not started or data is unavailable for the day" textColor="white">
       </lib-empty-data>
     }
 
     @else if (status === 'empty') {
-      <lib-empty-data
-        icon="isax-folder-open"
-        name="No Data Available"
-        description="No KPI data is available for the selected date"
-        textColor="white">
+      <lib-empty-data icon="isax-folder-open" name="No Data Available"
+        description="No KPI data is available for the selected date" textColor="white">
       </lib-empty-data>
     }
 
     @else if (status === 'error') {
-      <lib-empty-data
-        icon="isax-danger"
-        name="Unable to Load KPIs"
-        description="Something went wrong while fetching KPI data"
-        textColor="white">
+      <lib-empty-data icon="isax-danger" name="Unable to Load KPIs"
+        description="Something went wrong while fetching KPI data" textColor="white">
       </lib-empty-data>
     }
 

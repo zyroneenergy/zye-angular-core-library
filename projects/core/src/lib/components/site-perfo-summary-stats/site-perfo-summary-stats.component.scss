@@ -30,6 +30,12 @@
       background: rgba(255, 255, 255, 0.06);
     }
 
+    &__content{
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
     &__icon {
       width: 40px;
       height: 40px;
@@ -143,4 +149,19 @@
   font-size: #{map-get(map-get($solar-typography, "body-1"), "font-size")};
     font-weight: 600;
     margin-bottom: 16px;
+}
+
+.kpi-stat {
+  &__subvalue {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__subvalue-icon {
+    font-size: 14px !important;
+    width: 14px !important;
+    height: 14px !important;
+    flex-shrink: 0;
+  }
 }
