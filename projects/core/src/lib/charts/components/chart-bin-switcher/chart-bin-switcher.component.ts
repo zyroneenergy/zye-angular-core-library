@@ -2,7 +2,7 @@ import {
   ChangeDetectionStrategy, Component, EventEmitter, Input, Output,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BinType, BIN_TAB_OPTIONS, BinTabOption } from '../../models/chart.model';
+import { ChartTabOption } from '../../models/generic.model';
 
 @Component({
   selector: 'lib-chart-bin-switcher',
@@ -12,8 +12,15 @@ import { BinType, BIN_TAB_OPTIONS, BinTabOption } from '../../models/chart.model
   styleUrl: './chart-bin-switcher.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChartBinSwitcherComponent {
-  @Input() activeBin: BinType = 'daily';
-  @Input() tabs: readonly BinTabOption[] = BIN_TAB_OPTIONS;
-  @Output() binChange = new EventEmitter<BinType>();
+export class ChartBinSwitcherComponent<T extends string = string> {
+  @Input({ required: true }) activeTab!: T;
+  @Input({ required: true }) tabs!: readonly ChartTabOption<T>[];
+  /** Button height in px — parent controls sizing instead of a baked-in 28px. */
+  @Input() height = 26;
+  @Output() tabChange = new EventEmitter<T>();
+
+  onSelect(tab: ChartTabOption<T>): void {
+    if (tab.key === this.activeTab) return; // guard here, not per-call-site
+    this.tabChange.emit(tab.key);
+  }
 }

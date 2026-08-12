@@ -1,9 +1,9 @@
-<div class="cbs-wrap">
+<div class="cbs-wrap" [style.--cbs-height.px]="height">
   @for (tab of tabs; track tab.key) {
     <button
       class="cbs-btn"
-      [class.active]="activeBin === tab.key"
-      (click)="binChange.emit(tab.key)">
+      [class.active]="activeTab === tab.key"
+      (click)="onSelect(tab)">
       {{ tab.label }}
     </button>
   }
