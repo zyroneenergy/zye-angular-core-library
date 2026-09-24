@@ -20,8 +20,8 @@ export class AuthTokenService {
   constructor() {}
 
   /**
-   * If persistence was intentionally configured, prefer the storage that contains the session.
-   * Otherwise default to localStorage so rememberMe semantics are preserved.
+   * Tokens always live in localStorage now — see the class doc comment for
+   * why. Kept as a method (not inlined) so callers don't have to know that.
    */
   getPreferredStorage(): Storage {
     return this.currentStorage;
@@ -29,12 +29,10 @@ export class AuthTokenService {
 
   getRememberMe(): boolean {
     const rememberMe = this.currentStorage.getItem(this.REMEMBER_ME_KEY);
-    if (rememberMe === 'true') return true;
-    if (rememberMe === 'false') return false;
-    return this.currentStorage === localStorage;
+    return rememberMe === 'true';
   }
 
-  /** Convenience boolean: true if tokens are persisted in localStorage. */
+  /** Convenience boolean: true if this session was persisted with "Remember me". */
   isRemembered(): boolean {
     return this.getRememberMe();
   }
@@ -45,7 +43,7 @@ export class AuthTokenService {
       return;
     }
 
-    const storage = rememberMe ? localStorage : sessionStorage;
+    const storage = this.currentStorage;
     storage.setItem(this.ACCESS_TOKEN_KEY, token);
 
     if (typeof expiresInSeconds === 'number' && Number.isFinite(expiresInSeconds)) {
@@ -54,7 +52,11 @@ export class AuthTokenService {
       storage.removeItem(this.ACCESS_TOKEN_EXPIRES_AT_KEY);
     }
 
-    this.clearAccessTokenFrom(this.getOtherStorage(storage));
+    // One-time migration cleanup: earlier versions kept un-remembered
+    // sessions in sessionStorage (tab-scoped, so a pasted URL in a new tab
+    // landed back on the login page). Clear any leftovers from that so a
+    // stale sessionStorage copy can never shadow the real one.
+    this.clearAccessTokenFrom(sessionStorage);
   }
 
   getAccessToken(): string | null {
@@ -71,7 +73,7 @@ export class AuthTokenService {
       return;
     }
 
-    const storage = rememberMe ? localStorage : sessionStorage;
+    const storage = this.currentStorage;
     storage.setItem(this.REFRESH_TOKEN_KEY, token);
 
     if (typeof expiresInSeconds === 'number' && Number.isFinite(expiresInSeconds)) {
@@ -80,7 +82,7 @@ export class AuthTokenService {
       storage.removeItem(this.REFRESH_TOKEN_EXPIRES_AT_KEY);
     }
 
-    this.clearRefreshTokenFrom(this.getOtherStorage(storage));
+    this.clearRefreshTokenFrom(sessionStorage);
   }
 
   getRefreshToken(): string | null {
@@ -110,11 +112,19 @@ export class AuthTokenService {
   }
 
   setSession(session: SessionInfo): void {
-    const storage = session.rememberMe ? localStorage : sessionStorage;
+    const storage = this.currentStorage;
     storage.setItem(this.SESSION_ID_KEY, session.sessionId);
     storage.setItem(this.TENANT_CODE_KEY, session.tenantCode);
     storage.setItem(this.REMEMBER_ME_KEY, String(session.rememberMe));
-    this.clearSessionFrom(this.getOtherStorage(storage));
+    this.clearSessionFrom(sessionStorage);
+  }
+
+  /** Independent of setSession() — a login can succeed (and needs its
+   *  "remember me" choice recorded) even when the JWT carries no
+   *  sessionId/tenantCode to build a SessionInfo from. */
+  setRememberMe(rememberMe: boolean): void {
+    this.currentStorage.setItem(this.REMEMBER_ME_KEY, String(rememberMe));
+    sessionStorage.removeItem(this.REMEMBER_ME_KEY);
   }
 
   getSessionId(): string | null {
@@ -155,23 +165,18 @@ export class AuthTokenService {
     this.clearSession();
   }
 
+  /**
+   * Tokens always live in localStorage, regardless of "Remember me" — a
+   * pasted URL in a fresh tab gets its own empty sessionStorage (it's
+   * scoped per browsing-context, not per browser), so anything stored
+   * there was invisible outside the tab that created it. "Remember me"
+   * still means something: it's forwarded to the backend on login and
+   * controls how long-lived the issued refresh token is, so an
+   * un-remembered session still naturally expires — it just does so via
+   * a short token lifetime instead of via tab-scoped storage.
+   */
   private get currentStorage(): Storage {
-    const rememberMe = localStorage.getItem(this.REMEMBER_ME_KEY);
-
-    if (rememberMe === 'true') {
-      return localStorage;
-    }
-
-    if (rememberMe === 'false') {
-      return sessionStorage;
-    }
-
-    return (
-      sessionStorage.getItem(this.ACCESS_TOKEN_KEY)
-      || sessionStorage.getItem(this.REFRESH_TOKEN_KEY)
-    )
-      ? sessionStorage
-      : localStorage;
+    return localStorage;
   }
 
   private clearAccessTokenFrom(storage: Storage): void {
@@ -203,9 +208,5 @@ export class AuthTokenService {
   private clearSession(): void {
     this.clearSessionFrom(localStorage);
     this.clearSessionFrom(sessionStorage);
-  }
-
-  private getOtherStorage(storage: Storage): Storage {
-    return storage === localStorage ? sessionStorage : localStorage;
   }
 }

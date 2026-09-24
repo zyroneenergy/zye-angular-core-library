@@ -179,16 +179,13 @@ export class AuthService {
     }
 
     // sessionId/tenantCode on the JWT are only required to build refresh
-    // requests for the activity-based silent-refresh flow. Projects that
-    // don't use that flow (or have no refresh token at all) must still be
-    // able to log in even if the token doesn't carry those claims.
-    const requiresSession = !!this.config?.auth?.enableActivitySilentRefresh;
+    // requests for the activity-based silent-refresh flow. A token that
+    // doesn't carry those claims must still let the user log in — it just
+    // means this session can't be silently refreshed later (buildRefreshRequest()
+    // returns null in that case, and the next refresh attempt degrades to a
+    // normal logout instead of blocking login itself, which used to fail
+    // every single login whenever the backend omitted these two claims).
     const session = this.extractSessionInfo(res.accessToken, rememberMe);
-
-    if (requiresSession && !session) {
-      this.logout();
-      return;
-    }
 
     this.persistTokens(res, session, rememberMe);
     this.userService.setUser(this.buildUserFromToken(res.accessToken));
@@ -202,6 +199,12 @@ export class AuthService {
 
     if (session) {
       this.tokenService.setSession(session);
+    } else {
+      // No sessionId/tenantCode on this token (so no SessionInfo to persist),
+      // but the "remember me" choice itself must still be recorded — it's
+      // read back by isRemembered()/tryAcquireRefreshLock() independently of
+      // whether a session was ever established.
+      this.tokenService.setRememberMe(rememberMe);
     }
 
     if (res.refreshToken) {
@@ -310,10 +313,11 @@ export class AuthService {
   }
 
   private tryAcquireRefreshLock(): boolean {
-    if (!this.tokenService.isRemembered()) {
-      return true;
-    }
-
+    // Used to skip locking entirely for un-remembered sessions, back when
+    // those lived in tab-scoped sessionStorage and so could never race
+    // across tabs. They're in shared localStorage now (see AuthTokenService),
+    // so the same multi-tab refresh race applies to every session — lock
+    // unconditionally.
     try {
       const payload = localStorage.getItem(this.REFRESH_LOCK_KEY);
       if (payload) {
@@ -332,10 +336,6 @@ export class AuthService {
   }
 
   private clearRefreshLock(): void {
-    if (!this.tokenService.isRemembered()) {
-      return;
-    }
-
     try {
       const payload = localStorage.getItem(this.REFRESH_LOCK_KEY);
       if (!payload) {

@@ -109,16 +109,26 @@ export class LoginComponent {
 
   this.authService.login(credentials, rememberMe).subscribe({
     next: (res: LoginSuccessResponse) => {
-      this.uiState.set({ status: 'success' });
       this.snackbar.success('Welcome back!');
 
       const returnUrl = sessionStorage.getItem('returnUrl');
-      if (returnUrl) {
-        sessionStorage.removeItem('returnUrl');
-        this.router.navigateByUrl(returnUrl);
-      } else {
-        this.router.navigate(['/dashboard']);
-      }
+      const navigated = returnUrl
+        ? (sessionStorage.removeItem('returnUrl'), this.router.navigateByUrl(returnUrl))
+        : this.router.navigate(['/dashboard']);
+
+      // Deliberately staying in the 'loading' state (not flipping to
+      // 'success') until the router settles — this component gets destroyed
+      // on a successful navigation anyway, so there's nothing to show in
+      // between. Flipping state first used to drop isLoading() to false and
+      // re-render the bare login form for a beat before navigation actually
+      // left the page. If navigation is ever rejected (e.g. a guard denies
+      // it), fall back to idle instead of leaving the user stuck on a
+      // spinner forever.
+      navigated.then((ok) => {
+        if (!ok) {
+          this.uiState.set({ status: 'idle' });
+        }
+      });
     },
     error: (err: any) => {
       const message = mapAuthError(err);
