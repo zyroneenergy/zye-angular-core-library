@@ -1,0 +1,273 @@
+@if (nav.isMobile()) {
+  <div class="sidenav-backdrop" [class.visible]="nav.mobileOpen()" (click)="nav.closeMobile()" aria-hidden="true"></div>
+}
+
+<nav
+  #panel
+  id="lib-sidenav"
+  class="sidenav"
+  [class.open]="nav.mobileOpen()"
+  aria-label="Main navigation"
+  [attr.inert]="nav.isMobile() && !nav.mobileOpen() ? '' : null"
+>
+  <!-- Header: brand + toggle. Collapsed rail: hovering the logo reveals the toggle (ChatGPT).
+       Mobile drawer: the toggle is a close (X) button. -->
+  <div class="sidenav__header">
+    <a class="brand" [routerLink]="homeLink()" [attr.aria-label]="brandName() + ' home'" [tabIndex]="nav.expanded() ? 0 : -1">
+      <img class="brand__logo" [src]="logoUrl()" alt="" width="28" height="28" />
+      <span class="label brand__title">{{ brandName() }}</span>
+    </a>
+
+    <button
+      #toggleBtn
+      type="button"
+      class="icon-btn sidenav__toggle"
+      (click)="nav.toggle()"
+      [attr.aria-label]="toggleLabel()"
+      [attr.aria-expanded]="nav.expanded()"
+      [matTooltip]="toggleLabel() + '  ' + shortcut"
+      [matTooltipDisabled]="nav.isMobile()"
+      matTooltipPosition="right"
+    >
+      <i class="isax" [ngClass]="toggleIcon()" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <!-- Primary navigation -->
+  <ul class="sidenav__list" role="list">
+    @for (item of items(); track item.name) {
+      @if (hasSub(item)) {
+        <li class="nav-group">
+          <div
+            class="nav-row"
+            cdkOverlayOrigin
+            #origin="cdkOverlayOrigin"
+            (mouseenter)="onGroupHover(item, true)"
+            (mouseleave)="onGroupHover(item, false)"
+          >
+            @if (item.path) {
+              <!-- With the sub-menu shown, the active child carries the highlight, not this parent. -->
+              <a
+                class="nav-item has-toggle"
+                [class.has-active-child]="subShown(item) && isUnder(item)"
+                [routerLink]="item.path"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: subShown(item) || !!item.exact }"
+                ariaCurrentWhenActive="page"
+              >
+                <ng-container [ngTemplateOutlet]="itemContent" [ngTemplateOutletContext]="{ $implicit: item }" />
+              </a>
+            } @else {
+              <button
+                type="button"
+                class="nav-item has-toggle"
+                [class.has-active-child]="isUnder(item)"
+                (click)="nav.expanded() ? toggleGroup(item) : onGroupHover(item, true)"
+                [attr.aria-expanded]="isOpen(item)"
+              >
+                <ng-container [ngTemplateOutlet]="itemContent" [ngTemplateOutletContext]="{ $implicit: item }" />
+              </button>
+            }
+            @if (nav.expanded()) {
+              <button
+                type="button"
+                class="nav-row__toggle"
+                (click)="toggleGroup(item)"
+                [attr.aria-controls]="'nav-sub-' + $index"
+                [attr.aria-expanded]="isOpen(item)"
+                [attr.aria-label]="(isOpen(item) ? 'Collapse ' : 'Expand ') + item.name"
+              >
+                <i class="isax isax-arrow-down-1" [class.is-open]="isOpen(item)" aria-hidden="true"></i>
+              </button>
+            }
+          </div>
+
+          @if (nav.expanded()) {
+            <!-- Always rendered so expand / collapse can animate its height. -->
+            <div [id]="'nav-sub-' + $index" class="nav-sub" [class.is-open]="isOpen(item)" [attr.inert]="isOpen(item) ? null : ''">
+              <div class="nav-sub__inner">
+                <ng-container [ngTemplateOutlet]="subContent" [ngTemplateOutletContext]="{ $implicit: item }" />
+              </div>
+            </div>
+          }
+
+          <!-- Collapsed rail: the sub-menu in a hover flyout -->
+          <ng-template
+            cdkConnectedOverlay
+            [cdkConnectedOverlayOrigin]="origin"
+            [cdkConnectedOverlayOpen]="flyoutFor() === item.name"
+            [cdkConnectedOverlayPositions]="flyoutPositions"
+            [cdkConnectedOverlayPush]="true"
+            (overlayOutsideClick)="closeFlyout()"
+            (detach)="closeFlyout()"
+          >
+            <div
+              class="nav-flyout"
+              role="dialog"
+              [attr.aria-label]="item.name"
+              (mouseenter)="onGroupHover(item, true)"
+              (mouseleave)="onGroupHover(item, false)"
+              (keydown.escape)="closeFlyout()"
+            >
+              @if (item.path) {
+                <a class="nav-flyout__title" [routerLink]="item.path" (click)="closeFlyout()">
+                  {{ item.name }}
+                  <i class="isax isax-arrow-right-3" aria-hidden="true"></i>
+                </a>
+              } @else {
+                <span class="nav-flyout__title">{{ item.name }}</span>
+              }
+              <div class="nav-flyout__body" (click)="closeFlyout()">
+                <ng-container [ngTemplateOutlet]="subContent" [ngTemplateOutletContext]="{ $implicit: item }" />
+              </div>
+            </div>
+          </ng-template>
+        </li>
+      } @else {
+        <li>
+          <a
+            class="nav-item"
+            [routerLink]="item.path"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: !!item.exact }"
+            ariaCurrentWhenActive="page"
+            [matTooltip]="item.name"
+            [matTooltipDisabled]="nav.expanded()"
+            matTooltipPosition="right"
+            (click)="runAction(item)"
+          >
+            <ng-container [ngTemplateOutlet]="itemContent" [ngTemplateOutletContext]="{ $implicit: item }" />
+          </a>
+        </li>
+      }
+    }
+  </ul>
+
+  <!-- Footer (customer-app layout): theme toggle, app footer items, My Account -->
+  <ul class="sidenav__list sidenav__footer" role="list">
+    @if (showThemeToggle()) {
+      <li>
+        <button
+          type="button"
+          class="nav-item"
+          (click)="toggleTheme()"
+          [attr.aria-label]="'Switch to ' + themeLabel()"
+          [matTooltip]="themeLabel()"
+          [matTooltipDisabled]="nav.expanded()"
+          matTooltipPosition="right"
+        >
+          <i class="nav-item__icon isax" [ngClass]="themeIcon()" aria-hidden="true"></i>
+          <span class="label">{{ themeLabel() }}</span>
+        </button>
+      </li>
+    }
+
+    @for (item of footer(); track item.name) {
+      <li>
+        @if (item.path) {
+          <a
+            class="nav-item"
+            [routerLink]="item.path"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            [matTooltip]="item.name"
+            [matTooltipDisabled]="nav.expanded()"
+            matTooltipPosition="right"
+            (click)="runAction(item)"
+          >
+            <ng-container [ngTemplateOutlet]="itemContent" [ngTemplateOutletContext]="{ $implicit: item }" />
+          </a>
+        } @else {
+          <button
+            type="button"
+            class="nav-item"
+            (click)="runAction(item)"
+            [matTooltip]="item.name"
+            [matTooltipDisabled]="nav.expanded()"
+            matTooltipPosition="right"
+          >
+            <ng-container [ngTemplateOutlet]="itemContent" [ngTemplateOutletContext]="{ $implicit: item }" />
+          </button>
+        }
+      </li>
+    }
+
+    @if (showLogout() || accountMenu().length) {
+      <li>
+        <button
+          type="button"
+          class="nav-item"
+          [matMenuTriggerFor]="account"
+          [matTooltip]="accountLabel()"
+          [matTooltipDisabled]="nav.expanded()"
+          matTooltipPosition="right"
+        >
+          <i class="nav-item__icon isax isax-profile-circle" aria-hidden="true"></i>
+          <span class="label">{{ accountLabel() }}</span>
+          <i class="label isax isax-arrow-up-2 nav-item__trail" aria-hidden="true"></i>
+        </button>
+      </li>
+    }
+  </ul>
+</nav>
+
+<mat-menu #account="matMenu" class="app-panel lib-account-menu" xPosition="after" yPosition="above">
+  @for (item of accountMenu(); track item.name) {
+    @if (item.path) {
+      <a mat-menu-item [routerLink]="item.path" (click)="runAction(item)">
+        <i class="lib-account-menu__icon" [ngClass]="item.icon" aria-hidden="true"></i>
+        <span>{{ item.name }}</span>
+      </a>
+    } @else {
+      <button mat-menu-item (click)="runAction(item)">
+        <i class="lib-account-menu__icon" [ngClass]="item.icon" aria-hidden="true"></i>
+        <span>{{ item.name }}</span>
+      </button>
+    }
+  }
+  @if (showLogout()) {
+    <button mat-menu-item class="lib-account-menu__danger" (click)="logout()">
+      <i class="isax isax-logout lib-account-menu__icon" aria-hidden="true"></i>
+      <span>Log out</span>
+    </button>
+  }
+</mat-menu>
+
+<!-- Icon + label (+ badge) of an item -->
+<ng-template #itemContent let-item>
+  <i class="nav-item__icon" [ngClass]="item.icon" aria-hidden="true"></i>
+  <span class="label">{{ item.name }}</span>
+  @if (item.badge != null && item.badge !== '') {
+    <span class="label nav-item__badge">{{ item.badge }}</span>
+  }
+</ng-template>
+
+<!-- Sub-menu body: custom template, else the children as links -->
+<ng-template #subContent let-item>
+  @if (item.submenu) {
+    <ng-container [ngTemplateOutlet]="item.submenu" />
+  } @else {
+    <ul class="nav-children" role="list">
+      @for (child of item.children; track child.name) {
+        <li>
+          <a
+            class="nav-child"
+            [routerLink]="child.path"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: !!child.exact }"
+            ariaCurrentWhenActive="page"
+            (click)="runAction(child)"
+          >
+            @if (child.icon) {
+              <i class="nav-child__icon" [ngClass]="child.icon" aria-hidden="true"></i>
+            }
+            <span class="nav-child__label">{{ child.name }}</span>
+            @if (child.badge != null && child.badge !== '') {
+              <span class="nav-item__badge">{{ child.badge }}</span>
+            }
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</ng-template>

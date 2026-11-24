@@ -1,0 +1,25 @@
+// ════════════════════════════════════════════════════════════════
+// Complete global stylesheet for apps built on this library.
+// In the app's styles.scss (with the library styles folder on includePaths):
+//
+//   @use "core";
+//
+// Light + dark themes live under body.light-theme / body.dark-theme
+// (ThemeService switches them). Typography and density are emitted once.
+// ════════════════════════════════════════════════════════════════
+@use "@angular/material" as mat;
+@use "abstracts" as *;
+@use "themes/light-theme";
+@use "themes/dark-theme";
+@use "themes/theme-variables";
+@use "base/reset";
+@use "base/scrollbar";
+@use "base/typography-utils";
+@use "layout/spacing";
+@use "layout/form-field";
+@use "material/mat-overrides";
+@use "components/overlays";
+@use "components/page-actions";
+
+@include mat.core();
+@include mat.typography-hierarchy($solar-typography);

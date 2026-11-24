@@ -15,3 +15,4 @@ export * from './side-bar/side-bar.component';
 export * from './site-perfo-summary-stats/site-perfo-summary-stats.component';
 export * from './sort-control/sort-control.component';
 export * from './button/button.component';
+export * from './side-panel/side-panel.component';

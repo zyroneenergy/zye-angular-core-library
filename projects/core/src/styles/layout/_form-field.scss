@@ -8,9 +8,14 @@
   --form-radius: 8px;
   --form-height: 40px;
   --form-padding: 12px;
-  --form-placeholder-color: #{map-get($solar-grey-colors, grey-3)};
+  --form-placeholder-color: #a3afc0;
   --form-text-color: var(--solarTextPrimary);
 }
+
+// Placeholders get their own, clearly lighter tone per theme so filled and
+// empty fields never look alike; values stay at the primary text colour.
+body.light-theme { --form-placeholder-color: #a3afc0; }
+body.dark-theme  { --form-placeholder-color: #66768f; }
 .mat-mdc-form-field {
   width: 100%;
   display: flex;
@@ -62,9 +67,42 @@
     text-align: start;
   }
 
-  .mat-mdc-input-element::placeholder {
-    color: #{map-get($solar-grey-colors, grey-3)} !important;
+  .mat-mdc-input-element::placeholder,
+  textarea.mat-mdc-input-element::placeholder {
+    color: var(--form-placeholder-color) !important;
+    -webkit-text-fill-color: var(--form-placeholder-color);
+    font-weight: 400;
     opacity: 1;
+  }
+
+  .mat-mdc-select-placeholder {
+    -webkit-text-fill-color: var(--form-placeholder-color);
+    font-weight: 400;
+  }
+
+  // ── Read-only / disabled: the value stays fully legible; the box greys out
+  // instead, so it reads as "locked" rather than "faded / empty".
+  .mdc-text-field.mdc-text-field--disabled,
+  .mdc-text-field:has(.mat-mdc-input-element[readonly]) {
+    background-color: var(--colorGrey1) !important;
+    border-color: var(--divider-border-color);
+    cursor: not-allowed;
+
+    &:hover,
+    &:focus-within {
+      border-color: var(--divider-border-color);
+      box-shadow: none;
+    }
+
+    .mat-mdc-input-element,
+    .mat-mdc-select-value,
+    .mat-mdc-select-value-text {
+      color: var(--solarTextPrimary) !important;
+      -webkit-text-fill-color: var(--solarTextPrimary); // Safari dims disabled inputs
+      cursor: not-allowed;
+    }
+
+    .mat-mdc-select-arrow { opacity: 0.4; }
   }
 
   /* select arrow icon alignment */
@@ -92,7 +130,7 @@ font-size: mat.font-size(
 ) !important;
 }
 .mat-mdc-select-placeholder {
-color: var(--solarTextThird) !important;
+color: var(--form-placeholder-color) !important;
 font-size: mat.font-size(
   mat.get-typography-config($solar-typography, "body-2"),
   "body-2"

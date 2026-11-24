@@ -1,0 +1,22 @@
+<lib-sidenav
+  [brandName]="brandName()"
+  [logoUrl]="logoUrl()"
+  [brandLink]="brandLink()"
+  [menuItems]="menuItems()"
+  [footerItems]="footerItems()"
+  [accountItems]="accountItems()"
+  [showThemeToggle]="showThemeToggle()"
+  [showLogout]="showLogout()"
+/>
+
+<main class="shell-main">
+  @if (nav.isMobile()) {
+    <lib-mobile-top-bar>
+      <ng-content select="[shellMobileActions]" ngProjectAs="[actions]" />
+    </lib-mobile-top-bar>
+  }
+
+  <div class="shell-content" [class.is-mobile]="nav.isMobile()" [class.is-flush]="flush()">
+    <ng-content />
+  </div>
+</main>

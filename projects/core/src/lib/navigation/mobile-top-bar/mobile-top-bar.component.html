@@ -1,0 +1,19 @@
+<header class="top-nav">
+  <button
+    type="button"
+    class="top-nav__btn"
+    (click)="nav.toggle()"
+    aria-label="Open menu"
+    aria-controls="lib-sidenav"
+    [attr.aria-expanded]="nav.mobileOpen()"
+  >
+    <i class="isax isax-textalign-left" aria-hidden="true"></i>
+  </button>
+
+  <h1 class="top-nav__title">{{ pageTitle() }}</h1>
+
+  <!-- Same width as the menu button, so the title stays centred. -->
+  <div class="top-nav__actions">
+    <ng-content select="[actions]" />
+  </div>
+</header>

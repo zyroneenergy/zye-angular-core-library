@@ -9,6 +9,7 @@ export class UserService {
 
   public userId = computed(() => this.userInfo()?.userId ?? null);
   public username = computed(() => this.userInfo()?.username ?? null);
+  public firstName = computed(() => this.userInfo()?.firstName ?? null);
   public isAuthenticated = computed(() => !!this.userInfo());
   public userData = computed(() => this.userInfo());
   public tenantId = computed(() => this.userInfo()?.tenantId ?? null);
@@ -24,12 +25,9 @@ export class UserService {
   }
 
   hasRole(role: string): boolean {
-    const roles = this.userInfo()?.roles;
-    if (Array.isArray(roles)) {
-      return roles.includes(role);
-    }
-
-    return roles === role;
+    const wanted = role.trim().toLowerCase();
+    const roles = this.userInfo()?.roles ?? [];
+    return (Array.isArray(roles) ? roles : [roles]).some(r => r.trim().toLowerCase() === wanted);
   }
 }
 

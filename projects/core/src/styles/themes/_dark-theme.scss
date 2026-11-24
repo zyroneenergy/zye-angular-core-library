@@ -42,8 +42,10 @@ $solar-dark-theme: map.set($solar-dark-theme, "color",      "background", $_dark
 $solar-dark-theme: map.set($solar-dark-theme, "background",               $_dark-bg-palette);
 
 // ── .dark-theme class ─────────────────────────────────────────────────────────
+// Only COLOR styles here — typography & density are emitted once, globally,
+// in _light-theme.scss (they are identical for both themes).
 .dark-theme {
-  @include mat.all-component-themes($solar-dark-theme); 
+  @include mat.all-component-colors($solar-dark-theme);
   @include mapbox-dark();
 
   @each $name, $color in $solar-action-colors {
@@ -55,6 +57,8 @@ $solar-dark-theme: map.set($solar-dark-theme, "background",               $_dark
   --solarTextPrimary:   #{map.get($solar-surface-color, 50)};
   --solarTextSecondary: #{map.get($solar-surface-color, 100)};
   --solarTextThird:     #{map.get($solar-surface-color, 300)};
+  // Locked / read-only surface (form fields, disabled tiles).
+  --colorGrey1: color-mix(in srgb, var(--solarTextThird) 9%, transparent);
   --fontSize:     #{$solar-default-font-size}px;
   --fontWeight:   #{$solar-default-font-weight};
   --borderRadius: #{$solar-default-border-radius}px;

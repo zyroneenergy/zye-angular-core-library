@@ -1,0 +1,481 @@
+// Colour tokens, from the active theme (light / dark). Also applied to the flyout,
+// which renders in the CDK overlay (outside :host) where host properties don't reach.
+@mixin color-tokens {
+  --sn-ease: cubic-bezier(0.2, 0, 0, 1);
+  --sn-bg: var(--mat-sidenav-container-background-color, var(--surfaceBackground));
+  --sn-border: var(--divider-border-color);
+  --sn-fg: var(--solarTextSecondary);
+  --sn-fg-strong: var(--solarTextPrimary);
+  --sn-fg-muted: var(--solarTextThird);
+  --sn-hover: color-mix(in srgb, var(--solarTextPrimary) 7%, transparent);
+  --sn-active: color-mix(in srgb, var(--solarTextPrimary) 11%, transparent);
+  --sn-accent: var(--primary500);
+}
+
+// Geometry keeps every icon on the same vertical axis (x = 32px) in both states:
+// only the rail width animates and labels fade, so nothing "jumps".
+:host {
+  --sn-rail: 64px;
+  --sn-wide: 260px;
+  --sn-drawer: min(300px, 85vw);
+  --sn-pad: 10px;
+  --sn-duration: 220ms;
+
+  @include color-tokens;
+
+  display: block;
+  flex: none;
+  position: relative;
+  height: 100%;
+  width: var(--sn-wide);
+  transition: width var(--sn-duration) var(--sn-ease);
+  z-index: 1000;
+}
+
+:host(.is-collapsed) {
+  width: var(--sn-rail);
+}
+
+// ── Panel ─────────────────────────────────────────────────────────────────────
+.sidenav {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--sn-pad);
+  background: var(--sn-bg);
+  border-right: 1px solid var(--sn-border);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+// ── Labels: fade in after the rail starts opening, fade out immediately ──────
+.label {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 1;
+  transition: opacity 160ms var(--sn-ease) 60ms;
+}
+
+:host(.is-collapsed) .label {
+  opacity: 0;
+  transition-delay: 0ms;
+  transition-duration: 80ms;
+}
+
+// ── Shared buttons ────────────────────────────────────────────────────────────
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--sn-fg);
+  cursor: pointer;
+  transition: background-color 120ms, color 120ms, opacity 120ms;
+
+  i { font-size: 20px; }
+
+  &:hover {
+    background: var(--sn-hover);
+    color: var(--sn-fg-strong);
+  }
+}
+
+:where(a, button):focus-visible {
+  outline: 2px solid var(--sn-accent);
+  outline-offset: -2px;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+.sidenav__header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 56px;
+  flex: none;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 0 8px;
+  color: var(--sn-fg-strong);
+  text-decoration: none;
+  border-radius: 8px;
+
+  &__logo {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    object-fit: contain;
+    transition: opacity 120ms;
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 600;
+  }
+}
+
+// Collapsed: the toggle sits on the logo and is revealed on hover / focus.
+:host(.is-collapsed) {
+  .sidenav__toggle {
+    position: absolute;
+    left: 4px; // 10px pad + 4px → centred on the 32px icon axis
+    opacity: 0;
+  }
+
+  .sidenav__header:hover,
+  .sidenav__header:focus-within {
+    .sidenav__toggle { opacity: 1; }
+    .brand__logo { opacity: 0; }
+  }
+}
+
+// ── Nav list ──────────────────────────────────────────────────────────────────
+.sidenav__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 40px;
+  padding: 0 12px; // 10px pad + 12px + 10px half-icon = 32px axis
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--sn-fg);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color 120ms, color 120ms;
+
+  &__icon {
+    flex: none;
+    width: 20px; // box stays 20px so icons keep the 32px axis
+    font-size: 18px;
+    line-height: 1;
+    text-align: center;
+  }
+
+  &__badge {
+    flex: none;
+    margin-left: auto;
+    min-width: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--sn-accent) 14%, transparent);
+    color: var(--sn-accent);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+  }
+
+  &:hover {
+    background: var(--sn-hover);
+    color: var(--sn-fg-strong);
+  }
+
+  &.active {
+    background: var(--sn-active);
+    color: var(--sn-fg-strong);
+    font-weight: 600;
+
+    .nav-item__icon { color: var(--sn-accent); }
+  }
+}
+
+// Parent whose active child is visible below it: no fill, just a "you're in here" cue.
+.nav-item.has-active-child {
+  color: var(--sn-fg-strong);
+  font-weight: 600;
+
+  .nav-item__icon { color: var(--sn-accent); }
+}
+
+// ── Item with a sub-menu ──────────────────────────────────────────────────────
+.nav-row {
+  position: relative;
+
+  &__toggle {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--sn-fg);
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: background-color 120ms, color 120ms;
+
+    &:hover { background: var(--sn-hover); color: var(--sn-fg-strong); }
+
+    .isax {
+      font-size: 14px;
+      line-height: 1;
+      transition: transform 180ms var(--sn-ease);
+      &.is-open { transform: rotate(180deg); }
+    }
+  }
+}
+
+:host(:not(.is-collapsed)) .nav-item.has-toggle { padding-right: 40px; }
+
+// Height animates open / closed via grid 0fr → 1fr (no fixed max-height).
+.nav-sub {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 220ms var(--sn-ease), opacity 160ms var(--sn-ease);
+
+  &.is-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  &__inner {
+    min-height: 0;
+    overflow: hidden;
+    padding: 2px 0 6px 21px; // guide line on the icon axis: 10px pad + 21px ≈ 32px
+  }
+}
+
+.nav-children {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0 0 0 12px;
+  border-left: 1px solid var(--sn-border);
+  list-style: none;
+}
+
+.nav-child {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: var(--sn-fg);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 120ms, color 120ms;
+
+  &__icon { flex: none; font-size: 16px; line-height: 1; }
+
+  &__label {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &:hover { background: var(--sn-hover); color: var(--sn-fg-strong); }
+
+  &.active {
+    background: var(--sn-active);
+    color: var(--sn-fg-strong);
+    font-weight: 600;
+
+    .nav-child__icon { color: var(--sn-accent); }
+  }
+}
+
+@keyframes nav-sub-in {
+  from { opacity: 0; transform: translateY(-4px); }
+}
+
+// Collapsed-rail flyout (rendered in the CDK overlay; still scoped to this component).
+.nav-flyout {
+  @include color-tokens;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 260px;
+  padding: 10px;
+  background: var(--sn-bg);
+  border: 1px solid var(--sn-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  animation: nav-sub-in 140ms var(--sn-ease);
+
+  &__body { padding: 0 0 2px 8px; }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 6px 6px;
+    color: var(--sn-fg-strong);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+
+    .isax { font-size: 14px; line-height: 1; color: var(--sn-fg); }
+    &:hover .isax { color: var(--sn-accent); }
+  }
+}
+
+// ── Footer ────────────────────────────────────────────────────────────────────
+.sidenav__footer {
+  flex: none;
+  margin: 0;
+  padding: 8px 0 12px;
+  border-top: 1px solid var(--sn-border);
+  overflow: visible;
+}
+
+.nav-item__trail {
+  flex: none;
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--sn-fg);
+}
+
+.nav-item[aria-expanded='true'] {
+  background: var(--sn-hover);
+  color: var(--sn-fg-strong);
+}
+
+.lib-account-menu__icon {
+  width: 20px;
+  margin-right: 10px;
+  font-size: 18px;
+  line-height: 1;
+  text-align: center;
+  vertical-align: middle;
+}
+
+// ── Mobile: off-canvas drawer (ChatGPT / Claude app style) ────────────────────
+// A rounded sheet that slides in over the page, a blurred dim backdrop behind
+// it, roomier rows for thumbs. While a swipe is in progress the drawer and the
+// backdrop follow --sn-progress (0 closed → 1 open) with transitions off.
+:host(.is-mobile) {
+  --sn-drawer: min(320px, 86vw);
+  --sn-sheet-ease: cubic-bezier(0.32, 0.72, 0, 1);
+
+  width: 0;
+  transition: none;
+
+  .sidenav {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: var(--sn-drawer);
+    padding: env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
+    border-right: 0;
+    border-radius: 0 20px 20px 0;
+    transform: translateX(-100%);
+    transition: transform 340ms var(--sn-sheet-ease), box-shadow 340ms;
+    will-change: transform;
+    z-index: 1001;
+    touch-action: pan-y;
+
+    &.open {
+      transform: none;
+      box-shadow: 8px 0 40px rgba(0, 0, 0, 0.28);
+    }
+  }
+
+  .sidenav__header { height: 60px; }
+
+  .sidenav__toggle i { font-size: 22px; }
+
+  .nav-item {
+    height: 46px;
+    font-size: 15px;
+    border-radius: 12px;
+
+    &__icon { font-size: 20px; }
+
+    &:active { background: var(--sn-active); }
+  }
+
+  .nav-child { height: 40px; font-size: 14px; }
+
+  .sidenav__footer { padding-bottom: 16px; }
+}
+
+// Finger-following drag (see sidenav-swipe.ts).
+:host(.is-mobile.is-dragging) {
+  .sidenav {
+    transition: none;
+    transform: translateX(calc((var(--sn-progress, 0) - 1) * 100%));
+    box-shadow: 8px 0 40px rgba(0, 0, 0, calc(0.28 * var(--sn-progress, 0)));
+  }
+
+  .sidenav-backdrop {
+    visibility: visible;
+    transition: none;
+    opacity: var(--sn-progress, 0);
+  }
+}
+
+.sidenav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 340ms var(--sn-ease), visibility 0s linear 340ms;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: pan-y;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  .sidenav,
+  .label,
+  .sidenav-backdrop,
+  .nav-sub,
+  .nav-flyout {
+    transition-duration: 0s !important;
+    animation: none !important;
+  }
+}

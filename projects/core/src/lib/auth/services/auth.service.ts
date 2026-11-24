@@ -21,11 +21,20 @@ interface JwtPayload {
   sub?: string;
   username?: string;
   name?: string;
+  firstName?: string;
+  given_name?: string;
   tenantId?: string;
   tenantCode?: string;
   sessionId?: string;
+  /** The API signs role codes as `role`; `roles` is accepted for other issuers. */
+  role?: string | string[];
   roles?: string | string[];
+  roleIds?: string[];
+  moduleAccessMap?: Record<string, string>;
 }
+
+const toArray = <T>(value: T | T[] | null | undefined): T[] =>
+  Array.isArray(value) ? value : value != null ? [value] : [];
 
 @Injectable({
   providedIn: 'root',
@@ -423,9 +432,12 @@ export class AuthService {
     return {
       userId: payload.userId ?? payload.sub ?? '',
       username: payload.username ?? payload.name ?? '',
+      firstName: (payload.firstName ?? payload.given_name)?.trim() || undefined,
       tenantId: payload.tenantId ?? '',
       tenantCode: payload.tenantCode ?? '',
-      roles: Array.isArray(payload.roles) ? payload.roles : payload.roles ? [payload.roles] : [],
+      roles: [...new Set([...toArray(payload.role), ...toArray(payload.roles)])],
+      roleIds: toArray(payload.roleIds),
+      moduleAccess: payload.moduleAccessMap ?? {},
     };
   }
 

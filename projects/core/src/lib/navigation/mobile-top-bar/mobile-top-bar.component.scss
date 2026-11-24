@@ -1,0 +1,66 @@
+// ChatGPT / Claude mobile header: menu left, centred title, actions right.
+// Translucent with a blur so page content reads through as it scrolls under.
+:host {
+  display: block;
+  flex: none;
+  position: relative;
+  z-index: 10;
+}
+
+.top-nav {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) minmax(44px, auto);
+  align-items: center;
+  gap: 4px;
+  height: 52px;
+  padding: env(safe-area-inset-top) 6px 0;
+  background: color-mix(in srgb, var(--mat-sidenav-content-background-color, var(--app-bg)) 82%, transparent);
+  backdrop-filter: saturate(160%) blur(14px);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  border-bottom: 1px solid color-mix(in srgb, var(--divider-border-color) 70%, transparent);
+  box-sizing: content-box;
+
+  &__title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-align: center;
+    color: var(--solarTextPrimary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+
+  &__btn {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--solarTextPrimary);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 120ms, transform 120ms;
+
+    i { font-size: 24px; }
+
+    &:hover { background: color-mix(in srgb, var(--solarTextPrimary) 7%, transparent); }
+    &:active { transform: scale(0.94); background: color-mix(in srgb, var(--solarTextPrimary) 10%, transparent); }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary500);
+      outline-offset: -2px;
+    }
+  }
+}

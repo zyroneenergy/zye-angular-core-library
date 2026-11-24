@@ -16,10 +16,20 @@ $solar-light-theme: mat.define-light-theme((
   density: 0,
 ));
 
-// ⚠️ .light-theme only re-colors — never re-emits the full theme.
-//    mat.all-component-themes() in styles.scss already covered the full output.
+// ── Theme-independent styles (emitted ONCE, globally) ─────────────────────────
+// Typography and density are identical for light and dark, so they must be
+// generated a single time. Emitting them inside both theme classes (via
+// mat.all-component-themes) triggers Angular Material's
+// "same typography/density styles are generated multiple times" warning and
+// bloats the CSS bundle.
+// See https://github.com/angular/components/blob/main/guides/duplicate-theming-styles.md
+@include mat.all-component-typographies($solar-light-theme);
+@include mat.all-component-densities($solar-light-theme);
+
+// ── .light-theme class ────────────────────────────────────────────────────────
+// Theme classes only emit COLOR styles — never the full theme.
 .light-theme {
-  @include mat.all-component-themes($solar-light-theme);
+  @include mat.all-component-colors($solar-light-theme);
   @include mapbox-light();
 
   @each $name, $color in $solar-action-light-colors {
@@ -30,6 +40,8 @@ $solar-light-theme: mat.define-light-theme((
   --solarTextPrimary:   #{map.get($solar-surface-color, 800)};
   --solarTextSecondary: #{map.get($solar-surface-color, 700)};
   --solarTextThird:     #{map.get($solar-surface-color, 600)};
+  // Locked / read-only surface (form fields, disabled tiles).
+  --colorGrey1: color-mix(in srgb, var(--solarTextThird) 9%, transparent);
 
   --kpi-icon-bg-color: #{map.get($solar-indigo-color, 50)};
   --kpi-icon-color:    #{map.get($solar-surface-color, 900)};

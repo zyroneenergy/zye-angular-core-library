@@ -7,7 +7,8 @@ import { filter, map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EventNames, EventsService } from '../../services/frontend/events.service';
 import { ThemeService } from '../../services/frontend/theme.service';
-import { LayoutService } from '../../services';
+import { LayoutService } from '../../services/frontend/layout.service';
+import { SidenavService } from '../../navigation/sidenav.service';
 
 @Component({
   selector: 'lib-top-nav-bar',
@@ -24,6 +25,7 @@ export class TopNavBarComponent {
   private readonly eventsService = inject(EventsService);
   private readonly themeService = inject(ThemeService);
   private readonly layout = inject(LayoutService);
+  private readonly sidenav = inject(SidenavService);
 
   // Signals for reactive state management
   readonly pageTitle = signal<string>('Dashboard');
@@ -102,6 +104,8 @@ export class TopNavBarComponent {
    * Toggle the side navigation drawer
    */
   toggleSidenav(): void {
+    this.sidenav.toggle();
+    // Legacy listeners (apps with their own sidebar) still get the event.
     this.eventsService.emitEvent('ToggleSidenav', {});
   }
 

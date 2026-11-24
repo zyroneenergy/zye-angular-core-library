@@ -1,0 +1,152 @@
+:host {
+  --sp-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --sp-bg: var(--mat-sidenav-container-background-color, var(--surfaceBackground));
+  --sp-border: var(--divider-border-color);
+
+  position: fixed;
+  inset: 0;
+  z-index: 1100; // above the app sidebar (1000–1001)
+  pointer-events: none;
+}
+
+:host(.is-open) {
+  pointer-events: auto;
+}
+
+// ── Backdrop ──────────────────────────────────────────────────────────────────
+.sp-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 280ms var(--sp-ease);
+}
+
+:host(.is-open) .sp-backdrop {
+  opacity: 1;
+}
+
+// ── Sheet ─────────────────────────────────────────────────────────────────────
+.sp {
+  position: absolute;
+  inset: 0 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: min(var(--sp-width, 450px), 100vw);
+  background: var(--sp-bg);
+  color: var(--solarTextPrimary);
+  border-left: 1px solid var(--sp-border);
+  box-shadow: -16px 0 48px rgba(0, 0, 0, 0.18);
+  transform: translateX(100%);
+  transition: transform 320ms var(--sp-ease), visibility 0s linear 320ms;
+  visibility: hidden;
+  outline: none;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  box-sizing: border-box;
+}
+
+:host(.is-open) .sp {
+  transform: none;
+  visibility: visible;
+  transition: transform 320ms var(--sp-ease), visibility 0s;
+}
+
+.sp__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: none;
+  padding: 20px 16px 16px 24px;
+  border-bottom: 1px solid var(--sp-border);
+}
+
+.sp__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sp__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.sp__subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--solarTextSecondary);
+}
+
+.sp__close {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  margin-top: -4px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--solarTextSecondary);
+  cursor: pointer;
+  transition: background-color 120ms, color 120ms;
+
+  i { font-size: 22px; }
+
+  &:hover {
+    background: color-mix(in srgb, var(--solarTextPrimary) 7%, transparent);
+    color: var(--solarTextPrimary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary500);
+    outline-offset: -2px;
+  }
+}
+
+.sp__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px 24px;
+}
+
+.sp__footer {
+  flex: none;
+
+  &:not(:empty) {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 24px;
+    border-top: 1px solid var(--sp-border);
+  }
+}
+
+// ── Phone: full-screen sheet ─────────────────────────────────────────────────
+@media (max-width: 599.98px) {
+  .sp {
+    width: 100vw;
+    border-left: 0;
+  }
+
+  .sp__header { padding: 16px 12px 14px 16px; }
+  .sp__body { padding: 16px; }
+  .sp__footer:not(:empty) { padding: 12px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp,
+  .sp-backdrop {
+    transition-duration: 0s !important;
+  }
+}

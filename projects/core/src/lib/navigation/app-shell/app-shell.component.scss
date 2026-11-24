@@ -1,0 +1,33 @@
+// [ sidebar | page ]. The sidebar animates its own width; the page simply flexes.
+:host {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.shell-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  // Pages that don't set their own colours inherit the theme's from here.
+  background: var(--mat-sidenav-content-background-color, var(--app-bg));
+  color: var(--mat-sidenav-content-text-color, var(--solarTextPrimary));
+}
+
+.shell-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px;
+
+  &.is-mobile {
+    // Pages scroll vertically only; wide content (tables) scrolls in its own container.
+    overflow-x: hidden;
+    padding: 16px;
+  }
+
+  &.is-flush { padding: 0; }
+}

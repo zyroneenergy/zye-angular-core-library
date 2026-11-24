@@ -17,6 +17,10 @@ export interface MenuItem {
   children?: MenuItem[];
 }
 
+/**
+ * @deprecated Use `lib-app-shell` (or `lib-sidenav`) from the navigation module:
+ * collapsible rail, mobile drawer, role-filtered items, account menu.
+ */
 @Component({
   selector: "lib-side-bar",
   standalone: true,

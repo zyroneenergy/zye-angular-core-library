@@ -1,4 +1,4 @@
-import { Component, computed, Inject, Optional, signal, ViewEncapsulation } from '@angular/core';
+import { Component, computed, Inject, inject, signal, ViewEncapsulation } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { AuthLayoutComponent } from "../auth-layout/auth-layout.component";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -19,6 +19,7 @@ import { CoreConfig } from '../../../config/core-config';
 import { CORE_CONFIG } from '../../../config/core-config.token';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { LoginCredentials } from '../../models/login-credentials';
+import { AccessService } from '../../../access/access.service';
 
 @Component({
   selector: 'lib-login',
@@ -55,6 +56,8 @@ export class LoginComponent {
   /** Welcome title for the login card */
   loginTitle: string;
   loginSubTitle?: string;
+  readonly logoUrl: string;
+  private readonly access = inject(AccessService);
 
   constructor(
     private fb: FormBuilder,
@@ -67,6 +70,7 @@ export class LoginComponent {
   ) {
     this.loginTitle = this.config.auth.loginTitle ?? `Aegis`;
     this.loginSubTitle = this.config.auth.loginSubtitle ?? `Portfolio Intelligence for Renewable Finance`;
+    this.logoUrl = this.config.auth.logoUrl ?? 'assets/images/company-logo-primary.png';
     this.initializeForm();
   }
 
@@ -114,7 +118,7 @@ export class LoginComponent {
       const returnUrl = sessionStorage.getItem('returnUrl');
       const navigated = returnUrl
         ? (sessionStorage.removeItem('returnUrl'), this.router.navigateByUrl(returnUrl))
-        : this.router.navigate(['/dashboard']);
+        : this.router.navigateByUrl(this.access.homeUrl());
 
       // Deliberately staying in the 'loading' state (not flipping to
       // 'success') until the router settles — this component gets destroyed

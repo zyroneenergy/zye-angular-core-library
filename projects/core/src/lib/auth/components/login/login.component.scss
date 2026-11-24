@@ -1,101 +1,104 @@
 @use "../../../../styles/abstracts/index" as *; 
-/* ── Shimmer skeleton wrapper ────────────────────────────── */
-.login-shimmer-wrapper {
-  padding: 4px 0;
-  width: 100%;
-}
 
-/* Error banner */
-.login-error-banner {
-  width: calc(100% - 28px);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background-color: rgba(192, 57, 43, 0.08);
-  border: 1px solid rgba(192, 57, 43, 0.25);
-  margin-bottom: 16px;
-
-  &__icon {
-    color: var(--actionRed);
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+lib-login {
+  /* ── Shimmer skeleton wrapper ────────────────────────────── */
+  .login-shimmer-wrapper {
+    padding: 4px 0;
+    width: 100%;
   }
 
-  &__text {
-    color: var(--actionRed);
+  /* Error banner */
+  .login-error-banner {
+    width: calc(100% - 28px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background-color: rgba(192, 57, 43, 0.08);
+    border: 1px solid rgba(192, 57, 43, 0.25);
+    margin-bottom: 16px;
+
+    &__icon {
+      color: var(--actionRed);
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    &__text {
+      color: var(--actionRed);
+      font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+      line-height: 1.5;
+    }
+  }
+
+  /* Submit button */
+  .login-submit-btn {
+    position: relative;
+    height: 42px !important;
+    width: 100%;
+
+    mat-spinner {
+      position: absolute;
+    }
+
+    &__label--hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  .forgot-remember-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; // unchanged for projects without the flag
+    margin-bottom: 16px;
+
+    &.has-remember-me {
+      justify-content: space-between;
+    }
+  }
+
+  .remember-me-checkbox {
     font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
-    line-height: 1.5;
-  }
-}
-
-/* Submit button */
-.login-submit-btn {
-  position: relative;
-  height: 42px !important;
-  width: 100%;
-
-  mat-spinner {
-    position: absolute;
+    color: var(--solarTextPrimary);
   }
 
-  &__label--hidden {
-    opacity: 0;
-    visibility: hidden;
+  .forgot-password-link {
+    color: var(--primary500);
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
-}
-
-.forgot-remember-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end; // unchanged for projects without the flag
-  margin-bottom: 16px;
-
-  &.has-remember-me {
-    justify-content: space-between;
+  .heading{
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
   }
-}
-
-.remember-me-checkbox {
-  font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
-  color: var(--solarTextPrimary);
-}
-
-.forgot-password-link {
-  color: var(--primary500);
-  font-weight: 500;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
+  .title{
+    font-size: var(--fontSize);
+    font-weight: 600;
+    color: var(--solarTextPrimary);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
   }
-}
-.heading{
-  display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.title{
-  font-size: var(--fontSize);
-  font-weight: 600;
-  color: var(--solarTextPrimary);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.register-text {
-  text-align: center;
-  color: var(--solarTextPrimary);
-}
+  .register-text {
+    text-align: center;
+    color: var(--solarTextPrimary);
+  }
 
-.register-link {
-  color: var(--primary500);
-  font-weight: 500;
-  text-decoration: none;
+  .register-link {
+    color: var(--primary500);
+    font-weight: 500;
+    text-decoration: none;
 
-  &:hover {
-    text-decoration: underline;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }

@@ -1,0 +1,124 @@
+@use "@angular/material" as mat;
+@use "../../../styles/abstracts/index" as *;
+
+// Card + form styles shared by every auth screen. Mixin only (no CSS output),
+// so each component includes it under its own scope and nothing leaks into
+// the app (auth components use ViewEncapsulation.None).
+@mixin auth-card-styles {
+  /* ===========================
+     Shared "card" and form styles
+     - This covers .login-card, .register-card, .update-card so you don't need duplicates
+     - Child pages keep the same HTML structure but remove repeated scss
+     =========================== */
+
+  .login-card,
+  .register-card,
+  .update-card,
+  .forgot-card,
+  .otp-card,
+  .auth-card {
+    padding: 24px 36px;
+    border-radius: var(--borderRadius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 449px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  /* typography used inside the cards */
+  .welcome-text {
+    font-size: mat.font-size(
+        mat.get-typography-config($solar-typography, 'headline-1'),
+        'headline-1'
+    );
+    font-weight: 800;
+    color: var(--solarTextPrimary);
+    text-align: start;
+    margin: 0;
+    line-height: 1.2;
+  }
+  .instruction-text {
+    color: var(--solarTextSecondary);
+    text-align: start;
+    margin: 0 !important;
+  }
+
+  /* form basics used everywhere */
+  .login-card form,
+  .register-card form,
+  .otp-card form,
+  .update-card form,
+  .forgot-card form,
+  .auth-card form {
+    color: var(--solarTextPrimary);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    mat-label{
+      margin-bottom: 6px;
+
+    }
+  }
+
+  .form-field {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+  }
+  /* two-column layout helper (register page) */
+  .form-field-row {
+    display: flex;
+    gap: 12px;
+  }
+  .form-field-col {
+    flex: 1;
+  }
+
+  /* common buttons and helpers */
+  .mat-mdc-raised-button{
+    width: 100%;
+    height: 42px;
+    font-weight: 600 !important;
+    font-size: calc(var(--fontSize) + 2px) !important;
+    margin-bottom: 24px;
+  }
+  .register-text {
+    width: 100%;
+    text-align: center;
+    color: var(--solarTextSecondary);
+    font-size: calc(var(--fontSize) + 2px) !important;
+    margin: 0;
+  }
+
+  .register-link {
+    color: var(--primary500);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  /* small reusable messages */
+  .error-text {
+    color: var(--actionRed);
+    padding: 6px 0;
+  }
+  .success-text {
+    color: var(--actionGreen);
+    padding: 6px 0;
+  }
+
+  @include ht-portrait {
+    .welcome-text {
+      font-size: mat.font-size(
+          mat.get-typography-config($solar-typography, 'headline-3'),
+          'headline-3'
+      );
+    }
+    .instruction-text,
+    .register-text {
+      font-size: var(--fontSize) !important;
+    }
+  }
+}

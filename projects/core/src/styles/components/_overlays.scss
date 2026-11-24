@@ -1,0 +1,459 @@
+// ════════════════════════════════════════════════════════════════
+// Reusable UI primitives that render in (or style) the CDK overlay
+// container, so they have to live in global CSS. Opt in per use:
+//
+//   <mat-slide-toggle class="app-switch" hideIcon>           Google-style switch
+//   <mat-select panelClass="app-panel">  <mat-menu class="app-panel">
+//   dialog.open(Cmp, { ...APP_DIALOG_CONFIG })                rounded dialog surface
+//   <div class="dlg"> head / body / foot inside it             shared popup layout
+// ════════════════════════════════════════════════════════════════
+@use "../abstracts" as *;
+
+$fs-body-2: map-get(map-get($solar-typography, "body-2"), "font-size");
+$fs-caption: map-get(map-get($solar-typography, "caption"), "font-size");
+$fs-headline-6: map-get(map-get($solar-typography, "headline-6"), "font-size");
+$ease-out: cubic-bezier(0.2, 0, 0, 1);
+
+// ── Switch — Material 2 / Google Forms: slim track, raised round thumb ──
+.mat-mdc-slide-toggle.app-switch {
+  --app-switch-on: var(--primary500);
+  --app-switch-off-thumb: #fafafa;
+  --app-switch-off-track: color-mix(in srgb, var(--solarTextThird) 45%, transparent);
+
+  --mdc-switch-track-width: 34px;
+  --mdc-switch-track-height: 14px;
+  --mdc-switch-track-shape: 7px;
+  --mdc-switch-handle-width: 20px;
+  --mdc-switch-handle-height: 20px;
+  --mdc-switch-handle-shape: 50%;
+  --mdc-switch-state-layer-size: 36px;
+  --mdc-switch-handle-elevation-shadow: 0 1px 3px rgba(0, 0, 0, 0.28), 0 1px 1px rgba(0, 0, 0, 0.14);
+  --mdc-switch-disabled-handle-elevation-shadow: none;
+
+  // On
+  --mdc-switch-selected-handle-color: var(--app-switch-on);
+  --mdc-switch-selected-hover-handle-color: var(--app-switch-on);
+  --mdc-switch-selected-focus-handle-color: var(--app-switch-on);
+  --mdc-switch-selected-pressed-handle-color: var(--app-switch-on);
+  --mdc-switch-selected-track-color: color-mix(in srgb, var(--app-switch-on) 42%, transparent);
+  --mdc-switch-selected-hover-track-color: color-mix(in srgb, var(--app-switch-on) 48%, transparent);
+  --mdc-switch-selected-focus-track-color: color-mix(in srgb, var(--app-switch-on) 48%, transparent);
+  --mdc-switch-selected-pressed-track-color: color-mix(in srgb, var(--app-switch-on) 48%, transparent);
+  --mdc-switch-selected-hover-state-layer-color: var(--app-switch-on);
+  --mdc-switch-selected-focus-state-layer-color: var(--app-switch-on);
+  --mdc-switch-selected-pressed-state-layer-color: var(--app-switch-on);
+
+  // Off
+  --mdc-switch-unselected-handle-color: var(--app-switch-off-thumb);
+  --mdc-switch-unselected-hover-handle-color: var(--app-switch-off-thumb);
+  --mdc-switch-unselected-focus-handle-color: var(--app-switch-off-thumb);
+  --mdc-switch-unselected-pressed-handle-color: var(--app-switch-off-thumb);
+  --mdc-switch-unselected-track-color: var(--app-switch-off-track);
+  --mdc-switch-unselected-hover-track-color: var(--app-switch-off-track);
+  --mdc-switch-unselected-focus-track-color: var(--app-switch-off-track);
+  --mdc-switch-unselected-pressed-track-color: var(--app-switch-off-track);
+  --mdc-switch-unselected-hover-state-layer-color: var(--solarTextSecondary);
+  --mdc-switch-unselected-focus-state-layer-color: var(--solarTextSecondary);
+  --mdc-switch-unselected-pressed-state-layer-color: var(--solarTextSecondary);
+
+  // Disabled keeps its colours, just faded — "locked", not "broken".
+  --mdc-switch-disabled-selected-handle-color: var(--app-switch-on);
+  --mdc-switch-disabled-unselected-handle-color: var(--app-switch-off-thumb);
+  --mdc-switch-disabled-selected-track-color: var(--app-switch-on);
+  --mdc-switch-disabled-unselected-track-color: var(--solarTextThird);
+  --mdc-switch-disabled-track-opacity: 0.3;
+
+  body.dark-theme & { --app-switch-off-thumb: #c9cfd8; }
+
+  .mdc-switch__handle { transition-timing-function: $ease-out; }
+}
+
+// ── Dropdown panels — same surface as the site switcher ────────────────
+.mat-mdc-select-panel.app-panel,
+.mat-mdc-menu-panel.app-panel {
+  --app-panel-bg: var(--mat-sidenav-container-background-color, var(--mdc-elevated-card-container-color));
+  --app-panel-hover: color-mix(in srgb, var(--solarTextPrimary) 6%, transparent);
+  --app-panel-selected: color-mix(in srgb, var(--primary500) 10%, transparent);
+
+  padding: 6px !important;
+  border: 1px solid var(--divider-border-color);
+  border-radius: 12px !important;
+  background: var(--app-panel-bg) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  animation: app-panel-in 140ms $ease-out;
+
+  // Options and menu items share one row style.
+  .mat-mdc-option,
+  .mat-mdc-menu-item {
+    min-height: 38px;
+    margin: 1px 0;
+    padding: 0 10px 0 12px;
+    border-radius: 8px;
+    font-size: $fs-body-2;
+    color: var(--solarTextPrimary);
+    transition: background-color 0.12s ease;
+
+    // Material's own hover / focus layer is replaced by the tint below.
+    &::before, .mat-mdc-focus-indicator::before { border-radius: 8px; }
+    .mdc-list-item__primary-text, .mat-mdc-menu-item-text { width: 100%; font-size: inherit; }
+
+    &:hover:not(.mdc-list-item--disabled):not([disabled]),
+    &.mat-mdc-option-active,
+    &.cdk-keyboard-focused { background: var(--app-panel-hover) !important; }
+
+    &[disabled], &.mdc-list-item--disabled { opacity: 0.55; }
+  }
+
+  .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple) {
+    background: var(--app-panel-selected) !important;
+
+    .mdc-list-item__primary-text { color: var(--primary500); font-weight: 600; }
+  }
+
+  // Single-select check mark.
+  .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after { color: var(--primary500); }
+
+  // Optional section label: <div class="app-panel__head">Change role</div>
+  .app-panel__head {
+    padding: 6px 12px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--solarTextThird);
+  }
+
+  // Menu row with trailing check: <span class="app-panel__item">Label <mat-icon class="app-panel__check">
+  .app-panel__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .app-panel__check {
+    width: 18px;
+    height: 18px;
+    margin: 0 !important;
+    font-size: 18px;
+    color: var(--primary500) !important;
+  }
+
+  .mat-mdc-menu-item:has(.app-panel__check) {
+    background: var(--app-panel-selected);
+    color: var(--primary500);
+    font-weight: 600;
+  }
+}
+
+.mat-mdc-menu-panel.app-panel {
+  min-width: 200px !important;
+
+  .mat-mdc-menu-content { padding: 0 !important; }
+}
+
+.mat-mdc-select-panel.app-panel {
+  min-width: 100% !important;
+  max-width: calc(100vw - 32px) !important;
+  transform-origin: left top;
+}
+
+@keyframes app-panel-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.985); }
+}
+
+// Sidebar account menu (lib-sidenav).
+.mat-mdc-menu-panel.lib-account-menu {
+  min-width: 220px !important;
+
+  .lib-account-menu__danger { color: var(--actionRed) !important; }
+}
+
+// ── Stacking: anchored pop-ups above dialogs ──────────────────────────
+// Dialogs (global wrapper + backdrop) and anchored pop-ups (select, menu,
+// autocomplete, tooltip) share the CDK's z-index 1000, so their order then
+// depends only on DOM order — and a dialog can end up covering the dropdown
+// opened from inside it. Anchored pop-ups always belong to something on screen,
+// so they go one layer up.
+.cdk-overlay-container .cdk-overlay-connected-position-bounding-box {
+  z-index: 1001;
+}
+
+// ── Dialogs ───────────────────────────────────────────────────────────
+.app-dialog {
+  --mdc-dialog-container-shape: 20px;
+  --mdc-dialog-container-color: var(--mat-sidenav-container-background-color, var(--mdc-elevated-card-container-color));
+  --mdc-dialog-container-elevation-shadow: 0 24px 64px rgba(0, 0, 0, 0.24), 0 4px 16px rgba(0, 0, 0, 0.08);
+
+  .mat-mdc-dialog-surface {
+    border: 1px solid var(--divider-border-color);
+    overflow: hidden;
+  }
+}
+
+// ── Popup layout — one look for every dialog ──────────────────────────
+//
+//   <div class="dlg">
+//     <header class="dlg-head">
+//       <span class="dlg-icon"><i class="isax isax-sms"></i></span>      (optional)
+//       <div class="dlg-head__text">
+//         <h2 mat-dialog-title class="dlg-title">Title</h2>
+//         <p class="dlg-sub">One line of context</p>                  (optional)
+//       </div>
+//       <button mat-icon-button class="dlg-close" mat-dialog-close><mat-icon>close</mat-icon></button>
+//     </header>
+//     <div class="dlg-body"> … </div>
+//     <footer class="dlg-foot">
+//       <button mat-stroked-button class="dlg-btn dlg-btn--ghost">Cancel</button>
+//       <button mat-flat-button color="primary" class="dlg-btn">Confirm</button>
+//     </footer>
+//   </div>
+$dlg-gutter: 24px;
+
+.dlg {
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+  color: var(--solarTextPrimary);
+}
+
+.dlg-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 22px 14px 18px $dlg-gutter;
+  border-bottom: 1px solid var(--divider-border-color);
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.dlg-icon {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  color: var(--primary500);
+  background: color-mix(in srgb, var(--primary500) 10%, transparent);
+
+  .mat-icon { width: 20px; height: 20px; font-size: 20px; }
+
+  &--warn {
+    color: var(--actionOrange, #ff8c1a);
+    background: color-mix(in srgb, var(--actionOrange, #ff8c1a) 12%, transparent);
+  }
+}
+
+// mat-dialog-title ships with its own padding / margins / ::before strut.
+.mat-mdc-dialog-title.dlg-title,
+.dlg-title {
+  margin: 0;
+  padding: 0;
+  font-size: $fs-headline-6;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--solarTextPrimary);
+
+  &::before { display: none; }
+}
+
+.dlg-sub {
+  margin: 0;
+  font-size: $fs-body-2;
+  line-height: 1.5;
+  color: var(--solarTextSecondary);
+}
+
+.dlg-close {
+  flex-shrink: 0;
+  margin-top: -6px;
+  color: var(--solarTextSecondary) !important;
+}
+
+.dlg-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px $dlg-gutter 24px;
+  overflow-y: auto;
+}
+
+.dlg-foot {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding: 16px $dlg-gutter;
+  border-top: 1px solid var(--divider-border-color);
+
+  @include ht-portrait {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    .dlg-btn { width: 100%; }
+  }
+}
+
+.dlg-btn {
+  height: 40px !important;
+  min-width: 104px !important;
+  border-radius: 10px !important;
+  font-size: $fs-body-2 !important;
+  font-weight: 600 !important;
+
+  .mdc-button__label { display: inline-flex; align-items: center; gap: 8px; }
+  .mat-icon, .isax { width: 17px; height: 17px; font-size: 17px; margin: 0; }
+
+  &--ghost { color: var(--solarTextPrimary) !important; }
+}
+
+// Label → value rows (summaries). Label is muted, the value carries the weight.
+.dlg-rows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.dlg-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--divider-border-color);
+
+  &:first-child { padding-top: 0; }
+  &:last-child { border-bottom: 0; padding-bottom: 0; }
+
+  &__label {
+    flex-shrink: 0;
+    font-size: $fs-body-2;
+    color: var(--solarTextThird);
+  }
+
+  &__value {
+    min-width: 0;
+    margin: 0;
+    font-size: $fs-body-2;
+    font-weight: 600;
+    text-align: right;
+    overflow-wrap: anywhere;
+    color: var(--solarTextPrimary);
+  }
+}
+
+// Choice cards with a radio dot: <button class="dlg-option" [class.is-selected]>
+.dlg-options { display: flex; flex-direction: column; gap: 10px; }
+
+.dlg-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--divider-border-color);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+
+  &:hover:not(:disabled) { border-color: color-mix(in srgb, var(--primary500) 50%, var(--divider-border-color)); }
+  &:focus-visible { outline: 2px solid var(--primary500); outline-offset: 2px; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  &.is-selected {
+    border-color: var(--primary500);
+    box-shadow: 0 0 0 1px var(--primary500);
+    background: color-mix(in srgb, var(--primary500) 5%, transparent);
+
+    .dlg-radio {
+      border-color: var(--primary500);
+      box-shadow: inset 0 0 0 3px var(--mdc-dialog-container-color, var(--whiteColor)), inset 0 0 0 8px var(--primary500);
+    }
+  }
+
+  &__text { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: $fs-body-2;
+    font-weight: 600;
+    color: var(--solarTextPrimary);
+  }
+
+  &__desc {
+    font-size: $fs-caption;
+    line-height: 1.5;
+    color: var(--solarTextSecondary);
+
+    strong { font-weight: 600; color: var(--solarTextPrimary); }
+  }
+}
+
+.dlg-radio {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  border-radius: 50%;
+  border: 1.5px solid var(--solarTextThird);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dlg-tag {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 18px;
+  text-transform: uppercase;
+  color: var(--actionGreen);
+  background: color-mix(in srgb, var(--actionGreen) 14%, transparent);
+}
+
+// Small stat line under the header: <p class="dlg-meta"><strong>Label:</strong> value</p>
+.dlg-meta {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: $fs-body-2;
+  color: var(--solarTextSecondary);
+  background: color-mix(in srgb, var(--solarTextThird) 9%, transparent);
+
+  strong { font-weight: 600; color: var(--solarTextPrimary); }
+}
+
+.dlg-section-label {
+  margin: 0;
+  font-size: $fs-caption;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--solarTextThird);
+}
+
+@include ht-portrait {
+  .dlg-head { padding: 18px 10px 16px 18px; }
+  .dlg-body { padding: 18px 18px 20px; }
+  .dlg-foot { padding: 14px 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mat-mdc-select-panel.app-panel,
+  .mat-mdc-menu-panel.app-panel { animation: none; }
+}
+

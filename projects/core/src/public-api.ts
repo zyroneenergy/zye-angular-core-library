@@ -11,3 +11,5 @@ export * from './lib/config/provide-core';
 export * from './lib/shared-map/map.component';
 export * from './lib/shared-map/map-popup/map-popup.component';
 export * from './lib/auth';
+export * from './lib/access';
+export * from './lib/navigation';
