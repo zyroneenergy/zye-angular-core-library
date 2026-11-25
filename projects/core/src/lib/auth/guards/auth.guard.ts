@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { AccessService } from '../../access/access.service';
 
 export const AuthGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
@@ -9,6 +10,11 @@ export const AuthGuard: CanActivateFn = (route, state) => {
   const isLoggedIn = authService.isAuthenticated();
 
   if (isLoggedIn) {
+    const access = inject(AccessService);
+    if (!access.canUseApp()) {
+      access.rejectSession(); // role not allowed in this app: sign out → login
+      return false;
+    }
     return true;
   }
 

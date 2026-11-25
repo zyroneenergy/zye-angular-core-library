@@ -11,6 +11,10 @@ function decide(requirement: AccessRequirement | undefined): boolean | UrlTree {
   const router = inject(Router);
 
   if (!access.isAuthenticated()) return router.parseUrl(access.loginUrl);
+  if (!access.canUseApp()) {
+    access.rejectSession(); // signs out and navigates to login
+    return false;
+  }
   if (access.can(requirement)) return true;
 
   // Denied → the user's home page, unless that is the page being refused (no redirect loop).
@@ -37,8 +41,13 @@ export const accessGuard = (route: { data?: Data }): boolean | UrlTree =>
 export const requireAccess = (requirement: AccessRequirement) => (): boolean | UrlTree => decide(requirement);
 
 /** Sends `/` to the signed-in user's role home, or to login. */
-export const homeRedirectGuard = (): UrlTree => {
+export const homeRedirectGuard = (): boolean | UrlTree => {
   const access = inject(AccessService);
   const router = inject(Router);
-  return router.parseUrl(access.isAuthenticated() ? access.homeUrl() : access.loginUrl);
+  if (!access.isAuthenticated()) return router.parseUrl(access.loginUrl);
+  if (!access.canUseApp()) {
+    access.rejectSession();
+    return false;
+  }
+  return router.parseUrl(access.homeUrl());
 };

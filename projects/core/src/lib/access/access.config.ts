@@ -28,6 +28,15 @@ export interface AccessRule {
 export type AccessRequirement = string | AccessRule | readonly (string | AccessRule)[];
 
 export interface AccessPolicy {
+  /**
+   * Roles allowed to use this app at all. Strict: admins get no bypass here.
+   * A signed-in user with none of these roles is signed out at login (and on
+   * any later navigation, e.g. a session restored from storage) and sees
+   * `appDeniedMessage`. Omit or leave empty to allow every role.
+   */
+  allowedRoles?: readonly string[];
+  /** Shown on the login page when `allowedRoles` refuses a user. */
+  appDeniedMessage?: string;
   /** Named features, e.g. `{ 'sites.details': { exceptRoles: [RoleCode.TenantClient] } }`. */
   features?: Record<string, AccessRule>;
   /**

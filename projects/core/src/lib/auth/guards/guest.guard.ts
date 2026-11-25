@@ -9,7 +9,13 @@ export const GuestGuard: CanActivateFn = () => {
   const router = inject(Router);
 
   if (authService.isAuthenticated()) {
-    return router.parseUrl(inject(AccessService).homeUrl());
+    const access = inject(AccessService);
+    // A stored session whose role this app refuses: sign it out, stay on the auth page.
+    if (!access.canUseApp()) {
+      access.rejectSession();
+      return true;
+    }
+    return router.parseUrl(access.homeUrl());
   }
 
   return true;

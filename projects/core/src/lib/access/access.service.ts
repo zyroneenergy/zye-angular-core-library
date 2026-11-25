@@ -6,6 +6,7 @@ import { ADMIN_ROLE_CODES, isRoleCode, meetsAccessLevel, normalizeRoleCode, role
 
 const DEFAULT_HOME = '/dashboard';
 const DEFAULT_LOGIN = '/auth/login';
+const APP_DENIED_NOTICE_KEY = 'appAccessDenied';
 
 const toArray = <T>(value: T | T[] | null | undefined): T[] =>
   Array.isArray(value) ? value : value != null ? [value] : [];
@@ -30,11 +31,8 @@ export class AccessService {
   private readonly policy: AccessPolicy = inject(ACCESS_POLICY, { optional: true }) ?? {};
   private readonly catalog = signal<ReadonlyMap<string, string>>(new Map());
   private readonly warned = new Set<string>();
-
-  constructor() {
-    // AuthService restores the user from the stored token when it is created.
-    inject(AuthService);
-  }
+  // Created first: it restores the user from the stored token.
+  private readonly auth = inject(AuthService);
 
   readonly isAuthenticated = this.user.isAuthenticated;
 
@@ -68,6 +66,41 @@ export class AccessService {
   });
 
   readonly loginUrl = this.policy.loginUrl ?? DEFAULT_LOGIN;
+
+  /**
+   * Whether the signed-in user's role may use this app at all (`allowedRoles`).
+   * Strict role match, no admin bypass.
+   */
+  readonly canUseApp = computed(() => {
+    const allowed = this.policy.allowedRoles ?? [];
+    return allowed.length === 0 || this.hasRole(...allowed);
+  });
+
+  readonly appDeniedMessage = this.policy.appDeniedMessage ?? "This account doesn't have access to this portal.";
+
+  /**
+   * Signs out a user whose role isn't allowed in this app and leaves the
+   * reason for the login page to show.
+   */
+  rejectSession(): void {
+    try {
+      sessionStorage.setItem(APP_DENIED_NOTICE_KEY, this.appDeniedMessage);
+    } catch {
+      /* storage unavailable: the login page just shows no notice */
+    }
+    this.auth.logout(this.loginUrl);
+  }
+
+  /** Reads (and clears) the notice left by `rejectSession()`. */
+  takeAppDeniedNotice(): string | null {
+    try {
+      const notice = sessionStorage.getItem(APP_DENIED_NOTICE_KEY);
+      sessionStorage.removeItem(APP_DENIED_NOTICE_KEY);
+      return notice;
+    } catch {
+      return null;
+    }
+  }
 
   hasRole(...codes: string[]): boolean {
     const roles = this.roles();

@@ -72,6 +72,10 @@ export class LoginComponent {
     this.loginSubTitle = this.config.auth.loginSubtitle ?? `Portfolio Intelligence for Renewable Finance`;
     this.logoUrl = this.config.auth.logoUrl ?? 'assets/images/company-logo-primary.png';
     this.initializeForm();
+
+    // Sent here because this app doesn't allow the account's role.
+    const notice = this.access.takeAppDeniedNotice();
+    if (notice) this.uiState.set({ status: 'error', errorMessage: notice });
   }
 
   private initializeForm(): void {
@@ -113,6 +117,15 @@ export class LoginComponent {
 
   this.authService.login(credentials, rememberMe).subscribe({
     next: (res: LoginSuccessResponse) => {
+      // Valid credentials, but this app doesn't allow the account's role.
+      if (!this.access.canUseApp()) {
+        const message = this.access.appDeniedMessage;
+        this.authService.logout(this.access.loginUrl);
+        this.uiState.set({ status: 'error', errorMessage: message });
+        this.snackbar.error(message);
+        return;
+      }
+
       this.snackbar.success('Welcome back!');
 
       const returnUrl = sessionStorage.getItem('returnUrl');

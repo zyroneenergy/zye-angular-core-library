@@ -88,7 +88,12 @@ describe('AccessService', () => {
     const result = TestBed.runInInjectionContext(() => accessGuard({ data: { access: 'sites.details' } }));
     expect(router.serializeUrl(result as never)).toBe('/sites');
     expect(TestBed.runInInjectionContext(() => accessGuard({ data: { access: 'sites.list' } }))).toBeTrue();
-    expect(router.serializeUrl(TestBed.runInInjectionContext(() => homeRedirectGuard()))).toBe('/sites');
+    expect(router.serializeUrl(TestBed.runInInjectionContext(() => homeRedirectGuard()) as never)).toBe('/sites');
+  });
+
+  it('every role may use the app when allowedRoles is not set', () => {
+    signIn(['site_engineer']);
+    expect(access.canUseApp()).toBeTrue();
   });
 
   it('menu hides what the role cannot open, and empty groups', () => {
@@ -99,5 +104,46 @@ describe('AccessService', () => {
       { name: 'Admin', icon: '', children: [{ name: 'Users', icon: '', path: '/users', access: 'users' }] },
     ];
     expect(filterNavItems(menu, (i) => access.can(i.access)).map((i) => i.name)).toEqual(['Sites']);
+  });
+});
+
+describe('AccessService allowedRoles (app-level sign-in)', () => {
+  let access: AccessService;
+  let user: UserService;
+  const signIn = (roles: string[]) =>
+    user.setUser({ userId: 'u1', username: 'a@b.c', tenantId: 't1', tenantCode: 'T', roles });
+
+  beforeEach(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        { provide: CORE_CONFIG, useValue: { apiUrl: '', auth: {} } },
+        provideAccessControl({ ...POLICY, allowedRoles: [RoleCode.TenantClient], appDeniedMessage: 'Clients only' }),
+      ],
+    });
+    access = TestBed.inject(AccessService);
+    user = TestBed.inject(UserService);
+  });
+
+  it('allows only the listed roles, with no admin bypass', () => {
+    signIn(['tenant_client']);
+    expect(access.canUseApp()).toBeTrue();
+    signIn(['admin']);
+    expect(access.canUseApp()).toBeFalse();
+    signIn(['superadmin']);
+    expect(access.canUseApp()).toBeFalse();
+    signIn(['site_manager']);
+    expect(access.canUseApp()).toBeFalse();
+  });
+
+  it('guards sign out a refused role and leave the notice for the login page', () => {
+    signIn(['admin']);
+    expect(TestBed.runInInjectionContext(() => accessGuard({ data: { access: 'sites.list' } }))).toBeFalse();
+    expect(user.isAuthenticated()).toBeFalse();
+    expect(access.takeAppDeniedNotice()).toBe('Clients only');
+    expect(access.takeAppDeniedNotice()).toBeNull();
   });
 });
