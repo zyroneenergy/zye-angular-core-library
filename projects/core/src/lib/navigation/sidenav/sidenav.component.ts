@@ -55,7 +55,8 @@ const pathOf = (url: string) => url.split(/[?#]/)[0];
 
 /**
  * Main app navigation, ChatGPT / Claude style.
- * Desktop: collapsible icon rail (Ctrl/⌘+B). Mobile: off-canvas drawer with backdrop.
+ * Desktop: collapsible icon rail (Ctrl/⌘+B). Mobile: full-height drawer with backdrop.
+ * One sidebar icon opens and closes it everywhere (header here, mobile top bar).
  * Items are data-driven and filtered by `AccessService`; open state lives in `SidenavService`.
  */
 @Component({
@@ -85,6 +86,13 @@ export class SidenavComponent {
   readonly showThemeToggle = input(true);
   /** Built-in "Log out" (with confirmation) in the "My Account" menu. */
   readonly showLogout = input(true);
+  /**
+   * Label of the account entry, e.g. the user's name from the app's profile.
+   * Falls back to the token's first name, then "My Account".
+   */
+  readonly accountName = input<string | null>(null);
+  /** Avatar on the account entry (photo / chosen avatar); the profile icon when absent or broken. */
+  readonly accountAvatarUrl = input<string | null>(null);
 
   protected readonly nav = inject(SidenavService);
   private readonly access = inject(AccessService);
@@ -126,13 +134,15 @@ export class SidenavComponent {
   protected readonly themeLabel = computed(() => (this.isDark() === 'dark' ? 'Light mode' : 'Dark mode'));
   protected readonly themeIcon = computed(() => (this.isDark() === 'dark' ? 'isax-sun-1' : 'isax-moon'));
 
-  /** Never the username / email: the first name when the token has one, else "My Account". */
-  protected readonly accountLabel = computed(() => this.user.firstName() || 'My Account');
+  protected readonly accountLabel = computed(() =>
+    this.accountName()?.trim() || this.user.firstName() || 'My Account');
+
+  /** Set when the avatar image fails (e.g. an expired signed URL); a new URL retries. */
+  private readonly avatarFailed = signal(false);
+  protected readonly accountAvatar = computed(() => (this.avatarFailed() ? null : this.accountAvatarUrl()));
 
   protected readonly toggleLabel = computed(() =>
-    this.nav.isMobile() ? 'Close menu' : this.nav.expanded() ? 'Close sidebar' : 'Open sidebar');
-  /** Mobile drawer closes with an X (ChatGPT / Claude); desktop toggles the rail. */
-  protected readonly toggleIcon = computed(() => (this.nav.isMobile() ? 'isax-close-circle' : 'isax-sidebar-left'));
+    this.nav.isMobile() || this.nav.expanded() ? 'Close sidebar' : 'Open sidebar');
   protected readonly shortcut = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘B' : 'Ctrl+B';
 
   constructor() {
@@ -154,6 +164,11 @@ export class SidenavComponent {
         this.openGroups.update(open => new Set([...open, ...inside.map(item => item.name)]));
       }
       this.flyoutFor.set(null);
+    }, { allowSignalWrites: true });
+
+    effect(() => {
+      this.accountAvatarUrl();
+      this.avatarFailed.set(false);
     }, { allowSignalWrites: true });
 
     // The flyout only exists on the rail.
@@ -230,6 +245,10 @@ export class SidenavComponent {
   protected closeFlyout(): void {
     clearTimeout(this.flyoutTimer);
     this.flyoutFor.set(null);
+  }
+
+  protected onAvatarError(): void {
+    this.avatarFailed.set(true);
   }
 
   protected toggleTheme(): void {

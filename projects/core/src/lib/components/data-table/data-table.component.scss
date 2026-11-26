@@ -19,9 +19,16 @@
 }
 
 // ── Scrollable area ──────────────────────────────────────────────────────────
+// min-height (inline, from minVisibleRows) keeps the footprint steady; the
+// row-coloured fill makes short tables read as one card, not a gap.
 .sf-table-scroll {
   overflow: auto;
   scrollbar-gutter: stable;
+  background: var(--mat-table-row-background-color);
+}
+
+.sf-table-loading {
+  background: var(--mat-table-row-background-color);
 }
 
 .sf-table th.mat-mdc-header-cell:last-child {
@@ -77,6 +84,35 @@
   bottom: 0;
   z-index: 2;
   flex-shrink: 0;
+
+  // Prev / next: plain icon buttons with a hover tint, as in the theme's other
+  // icon buttons. The app-wide disabled-button fill (a grey disc on the light
+  // theme) doesn't belong here, so it's cleared and disabled just fades.
+  ::ng-deep .mat-mdc-paginator-navigation-previous,
+  ::ng-deep .mat-mdc-paginator-navigation-next,
+  ::ng-deep .mat-mdc-paginator-navigation-first,
+  ::ng-deep .mat-mdc-paginator-navigation-last {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+    border-radius: 8px;
+    background: transparent !important;
+    color: var(--solarTextSecondary);
+    transition: background-color 120ms, color 120ms;
+
+    .mat-mdc-button-persistent-ripple,
+    .mat-mdc-button-ripple { border-radius: 8px; }
+
+    &:not(:disabled):hover {
+      background: color-mix(in srgb, var(--solarTextPrimary) 7%, transparent) !important;
+      color: var(--solarTextPrimary);
+    }
+
+    &:disabled {
+      color: var(--solarTextThird);
+      opacity: 0.45;
+    }
+  }
 }
 
 // ── Empty state ───────────────────────────────────────────────────────────────
@@ -94,6 +130,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  // Fills the table's minimum body, so the message sits centred in it.
+  min-height: var(--sf-empty-min, auto);
+  box-sizing: border-box;
   padding: 48px 24px;
   gap: 8px;
   text-align: center;

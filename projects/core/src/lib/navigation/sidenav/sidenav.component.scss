@@ -363,6 +363,17 @@
   overflow: visible;
 }
 
+// 24px avatar on the 20px icon box's axis (2px overhang each side).
+.nav-item__avatar {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin: 0 -2px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--sn-hover);
+}
+
 .nav-item__trail {
   flex: none;
   margin-left: auto;
@@ -384,10 +395,10 @@
   vertical-align: middle;
 }
 
-// ── Mobile: off-canvas drawer (ChatGPT / Claude app style) ────────────────────
-// A rounded sheet that slides in over the page, a blurred dim backdrop behind
-// it, roomier rows for thumbs. While a swipe is in progress the drawer and the
-// backdrop follow --sn-progress (0 closed → 1 open) with transitions off.
+// ── Mobile: off-canvas drawer (ChatGPT / Claude web-mobile style) ─────────────
+// A flat, full-height panel that slides in over the page, a dim backdrop
+// behind it, roomier rows for thumbs. While a swipe is in progress the drawer
+// and the backdrop follow --sn-progress (0 closed → 1 open) with transitions off.
 :host(.is-mobile) {
   --sn-drawer: min(320px, 86vw);
   --sn-sheet-ease: cubic-bezier(0.32, 0.72, 0, 1);
@@ -400,8 +411,8 @@
     inset: 0 auto 0 0;
     width: var(--sn-drawer);
     padding: env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
-    border-right: 0;
-    border-radius: 0 20px 20px 0;
+    border-right: 1px solid var(--sn-border);
+    border-radius: 0;
     transform: translateX(-100%);
     transition: transform 340ms var(--sn-sheet-ease), box-shadow 340ms;
     will-change: transform;
@@ -410,7 +421,7 @@
 
     &.open {
       transform: none;
-      box-shadow: 8px 0 40px rgba(0, 0, 0, 0.28);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
     }
   }
 
@@ -421,7 +432,7 @@
   .nav-item {
     height: 46px;
     font-size: 15px;
-    border-radius: 12px;
+    border-radius: 10px;
 
     &__icon { font-size: 20px; }
 
@@ -438,7 +449,7 @@
   .sidenav {
     transition: none;
     transform: translateX(calc((var(--sn-progress, 0) - 1) * 100%));
-    box-shadow: 8px 0 40px rgba(0, 0, 0, calc(0.28 * var(--sn-progress, 0)));
+    box-shadow: 4px 0 24px rgba(0, 0, 0, calc(0.18 * var(--sn-progress, 0)));
   }
 
   .sidenav-backdrop {

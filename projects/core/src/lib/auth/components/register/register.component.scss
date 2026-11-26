@@ -1,4 +1,5 @@
-@use "../../../../styles/abstracts/index" as *; 
+@use "../../../../styles/abstracts/index" as *;
+@use "../auth-shared" as auth;
 
 lib-register {
   .register-card {
@@ -32,21 +33,8 @@ lib-register {
     width: 100%;
   }
 
-  /* Reuse error banner styles from login (or move to shared stylesheet) */
-  .login-error-banner {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    background-color: rgba(192, 57, 43, 0.08);
-    border: 1px solid rgba(192, 57, 43, 0.25);
-    margin-bottom: 16px;
-
-    &__icon { color: #c0392b; font-size: 18px; }
-    &__text { color: #c0392b; font-size: 14px; line-height: 1.5; }
-  }
+  /* Error banner (shared with login) */
+  @include auth.auth-alert;
 
   .register-submit-btn {
     width: 100%;

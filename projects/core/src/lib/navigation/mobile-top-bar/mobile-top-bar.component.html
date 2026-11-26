@@ -3,11 +3,12 @@
     type="button"
     class="top-nav__btn"
     (click)="nav.toggle()"
-    aria-label="Open menu"
+    aria-label="Open sidebar"
     aria-controls="lib-sidenav"
     [attr.aria-expanded]="nav.mobileOpen()"
   >
-    <i class="isax isax-textalign-left" aria-hidden="true"></i>
+    <!-- Same sidebar icon as the drawer's own toggle, so open and close read as one control. -->
+    <i class="isax isax-sidebar-left" aria-hidden="true"></i>
   </button>
 
   <h1 class="top-nav__title">{{ pageTitle() }}</h1>

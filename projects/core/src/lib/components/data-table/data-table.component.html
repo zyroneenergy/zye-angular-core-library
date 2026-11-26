@@ -2,7 +2,9 @@
 
   <!-- ── Loading / Shimmer State ──────────────────────────────────────────── -->
   @if (loading) {
-    <lib-shimmer preset="table-inline" [count]="10"></lib-shimmer>
+    <div class="sf-table-loading" [style.min-height.px]="minBodyHeight">
+      <lib-shimmer preset="table-inline" [count]="10"></lib-shimmer>
+    </div>
   }
 
   <!-- ── Data Table ────────────────────────────────────────────────────────── -->
@@ -11,6 +13,8 @@
       class="sf-table-scroll"
       [class.sf-table-scroll--capped]="maxBodyHeight !== null"
       [style.max-height.px]="maxBodyHeight"
+      [style.min-height.px]="minBodyHeight"
+      [style.--sf-empty-min.px]="minBodyHeight ? minBodyHeight - headerHeight : null"
     >
       <table
         mat-table

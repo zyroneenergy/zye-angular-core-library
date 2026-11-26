@@ -1,4 +1,5 @@
-@use "../../../../styles/abstracts/index" as *; 
+@use "../../../../styles/abstracts/index" as *;
+@use "../auth-shared" as auth;
 
 lib-login {
   /* ── Shimmer skeleton wrapper ────────────────────────────── */
@@ -7,31 +8,8 @@ lib-login {
     width: 100%;
   }
 
-  /* Error banner */
-  .login-error-banner {
-    width: calc(100% - 28px);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    background-color: rgba(192, 57, 43, 0.08);
-    border: 1px solid rgba(192, 57, 43, 0.25);
-    margin-bottom: 16px;
-
-    &__icon {
-      color: var(--actionRed);
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-    }
-
-    &__text {
-      color: var(--actionRed);
-      font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
-      line-height: 1.5;
-    }
-  }
+  /* Error banner (shared with register) */
+  @include auth.auth-alert;
 
   /* Submit button */
   .login-submit-btn {

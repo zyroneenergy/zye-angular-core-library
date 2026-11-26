@@ -10,8 +10,8 @@
   aria-label="Main navigation"
   [attr.inert]="nav.isMobile() && !nav.mobileOpen() ? '' : null"
 >
-  <!-- Header: brand + toggle. Collapsed rail: hovering the logo reveals the toggle (ChatGPT).
-       Mobile drawer: the toggle is a close (X) button. -->
+  <!-- Header: brand + sidebar toggle (same icon on desktop and mobile, ChatGPT / Claude).
+       Collapsed rail: hovering the logo reveals the toggle. -->
   <div class="sidenav__header">
     <a class="brand" [routerLink]="homeLink()" [attr.aria-label]="brandName() + ' home'" [tabIndex]="nav.expanded() ? 0 : -1">
       <img class="brand__logo" [src]="logoUrl()" alt="" width="28" height="28" />
@@ -29,7 +29,7 @@
       [matTooltipDisabled]="nav.isMobile()"
       matTooltipPosition="right"
     >
-      <i class="isax" [ngClass]="toggleIcon()" aria-hidden="true"></i>
+      <i class="isax isax-sidebar-left" aria-hidden="true"></i>
     </button>
   </div>
 
@@ -202,7 +202,11 @@
           [matTooltipDisabled]="nav.expanded()"
           matTooltipPosition="right"
         >
-          <i class="nav-item__icon isax isax-profile-circle" aria-hidden="true"></i>
+          @if (accountAvatar(); as avatar) {
+            <img class="nav-item__avatar" [src]="avatar" alt="" width="24" height="24" (error)="onAvatarError()" />
+          } @else {
+            <i class="nav-item__icon isax isax-profile-circle" aria-hidden="true"></i>
+          }
           <span class="label">{{ accountLabel() }}</span>
           <i class="label isax isax-arrow-up-2 nav-item__trail" aria-hidden="true"></i>
         </button>

@@ -1,6 +1,53 @@
 @use "@angular/material" as mat;
 @use "../../../styles/abstracts/index" as *;
 
+// Inline alert on the auth cards (wrong password, account not allowed, …).
+// Same recipe as the app's "solid" status chips (PR / production): a tinted
+// surface + border, and text mixed from the tone so it reads on both themes.
+// Icon and text share one row, centred; long messages wrap, never overflow.
+@mixin auth-alert($tone: var(--actionRed, #e5484d)) {
+  .login-error-banner {
+    --alert-tone: #{$tone};
+
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--alert-tone) 15%, #ffffff);
+    border: 1.5px solid color-mix(in srgb, var(--alert-tone) 22%, #ffffff);
+    color: color-mix(in srgb, var(--alert-tone) 95%, #0d0d0d);
+
+    body[data-zy-theme='dark'] & {
+      background: color-mix(in srgb, var(--alert-tone) 28%, #141414);
+      border-color: color-mix(in srgb, var(--alert-tone) 55%, #141414);
+      color: color-mix(in srgb, var(--alert-tone) 30%, var(--solarTextPrimary, #f5f5f5));
+    }
+
+    &__icon {
+      flex: none;
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+      line-height: 18px;
+      color: currentColor;
+    }
+
+    &__text {
+      flex: 1;
+      min-width: 0;
+      font-size: #{map-get(map-get($solar-typography, "body-2"), "font-size")};
+      font-weight: 600;
+      line-height: 1.4;
+      color: currentColor;
+      overflow-wrap: anywhere;
+    }
+  }
+}
+
 // Card + form styles shared by every auth screen. Mixin only (no CSS output),
 // so each component includes it under its own scope and nothing leaks into
 // the app (auth components use ViewEncapsulation.None).

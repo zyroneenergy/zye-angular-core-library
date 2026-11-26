@@ -77,6 +77,13 @@ export class DataTableComponent<T extends { id?: string }> implements AfterConte
   @Input() maxVisibleRows: number | null = 10;
 
   /**
+   * Rows' worth of height the body always keeps, so the table (and the
+   * paginator under it) has the same footprint whether it holds 1 row, none,
+   * or is loading. `null` / 0 lets it shrink to its rows. Defaults to 6.
+   */
+  @Input() minVisibleRows: number | null = 6;
+
+  /**
    * Row height in px used to compute the scroll cap. Must match `.sf-data-row`
    * height in data-table.component.scss — kept as an input (rather than only
    * living in CSS) so callers with a taller custom row template can pass the
@@ -129,6 +136,14 @@ export class DataTableComponent<T extends { id?: string }> implements AfterConte
   get maxBodyHeight(): number | null {
     if (this.maxVisibleRows == null || this.maxVisibleRows <= 0) return null;
     return this.headerHeight + this.rowHeight * this.maxVisibleRows;
+  }
+
+  /** Minimum body height (header + `minVisibleRows`), never above the scroll cap. */
+  get minBodyHeight(): number | null {
+    if (this.minVisibleRows == null || this.minVisibleRows <= 0) return null;
+    const min = this.headerHeight + this.rowHeight * this.minVisibleRows;
+    const max = this.maxBodyHeight;
+    return max == null ? min : Math.min(min, max);
   }
 
   // ── Selection helpers exposed to template ──────────────────────────────────
